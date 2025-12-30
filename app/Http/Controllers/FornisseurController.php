@@ -33,7 +33,8 @@ class FornisseurController extends Controller
             'name' => 'required|string|max:255',
             'phone_number' => 'nullable|string|max:255',
             'ville' => 'nullable|string|max:255',
-            'specialite' => 'nullable|string|in:embalage,capsule,herb',
+            'specialite' => 'nullable|array',
+            'specialite.*' => 'string|in:embalage,capsule,herb',
         ]);
 
         Fornisseur::create($request->all());
@@ -66,7 +67,8 @@ class FornisseurController extends Controller
             'name' => 'required|string|max:255',
             'phone_number' => 'nullable|string|max:255',
             'ville' => 'nullable|string|max:255',
-            'specialite' => 'nullable|string|in:embalage,capsule,herb',
+            'specialite' => 'nullable|array',
+            'specialite.*' => 'string|in:embalage,capsule,herb',
         ]);
 
         $fornisseur->update($request->all());

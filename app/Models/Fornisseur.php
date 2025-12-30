@@ -11,6 +11,10 @@ class Fornisseur extends Model
 
     protected $fillable = ['name', 'phone_number', 'ville', 'specialite'];
 
+    protected $casts = [
+        'specialite' => 'array',
+    ];
+
     public function herbStockMovements()
     {
         return $this->hasMany(HerbStockMovement::class);

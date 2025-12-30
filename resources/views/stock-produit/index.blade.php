@@ -275,6 +275,50 @@
         </div>
     @endif
 
+    <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; background: #f9fafb; padding: 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 0.25rem; text-transform: uppercase;">Produit</label>
+            <select id="filter-produit" class="filter-select" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; outline: none; background: white;">
+                <option value="">Tous les produits</option>
+                @foreach($stocks->pluck('product.name')->unique() as $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 0.25rem; text-transform: uppercase;">Catégorie</label>
+            <select id="filter-category" class="filter-select" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; outline: none; background: white;">
+                <option value="">Toutes les catégories</option>
+                @foreach($stocks->pluck('category.name')->unique()->filter() as $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 0.25rem; text-transform: uppercase;">Couleur</label>
+            <select id="filter-color" class="filter-select" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; outline: none; background: white;">
+                <option value="">Toutes les couleurs</option>
+                @foreach($stocks->pluck('color.name')->unique()->filter() as $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 0.25rem; text-transform: uppercase;">Taille</label>
+            <select id="filter-size" class="filter-select" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; outline: none; background: white;">
+                <option value="">Toutes les tailles</option>
+                @foreach($stocks->pluck('size.name')->unique()->filter() as $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+            <button onclick="resetFilters()" style="padding: 0.5rem 1rem; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #4b5563; cursor: pointer; transition: all 0.2s;">
+                Réinitialiser
+            </button>
+        </div>
+    </div>
+
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -284,19 +328,16 @@
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Couleur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Taille</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité</th>
-                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Fournisseur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="stockTableBody">
                 @forelse($stocks as $stock)
                 @php
                     $globalQuantity = $stock->global_quantity;
-                    // Get the most recent restock movement with supplier
-                    $latestRestock = $stock->movements()->where('type', 'restock')->with('fornisseur')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc')->first();
                 @endphp
-                <tr style="border-bottom: 1px solid #f3f4f6;">
+                <tr style="border-bottom: 1px solid #f3f4f6;" class="stock-row">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $stock->product->name }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $stock->category->name ?? '-' }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $stock->color->name ?? '-' }}</td>
@@ -305,16 +346,6 @@
                         <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                             {{ $globalQuantity }} unités
                         </span>
-                    </td>
-                    <td style="padding: 1rem; color: #6b7280;">
-                        @if($latestRestock && $latestRestock->fornisseur)
-                            <span style="font-weight: 500; color: #1f2937;">{{ $latestRestock->fornisseur->name }}</span>
-                            @if($latestRestock->fornisseur->ville)
-                                <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $latestRestock->fornisseur->ville }}</span>
-                            @endif
-                        @else
-                            <span style="color: #9ca3af;">-</span>
-                        @endif
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $stock->notes ?? '-' }}</td>
                     <td style="padding: 1rem; text-align: right;">
@@ -497,5 +528,42 @@
             closeUsageModal();
         }
     });
+
+    // Filters functionality
+    const filterSelects = document.querySelectorAll('.filter-select');
+    
+    filterSelects.forEach(select => {
+        select.addEventListener('change', filterTable);
+    });
+
+    function filterTable() {
+        const productFilter = document.getElementById('filter-produit').value.toLowerCase();
+        const categoryFilter = document.getElementById('filter-category').value.toLowerCase();
+        const colorFilter = document.getElementById('filter-color').value.toLowerCase();
+        const sizeFilter = document.getElementById('filter-size').value.toLowerCase();
+        
+        const rows = document.querySelectorAll('.stock-row');
+        
+        rows.forEach(row => {
+            const product = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            const category = row.querySelector('td:nth-child(2)').textContent.toLowerCase().trim();
+            const color = row.querySelector('td:nth-child(3)').textContent.toLowerCase().trim();
+            const size = row.querySelector('td:nth-child(4)').textContent.toLowerCase().trim();
+            
+            const matchProduct = !productFilter || product === productFilter;
+            const matchCategory = !categoryFilter || category === categoryFilter || (category === '-' && !categoryFilter);
+            const matchColor = !colorFilter || color === colorFilter || (color === '-' && !colorFilter);
+            const matchSize = !sizeFilter || size === sizeFilter || (size === '-' && !sizeFilter);
+            
+            row.style.display = (matchProduct && matchCategory && matchColor && matchSize) ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        filterSelects.forEach(select => {
+            select.value = '';
+        });
+        filterTable();
+    }
 </script>
 @endpush

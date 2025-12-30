@@ -274,40 +274,44 @@
         </div>
     @endif
 
+    <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; background: #f9fafb; padding: 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+        <div style="flex: 1; min-width: 200px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 0.25rem; text-transform: uppercase;">Carton</label>
+            <select id="filter-carton" class="filter-select" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; outline: none; background: white;">
+                <option value="">Tous les cartons</option>
+                @foreach($capsules->pluck('carton')->unique() as $carton)
+                    <option value="{{ $carton }}">{{ $carton }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+            <button onclick="resetFilters()" style="padding: 0.5rem 1rem; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #4b5563; cursor: pointer; transition: all 0.2s;">
+                Réinitialiser
+            </button>
+        </div>
+    </div>
+
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr style="border-bottom: 1px solid #e5e7eb; text-align: left;">
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Carton</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité de cartons</th>
-                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Fournisseur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="stockTableBody">
                 @forelse($capsules as $capsule)
                 @php
                     $globalQuantity = $capsule->global_quantity;
-                    // Get the most recent restock movement with supplier
-                    $latestRestock = $capsule->movements()->where('type', 'restock')->with('fornisseur')->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc')->first();
                 @endphp
-                <tr style="border-bottom: 1px solid #f3f4f6;">
+                <tr style="border-bottom: 1px solid #f3f4f6;" class="stock-row">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $capsule->carton }}</td>
                     <td style="padding: 1rem; color: #4b5563;">
                         <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                             {{ $globalQuantity }} cartons
                         </span>
-                    </td>
-                    <td style="padding: 1rem; color: #6b7280;">
-                        @if($latestRestock && $latestRestock->fornisseur)
-                            <span style="font-weight: 500; color: #1f2937;">{{ $latestRestock->fornisseur->name }}</span>
-                            @if($latestRestock->fornisseur->ville)
-                                <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $latestRestock->fornisseur->ville }}</span>
-                            @endif
-                        @else
-                            <span style="color: #9ca3af;">-</span>
-                        @endif
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $capsule->notes ?? '-' }}</td>
                     <td style="padding: 1rem; text-align: right;">
@@ -531,5 +535,26 @@
             closeUsageModal();
         }
     });
+
+    // Filters functionality
+    const filterSelect = document.getElementById('filter-carton');
+    
+    filterSelect.addEventListener('change', filterTable);
+
+    function filterTable() {
+        const cartonFilter = filterSelect.value.toLowerCase();
+        const rows = document.querySelectorAll('.stock-row');
+        
+        rows.forEach(row => {
+            const carton = row.querySelector('td:nth-child(1)').textContent.toLowerCase().trim();
+            const matchCarton = !cartonFilter || carton === cartonFilter;
+            row.style.display = matchCarton ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        filterSelect.value = '';
+        filterTable();
+    }
 </script>
 @endpush

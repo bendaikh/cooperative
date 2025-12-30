@@ -15,7 +15,7 @@ class StockHerbController extends Controller
     public function index()
     {
         $herbs = Herb::with(['movements.fornisseur'])->get();
-        $fornisseurs = Fornisseur::where('specialite', 'herb')->get();
+        $fornisseurs = Fornisseur::whereJsonContains('specialite', 'herb')->get();
         return view('stock-herb.index', compact('herbs', 'fornisseurs'));
     }
 
@@ -25,7 +25,7 @@ class StockHerbController extends Controller
     public function create()
     {
         $herbs = Herb::all();
-        $fornisseurs = Fornisseur::where('specialite', 'herb')->get();
+        $fornisseurs = Fornisseur::whereJsonContains('specialite', 'herb')->get();
         return view('stock-herb.create', compact('herbs', 'fornisseurs'));
     }
 
