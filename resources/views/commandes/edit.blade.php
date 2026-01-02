@@ -84,8 +84,8 @@
                                         }
                                     }
                                 @endphp
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->quantity }}" data-type="PILULIER" {{ $isSelected ? 'selected' : '' }}>
-                                    {{ $pilulier->name }} - Stock: {{ $stock->quantity }}
+                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-type="PILULIER" {{ $isSelected ? 'selected' : '' }}>
+                                    {{ $pilulier->name }} - Stock: {{ $stock->global_quantity }}
                                 </option>
                             @endforeach
                         @endforeach
@@ -113,8 +113,8 @@
                                         }
                                     }
                                 @endphp
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->quantity }}" data-type="BOUCHON" {{ $isSelected ? 'selected' : '' }}>
-                                    {{ $bouchon->name }} - Stock: {{ $stock->quantity }}
+                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-type="BOUCHON" {{ $isSelected ? 'selected' : '' }}>
+                                    {{ $bouchon->name }} - Stock: {{ $stock->global_quantity }}
                                 </option>
                             @endforeach
                         @endforeach
@@ -122,6 +122,26 @@
                     <p id="bouchon-stock-info" style="color: #6b7280; font-size: 0.75rem;"></p>
                     @error('bouchon_product_stock_id')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Joint de sécurité Checkbox -->
+                <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #fef3c7; border-radius: 0.75rem; border: 2px solid #fbbf24;">
+                    @if($jointSecurite && $jointSecurite->stock->count() > 0)
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" name="avec_joint_securite" id="avec_joint_securite" value="1" {{ old('avec_joint_securite', $commande->avec_joint_securite) ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem;">
+                            <span style="font-size: 0.875rem; font-weight: 600; color: #1f2937;">🔒 Avec Joint de sécurité</span>
+                        </label>
+                        <p style="color: #78350f; font-size: 0.75rem; margin-top: 0.5rem; margin-left: 2rem;">
+                            Si coché, la même quantité sera appliquée pour le Joint de sécurité.
+                            Stock disponible: {{ $jointSecurite->stock->first()->global_quantity }}
+                        </p>
+                    @else
+                        <p style="color: #92400e; font-size: 0.875rem; font-weight: 600;">🔒 Joint de sécurité</p>
+                        <p style="color: #b45309; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible - Créez d'abord un produit "Joint de sécurité" et son stock.</p>
+                    @endif
+                    @error('avec_joint_securite')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>

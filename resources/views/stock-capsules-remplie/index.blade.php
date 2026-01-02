@@ -103,7 +103,7 @@
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">
                         <span style="background: #ecfdf5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
-                            {{ $filledCapsule->quantity }} rangées
+                            {{ round($filledCapsule->quantity, 2) }} rangées
                         </span>
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">

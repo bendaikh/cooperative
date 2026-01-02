@@ -9,11 +9,13 @@ class Commande extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['client_id', 'product_stock_id', 'quantity', 'status', 'notes', 'capsules_per_unit'];
+    protected $fillable = ['client_id', 'product_stock_id', 'quantity', 'status', 'notes', 'capsules_per_unit', 'avec_joint_securite', 'stock_applied'];
 
     protected $casts = [
         'quantity' => 'integer',
         'capsules_per_unit' => 'integer',
+        'avec_joint_securite' => 'boolean',
+        'stock_applied' => 'boolean',
     ];
 
     public function client()
@@ -39,7 +41,10 @@ class Commande extends Model
 
     public static function getStatuses()
     {
-        return ['en attente', 'en cours', 'livré', 'annulé'];
+        return ['Confirmé', 'En cours d\'emballage', 'Sortie'];
     }
+
+
+    
 }
 

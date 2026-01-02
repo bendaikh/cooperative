@@ -50,10 +50,10 @@
                     </div>
                     <div>
                         @php
-                            $statusClass = str_replace([' ', 'é', 'à', 'è'], ['-', 'e', 'a', 'e'], strtolower($commande->status));
+                            $statusClass = str_replace([' ', 'é', 'à', 'è', "'"], ['-', 'e', 'a', 'e', '-'], strtolower($commande->status));
                         @endphp
-                        <button class="status-button status-{{ $statusClass }}" type="button" data-commande-id="{{ $commande->id }}" data-current-status="{{ $commande->status }}" style="background: white; border: none; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
-                            {{ ucfirst($commande->status) }}
+                        <button class="status-button status-{{ $statusClass }}" type="button" data-commande-id="{{ $commande->id }}" data-current-status="{{ $commande->status }}" style="padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15); border: none;">
+                            {{ $commande->status }}
                         </button>
                     </div>
                 </div>
@@ -206,17 +206,14 @@
         <div class="status-modal-body">
             <p style="margin-bottom: 1rem; color: #6b7280;">Sélectionnez le nouveau statut:</p>
             <div class="status-options-grid">
-                <button class="status-option-btn" data-status="en attente">
-                    <span class="status-badge status-en-attente">En attente</span>
+                <button class="status-option-btn" data-status="Confirmé">
+                    <span class="status-badge status-confirme">Confirmé</span>
                 </button>
-                <button class="status-option-btn" data-status="en cours">
-                    <span class="status-badge status-en-cours">En cours</span>
+                <button class="status-option-btn" data-status="En cours d'emballage">
+                    <span class="status-badge status-en-cours-d-emballage">En cours d'emballage</span>
                 </button>
-                <button class="status-option-btn" data-status="livré">
-                    <span class="status-badge status-livre">Livré</span>
-                </button>
-                <button class="status-option-btn" data-status="annulé">
-                    <span class="status-badge status-annule">Annulé</span>
+                <button class="status-option-btn" data-status="Sortie">
+                    <span class="status-badge status-sortie">Sortie</span>
                 </button>
             </div>
         </div>
@@ -235,28 +232,22 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
     }
 
-    .status-en-attente {
+    .status-confirme {
         background: #fef3c7 !important;
         color: #92400e !important;
         border: 2px solid #fbbf24 !important;
     }
 
-    .status-en-cours {
+    .status-en-cours-d-emballage {
         background: #dbeafe !important;
         color: #1e40af !important;
         border: 2px solid #60a5fa !important;
     }
 
-    .status-livre {
+    .status-sortie {
         background: #d1fae5 !important;
         color: #065f46 !important;
         border: 2px solid #34d399 !important;
-    }
-
-    .status-annule {
-        background: #fee2e2 !important;
-        color: #991b1b !important;
-        border: 2px solid #f87171 !important;
     }
 
     /* Modal Styles */
@@ -380,24 +371,19 @@
         width: 100%;
     }
 
-    .status-option-btn[data-status="en attente"] .status-badge {
+    .status-option-btn[data-status="Confirmé"] .status-badge {
         background: #fef3c7;
         color: #92400e;
     }
 
-    .status-option-btn[data-status="en cours"] .status-badge {
+    .status-option-btn[data-status="En cours d'emballage"] .status-badge {
         background: #dbeafe;
         color: #1e40af;
     }
 
-    .status-option-btn[data-status="livré"] .status-badge {
+    .status-option-btn[data-status="Sortie"] .status-badge {
         background: #d1fae5;
         color: #065f46;
-    }
-
-    .status-option-btn[data-status="annulé"] .status-badge {
-        background: #fee2e2;
-        color: #991b1b;
     }
 </style>
 @endpush
@@ -494,10 +480,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     statusButton.textContent = newStatus;
                     statusButton.dataset.currentStatus = newStatus;
                     
-                    // Normalize status for CSS class (replace spaces and accents)
+                    // Normalize status for CSS class (replace spaces, accents, and apostrophes)
                     const statusClass = newStatus.replace(/\s+/g, '-').toLowerCase()
-                        .replace(/é/g, 'e').replace(/à/g, 'a').replace(/è/g, 'e');
+                        .replace(/é/g, 'e').replace(/à/g, 'a').replace(/è/g, 'e').replace(/'/g, '-');
                     statusButton.className = `status-button status-${statusClass}`;
+                    
+                    // Reload page after 1 second to show updated stock values
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
                     alert(data.message || 'Une erreur est survenue');
                     location.reload();

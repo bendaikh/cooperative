@@ -37,6 +37,9 @@ class ProductStock extends Model
 
     /**
      * Calculate the global quantity based on movements
+     * The quantity field is used as the current stock level
+     * Global quantity represents: current quantity - all usages that haven't been accounted for
+     * OR simply: quantity + all restock movements - all usage movements
      */
     public function getGlobalQuantityAttribute()
     {
@@ -48,6 +51,8 @@ class ProductStock extends Model
             $restocks = $this->movements()->where('type', 'restock')->sum('quantity');
             $usages = $this->movements()->where('type', 'usage')->sum('quantity');
         }
-        return ($this->quantity ?? 0) + $restocks - $usages;
+        // The current quantity field is already the base
+        // We just show it as-is, the movements are for audit trail
+        return max(0, $this->quantity);
     }
 }

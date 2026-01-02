@@ -35,7 +35,7 @@ class Product extends Model
     // Check if this is packaging (has type_emballage)
     public function isEmballage()
     {
-        return !is_null($this->type_emballage);
+        return !is_null($this->type_emballage) || $this->name === 'Joint de sécurité';
     }
 
     // Get type of emballage
@@ -45,6 +45,10 @@ class Product extends Model
             'PILULIER' => '📦 Pilulier',
             'BOUCHON' => '🔓 Bouchon',
         ];
+        
+        if ($this->name === 'Joint de sécurité') {
+            return '🔒 Joint de sécurité';
+        }
         
         return $types[$this->type_emballage] ?? $this->type_emballage;
     }

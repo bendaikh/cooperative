@@ -6,9 +6,13 @@
 @section('content')
 <div style="max-width: 1000px;">
     <div style="background: white; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <!-- Hidden indicator of errors for JavaScript detection -->
+        @if($errors->any())
+            <div id="hasErrors" style="display: none;">true</div>
+        @endif
         
         @if($errors->any())
-            <div style="background: #fee2e2; border: 3px solid #dc2626; color: #991b1b; padding: 2rem; border-radius: 0.75rem; margin-bottom: 2rem; font-size: 1.1rem; font-weight: 600;">
+            <div style="background: #fee2e2; border: 3px solid #dc2626; color: #991b1b; padding: 2rem; border-radius: 0.75rem; margin-bottom: 2rem; font-size: 1.1rem; font-weight: 600;" id="errorMessages">
                 <p style="margin-bottom: 1rem;">⚠️ ERREURS DE VALIDATION - Veuillez corriger les erreurs ci-dessous:</p>
                 <ul style="margin: 0; padding-left: 2rem; list-style: disc;">
                     @foreach($errors->all() as $error)
@@ -81,8 +85,8 @@
                         <option value="">Sélectionner un PILULIER</option>
                         @foreach($piluliers as $pilulier)
                             @foreach($pilulier->stock as $stock)
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->quantity }}" data-type="PILULIER">
-                                    {{ $pilulier->name }} - Stock: {{ $stock->quantity }}
+                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-type="PILULIER" {{ old('pilulier_product_stock_id') == $stock->id ? 'selected' : '' }}>
+                                    {{ $pilulier->name }} - Stock: {{ $stock->global_quantity }}
                                 </option>
                             @endforeach
                         @endforeach
@@ -101,8 +105,8 @@
                         <option value="">Sélectionner un BOUCHON</option>
                         @foreach($bouchons as $bouchon)
                             @foreach($bouchon->stock as $stock)
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->quantity }}" data-type="BOUCHON">
-                                    {{ $bouchon->name }} - Stock: {{ $stock->quantity }}
+                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-type="BOUCHON" {{ old('bouchon_product_stock_id') == $stock->id ? 'selected' : '' }}>
+                                    {{ $bouchon->name }} - Stock: {{ $stock->global_quantity }}
                                 </option>
                             @endforeach
                         @endforeach
@@ -110,6 +114,26 @@
                     <p id="bouchon-stock-info" style="color: #6b7280; font-size: 0.75rem;"></p>
                     @error('bouchon_product_stock_id')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Joint de sécurité Checkbox -->
+                <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #fef3c7; border-radius: 0.75rem; border: 2px solid #fbbf24;">
+                    @if($jointSecurite && $jointSecurite->stock->count() > 0)
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" name="avec_joint_securite" id="avec_joint_securite" value="1" {{ old('avec_joint_securite') ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem;">
+                            <span style="font-size: 0.875rem; font-weight: 600; color: #1f2937;">🔒 Avec Joint de sécurité</span>
+                        </label>
+                        <p style="color: #78350f; font-size: 0.75rem; margin-top: 0.5rem; margin-left: 2rem;">
+                            Si coché, la même quantité sera appliquée pour le Joint de sécurité.
+                            Stock disponible: {{ $jointSecurite->stock->first()->global_quantity }}
+                        </p>
+                    @else
+                        <p style="color: #92400e; font-size: 0.875rem; font-weight: 600;">🔒 Joint de sécurité</p>
+                        <p style="color: #b45309; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible - Créez d'abord un produit "Joint de sécurité" et son stock.</p>
+                    @endif
+                    @error('avec_joint_securite')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -139,8 +163,8 @@
                     <select name="filled_capsule_id" id="filled_capsule_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
                         <option value="">Sélectionner des capsules remplies</option>
                         @foreach($filledCapsules as $capsule)
-                            <option value="{{ $capsule->id }}" data-quantity="{{ $capsule->quantity }}">
-                                {{ $capsule->herb->name ?? 'Herbe inconnue' }} - Stock: {{ $capsule->quantity }} rangées
+                            <option value="{{ $capsule->id }}" data-quantity="{{ $capsule->quantity }}" {{ old('filled_capsule_id') == $capsule->id ? 'selected' : '' }}>
+                                {{ $capsule->herb->name ?? 'Herbe inconnue' }} - Stock: {{ round($capsule->quantity, 2) }} rangées
                             </option>
                         @endforeach
                     </select>
@@ -234,7 +258,19 @@
 
 @push('scripts')
 <script>
-let currentStep = 1;
+// FIRST: Check for validation errors and jump to step 5 if they exist
+// This must be done BEFORE any other DOM queries to avoid script stopping on null elements
+const hasErrorsIndicator = document.getElementById('hasErrors');
+const shouldJumpToStep5 = hasErrorsIndicator !== null;
+
+if (shouldJumpToStep5) {
+    // Validation errors detected - will jump to step 5
+} else {
+    // No validation errors - will start at step 1
+}
+
+// NOW initialize the rest
+let currentStep = shouldJumpToStep5 ? 5 : 1;
 const totalSteps = 5;
 
 const form = document.getElementById('commandeForm');
@@ -251,7 +287,6 @@ const filledCapsuleSelect = document.getElementById('filled_capsule_id');
 const capsulesPerUnitInputs = document.querySelectorAll('input[name="capsules_per_unit"]');
 
 function showStep(step) {
-    console.log('Showing step:', step);
     
     // Hide all steps
     document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
@@ -382,7 +417,6 @@ nextBtn.addEventListener('click', () => {
 
 // Handle form submission - just submit to server
 form.addEventListener('submit', (e) => {
-    console.log('Form submitted - sending to server');
     // Allow form to submit naturally to the server
     // Server will handle validation
 });
@@ -396,7 +430,16 @@ form.addEventListener('submit', (e) => {
     el.addEventListener('change', updateSummary);
 });
 
-showStep(1);
+// Initialize the form on the correct step (already set in currentStep variable at top)
+showStep(currentStep);
+if (shouldJumpToStep5) {
+    window.scrollTo(0, 0);
+    // Update summary with existing form values
+    setTimeout(() => {
+        updateSummary();
+        updateStockInfo();
+    }, 100);
+}
 </script>
 @endpush
 @endsection

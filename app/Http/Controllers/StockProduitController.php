@@ -93,18 +93,6 @@ class StockProduitController extends Controller
 
         $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
 
-        // Create initial movement if quantity > 0
-        if ($request->quantity > 0) {
-            StockMovement::create([
-                'product_stock_id' => $stock->id,
-                'fornisseur_id' => $request->fornisseur_id,
-                'type' => 'restock',
-                'quantity' => $request->quantity,
-                'movement_date' => now(),
-                'notes' => 'Stock initial',
-            ]);
-        }
-
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit créé avec succès.');
     }
 
