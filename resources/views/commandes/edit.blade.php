@@ -41,6 +41,57 @@
             @csrf
             @method('PUT')
 
+            <!-- Error Messages Display -->
+            @if($errors->any())
+                <div style="background: #fee2e2; border: 3px solid #dc2626; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600; color: #991b1b;">⚠️ ERREURS DE VALIDATION</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        @if($errors->has('pilulier_product_stock_id'))
+                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
+                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🥤 PILULIER</p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('pilulier_product_stock_id') }}</p>
+                            </div>
+                        @endif
+                        
+                        @if($errors->has('bouchon_product_stock_id'))
+                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
+                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🧢 BOUCHON</p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('bouchon_product_stock_id') }}</p>
+                            </div>
+                        @endif
+                        
+                        @if($errors->has('filled_capsule_id'))
+                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
+                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">💊 CAPSULES</p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('filled_capsule_id') }}</p>
+                            </div>
+                        @endif
+                        
+                        @if($errors->has('avec_joint_securite'))
+                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
+                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🔒 JOINT</p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('avec_joint_securite') }}</p>
+                            </div>
+                        @endif
+                        
+                        @if($errors->has('ticket_product_stock_id'))
+                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
+                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🎫 TICKET</p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('ticket_product_stock_id') }}</p>
+                            </div>
+                        @endif
+                        
+                        @if($errors->has('ticket_quantity'))
+                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
+                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🎫 QTÉ TICKET</p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('ticket_quantity') }}</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <!-- Step 1: Client Selection -->
             <div class="form-step" data-step="1" style="display: block;">
                 <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 1: Sélectionner le client</h2>
@@ -141,6 +192,83 @@
                         <p style="color: #b45309; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible - Créez d'abord un produit "Joint de sécurité" et son stock.</p>
                     @endif
                     @error('avec_joint_securite')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Ticket Checkbox -->
+                <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%); border-radius: 0.75rem; border: 2px solid #d8b4fe;">
+                    @if($tickets && $tickets->count() > 0)
+                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 0.75rem;">
+                            <input type="checkbox" name="avec_ticket" id="avec_ticket" value="1" {{ old('avec_ticket', $commande->avec_ticket) ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem; accent-color: #a855f7;">
+                            <span style="font-size: 0.95rem; font-weight: 600; color: #1f2937;">🎫 Avec Ticket</span>
+                        </label>
+                        <p style="color: #6b21a8; font-size: 0.75rem; margin-left: 2rem; margin-top: 0.25rem;">
+                            Si coché, spécifiez le produit ticket, le nom de la marque et le numéro d'autorisation.
+                        </p>
+                        
+                        <!-- Hidden ticket fields that show when checkbox is checked -->
+                        <div id="ticket-fields" style="display: {{ old('avec_ticket', $commande->avec_ticket) ? 'block' : 'none' }}; margin-top: 1.25rem; padding: 1.25rem; background: white; border: 2px solid #d8b4fe; border-radius: 0.5rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                                <!-- Ticket Product Selection -->
+                                <div>
+                                    <label for="ticket_product_stock_id" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Produit Ticket <span style="color: #dc2626;">*</span></label>
+                                    <select name="ticket_product_stock_id" id="ticket_product_stock_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                        <option value="">Sélectionner un ticket</option>
+                                        @foreach($tickets as $ticket)
+                                            @foreach($ticket->stock as $stock)
+                                                @php
+                                                    $isSelected = false;
+                                                    if($commande->ticket_product_stock_id == $stock->id) {
+                                                        $isSelected = true;
+                                                    }
+                                                @endphp
+                                                <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}" {{ $isSelected ? 'selected' : '' }}>
+                                                    {{ $ticket->name }} (Stock: {{ $stock->quantity }})
+                                                </option>
+                                            @endforeach
+                                        @endforeach
+                                    </select>
+                                    <p id="ticket-stock-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; font-weight: 500;"></p>
+                                </div>
+
+                                <!-- Ticket Quantity -->
+                                <div>
+                                    <label for="ticket_quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité de Tickets <span style="color: #dc2626;">*</span></label>
+                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="1" value="{{ old('ticket_quantity', $commande->ticket_quantity) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    <p id="ticket-quantity-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; font-weight: 500;"></p>
+                                </div>
+
+                                <!-- Brand Name -->
+                                <div>
+                                    <label for="nom_marque" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Nom de la marque <span style="color: #dc2626;">*</span></label>
+                                    <input type="text" name="nom_marque" id="nom_marque" value="{{ old('nom_marque', $commande->nom_marque) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                </div>
+
+                                <!-- Authorization Number -->
+                                <div>
+                                    <label for="numero_autorisation" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Numéro d'autorisation <span style="color: #dc2626;">*</span></label>
+                                    <input type="text" name="numero_autorisation" id="numero_autorisation" value="{{ old('numero_autorisation', $commande->numero_autorisation) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <p style="color: #7e22ce; font-size: 0.875rem; font-weight: 600;">🎫 Tickets</p>
+                        <p style="color: #a855f7; font-size: 0.75rem; margin-top: 0.5rem;">Non disponibles - Créez d'abord un produit "Ticket" et son stock.</p>
+                    @endif
+                    @error('avec_ticket')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
+                    @enderror
+                    @error('ticket_product_stock_id')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
+                    @enderror
+                    @error('ticket_quantity')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
+                    @enderror
+                    @error('nom_marque')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
+                    @enderror
+                    @error('numero_autorisation')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
                     @enderror
                 </div>
@@ -287,6 +415,23 @@ const pilulierSelect = document.getElementById('pilulier_product_stock_id');
 const bouchonSelect = document.getElementById('bouchon_product_stock_id');
 const filledCapsuleSelect = document.getElementById('filled_capsule_id');
 const capsulesPerUnitInputs = document.querySelectorAll('input[name="capsules_per_unit"]');
+const ticketCheckbox = document.getElementById('avec_ticket');
+const ticketFields = document.getElementById('ticket-fields');
+const ticketProductSelect = document.getElementById('ticket_product_stock_id');
+const ticketQuantityInput = document.getElementById('ticket_quantity');
+const nomMarqueInput = document.getElementById('nom_marque');
+const numeroAutorisationInput = document.getElementById('numero_autorisation');
+
+// Field validation state - tracks which fields are valid
+const validationState = {
+    client: false,  // Client is required - start as false
+    pilulier: true,
+    bouchon: true,
+    quantity: true,
+    capsules: true,
+    jointSecurite: true,
+    tickets: true
+};
 
 function showStep(step) {
     // Hide all steps
@@ -315,25 +460,271 @@ function showStep(step) {
     window.scrollTo(0, 0);
 }
 
+function setFieldError(fieldId, errorMessage) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    // Add error styling to field
+    field.style.borderColor = '#dc2626';
+    field.style.borderWidth = '2px';
+    field.style.backgroundColor = '#fef2f2';
+    
+    // Create or update error message
+    let errorElement = field.parentElement.querySelector('.field-error-message');
+    if (!errorElement) {
+        errorElement = document.createElement('p');
+        errorElement.className = 'field-error-message';
+        errorElement.style.color = '#dc2626';
+        errorElement.style.fontSize = '0.75rem';
+        errorElement.style.marginTop = '0.25rem';
+        errorElement.style.fontWeight = '500';
+        field.parentElement.appendChild(errorElement);
+    }
+    errorElement.textContent = errorMessage;
+}
+
+function clearFieldError(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    // Remove error styling
+    field.style.borderColor = '#d1d5db';
+    field.style.borderWidth = '1px';
+    field.style.backgroundColor = 'white';
+    
+    // Remove error message
+    const errorElement = field.parentElement.querySelector('.field-error-message');
+    if (errorElement) {
+        errorElement.remove();
+    }
+}
+
+function validateStep2() {
+    let isValid = true;
+    
+    // Get quantity from step 3 (will be 0 if not yet entered)
+    const pilulierQty = quantityInput.value ? parseInt(quantityInput.value) : 0;
+    
+    // Validate Pilulier selection
+    if (!pilulierSelect.value) {
+        setFieldError('pilulier_product_stock_id', 'Veuillez sélectionner un PILULIER');
+        validationState.pilulier = false;
+        isValid = false;
+    } else {
+        const pilulierOption = pilulierSelect.options[pilulierSelect.selectedIndex];
+        const pilulierStock = pilulierOption?.dataset?.stock ? parseInt(pilulierOption.dataset.stock) : 0;
+        
+        if (pilulierQty > 0 && pilulierQty > pilulierStock) {
+            setFieldError('pilulier_product_stock_id', `Stock PILULIER insuffisant (disponible : ${pilulierStock})`);
+            validationState.pilulier = false;
+            isValid = false;
+        } else {
+            clearFieldError('pilulier_product_stock_id');
+            validationState.pilulier = true;
+        }
+    }
+    
+    // Validate Bouchon selection
+    if (!bouchonSelect.value) {
+        setFieldError('bouchon_product_stock_id', 'Veuillez sélectionner un BOUCHON');
+        validationState.bouchon = false;
+        isValid = false;
+    } else {
+        const bouchonOption = bouchonSelect.options[bouchonSelect.selectedIndex];
+        const bouchonStock = bouchonOption?.dataset?.stock ? parseInt(bouchonOption.dataset.stock) : 0;
+        
+        if (pilulierQty > 0 && pilulierQty > bouchonStock) {
+            setFieldError('bouchon_product_stock_id', `Stock BOUCHON insuffisant (disponible : ${bouchonStock})`);
+            validationState.bouchon = false;
+            isValid = false;
+        } else {
+            clearFieldError('bouchon_product_stock_id');
+            validationState.bouchon = true;
+        }
+    }
+    
+    updateNextButtonState();
+    return isValid;
+}
+
+function validateStep3() {
+    let isValid = true;
+    
+    // Validate Quantity
+    const qty = quantityInput.value ? parseInt(quantityInput.value) : 0;
+    if (!quantityInput.value || qty < 1) {
+        setFieldError('quantity', 'Veuillez entrer une quantité valide (minimum 1)');
+        validationState.quantity = false;
+        isValid = false;
+    } else {
+        // Check stock against entered quantity
+        const pilulierOption = pilulierSelect.options[pilulierSelect.selectedIndex];
+        const pilulierStock = pilulierOption?.dataset?.stock ? parseInt(pilulierOption.dataset.stock) : 0;
+        
+        const bouchonOption = bouchonSelect.options[bouchonSelect.selectedIndex];
+        const bouchonStock = bouchonOption?.dataset?.stock ? parseInt(bouchonOption.dataset.stock) : 0;
+        
+        // Check if quantity exceeds either PILULIER or BOUCHON stock
+        if (qty > pilulierStock) {
+            setFieldError('quantity', `Quantité dépasse stock PILULIER (disponible : ${pilulierStock})`);
+            validationState.quantity = false;
+            isValid = false;
+        } else if (qty > bouchonStock) {
+            setFieldError('quantity', `Quantité dépasse stock BOUCHON (disponible : ${bouchonStock})`);
+            validationState.quantity = false;
+            isValid = false;
+        } else {
+            clearFieldError('quantity');
+            validationState.quantity = true;
+        }
+    }
+    
+    updateNextButtonState();
+    return isValid;
+}
+
+function validateStep4() {
+    let isValid = true;
+    
+    const qty = quantityInput.value ? parseInt(quantityInput.value) : 0;
+    const capsulesPer = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
+    const totalCapsulesNeeded = qty * capsulesPer;
+    
+    // Validate Filled Capsules
+    if (!filledCapsuleSelect.value) {
+        setFieldError('filled_capsule_id', 'Veuillez sélectionner des capsules remplies');
+        validationState.capsules = false;
+        isValid = false;
+    } else {
+        const capsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
+        const availableCapsules = capsuleOption?.dataset?.quantity ? parseFloat(capsuleOption.dataset.quantity) * 420 : 0;
+        
+        if (totalCapsulesNeeded > 0 && totalCapsulesNeeded > availableCapsules) {
+            const availableCapsuleCount = Math.floor(availableCapsules);
+            setFieldError('filled_capsule_id', `Stock capsules insuffisant (disponible : ${availableCapsuleCount})`);
+            validationState.capsules = false;
+            isValid = false;
+        } else {
+            clearFieldError('filled_capsule_id');
+            validationState.capsules = true;
+        }
+    }
+    
+    // Validate Capsules Per Unit is selected
+    if (!document.querySelector('input[name="capsules_per_unit"]:checked')) {
+        const firstRadio = document.querySelector('input[name="capsules_per_unit"]');
+        if (firstRadio) {
+            setFieldError('capsules_per_unit_container', 'Veuillez sélectionner le nombre de capsules par unité');
+            isValid = false;
+        }
+    } else {
+        clearFieldError('capsules_per_unit_container');
+    }
+    
+    // Validate Tickets if enabled
+    if (ticketCheckbox && ticketCheckbox.checked) {
+        let ticketValid = true;
+        
+        if (!ticketProductSelect.value) {
+            setFieldError('ticket_product_stock_id', 'Veuillez sélectionner un produit ticket');
+            ticketValid = false;
+        } else {
+            const ticketOption = ticketProductSelect.options[ticketProductSelect.selectedIndex];
+            const ticketStock = ticketOption?.dataset?.quantity ? parseInt(ticketOption.dataset.quantity) : 0;
+            const ticketQty = ticketQuantityInput.value ? parseInt(ticketQuantityInput.value) : 0;
+            
+            if (ticketQty < 1) {
+                setFieldError('ticket_quantity', 'Veuillez entrer une quantité de tickets valide (minimum 1)');
+                ticketValid = false;
+            } else if (ticketQty > ticketStock) {
+                setFieldError('ticket_product_stock_id', `Stock tickets insuffisant (disponible : ${ticketStock})`);
+                ticketValid = false;
+            } else {
+                clearFieldError('ticket_product_stock_id');
+                clearFieldError('ticket_quantity');
+            }
+        }
+        
+        if (!nomMarqueInput.value || nomMarqueInput.value.trim() === '') {
+            setFieldError('nom_marque', 'Le nom de la marque est requis');
+            ticketValid = false;
+        } else {
+            clearFieldError('nom_marque');
+        }
+        
+        if (!numeroAutorisationInput.value || numeroAutorisationInput.value.trim() === '') {
+            setFieldError('numero_autorisation', 'Le numéro d\'autorisation est requis');
+            ticketValid = false;
+        } else {
+            clearFieldError('numero_autorisation');
+        }
+        
+        validationState.tickets = ticketValid;
+        isValid = isValid && ticketValid;
+    } else {
+        clearFieldError('ticket_product_stock_id');
+        clearFieldError('ticket_quantity');
+        clearFieldError('nom_marque');
+        clearFieldError('numero_autorisation');
+        validationState.tickets = true;
+    }
+    
+    updateNextButtonState();
+    return isValid;
+}
+
+function updateNextButtonState() {
+    const stepsValidation = {
+        1: clientSelect.value !== '',
+        2: validationState.pilulier && validationState.bouchon,
+        3: validationState.quantity,
+        4: validationState.capsules
+    };
+    
+    const currentStepValid = stepsValidation[currentStep] !== undefined ? stepsValidation[currentStep] : true;
+    
+    if (currentStep < totalSteps) {
+        if (currentStepValid) {
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+            nextBtn.style.backgroundColor = '#2d7a52';
+        } else {
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+            nextBtn.style.backgroundColor = '#a0a0a0';
+        }
+    }
+}
+
 function validateStep(step) {
-    const errors = [];
-    
     if (step === 1) {
-        if (!clientSelect.value) errors.push('Veuillez sélectionner un client');
+        if (!clientSelect.value) {
+            setFieldError('client_id', 'Veuillez sélectionner un client');
+            validationState.client = false;
+            updateNextButtonState();
+            return false;
+        } else {
+            clearFieldError('client_id');
+            validationState.client = true;
+            updateNextButtonState();
+            return true;
+        }
     } else if (step === 2) {
-        if (!pilulierSelect.value) errors.push('Veuillez sélectionner un PILULIER');
-        if (!bouchonSelect.value) errors.push('Veuillez sélectionner un BOUCHON');
+        const result = validateStep2();
+        updateNextButtonState();
+        return result;
     } else if (step === 3) {
-        if (!quantityInput.value || quantityInput.value < 1) errors.push('Veuillez entrer une quantité valide');
+        const result = validateStep3();
+        updateNextButtonState();
+        return result;
     } else if (step === 4) {
-        if (!filledCapsuleSelect.value) errors.push('Veuillez sélectionner des capsules remplies');
-        if (!document.querySelector('input[name="capsules_per_unit"]:checked')) errors.push('Veuillez sélectionner le nombre de capsules par unité');
+        const result = validateStep4();
+        updateNextButtonState();
+        return result;
     }
-    
-    if (errors.length > 0) {
-        alert('Erreurs:\n- ' + errors.join('\n- '));
-        return false;
-    }
+    updateNextButtonState();
     return true;
 }
 
@@ -389,6 +780,163 @@ function updateStockInfo() {
     }
 }
 
+// Real-time validation system - validates continuously on every change
+function setupRealtimeValidation() {
+    
+    // ===== STEP 2 VALIDATORS =====
+    // Quantity input affects both Pilulier and Bouchon stock validation
+    if (quantityInput) {
+        ['input', 'change'].forEach(event => {
+            quantityInput.addEventListener(event, () => {
+                validateStep2();
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // Pilulier selection validator
+    if (pilulierSelect) {
+        ['change'].forEach(event => {
+            pilulierSelect.addEventListener(event, () => {
+                validateStep2();
+                updateSummary();
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // Bouchon selection validator
+    if (bouchonSelect) {
+        ['change'].forEach(event => {
+            bouchonSelect.addEventListener(event, () => {
+                validateStep2();
+                updateSummary();
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // ===== STEP 3 VALIDATORS =====
+    // Quantity input validator for step 3
+    if (quantityInput) {
+        ['input', 'change', 'blur'].forEach(event => {
+            quantityInput.addEventListener(event, () => {
+                validateStep3();
+                validateStep2();  // Also revalidate step 2 since quantity affects PILULIER/BOUCHON
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // ===== STEP 4 VALIDATORS =====
+    // Filled Capsules validator
+    if (filledCapsuleSelect) {
+        ['change'].forEach(event => {
+            filledCapsuleSelect.addEventListener(event, () => {
+                validateStep4();
+                updateSummary();
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // Capsules per unit radio buttons
+    capsulesPerUnitInputs.forEach(radio => {
+        ['change'].forEach(event => {
+            radio.addEventListener(event, () => {
+                validateStep4();
+                updateSummary();
+                updateStockInfo();
+            });
+        });
+    });
+    
+    // Ticket checkbox toggle
+    if (ticketCheckbox) {
+        ticketCheckbox.addEventListener('change', function() {
+            validateStep4();
+            if (this.checked) {
+                ticketFields.style.display = 'block';
+                ticketProductSelect.setAttribute('required', 'required');
+                ticketQuantityInput.setAttribute('required', 'required');
+                nomMarqueInput.setAttribute('required', 'required');
+                numeroAutorisationInput.setAttribute('required', 'required');
+            } else {
+                ticketFields.style.display = 'none';
+                ticketProductSelect.removeAttribute('required');
+                ticketQuantityInput.removeAttribute('required');
+                nomMarqueInput.removeAttribute('required');
+                numeroAutorisationInput.removeAttribute('required');
+                ticketProductSelect.value = '';
+                ticketQuantityInput.value = '';
+                nomMarqueInput.value = '';
+                numeroAutorisationInput.value = '';
+                clearFieldError('ticket_product_stock_id');
+                clearFieldError('ticket_quantity');
+                clearFieldError('nom_marque');
+                clearFieldError('numero_autorisation');
+            }
+            updateStockInfo();
+        });
+    }
+    
+    // Ticket product selector
+    if (ticketProductSelect) {
+        ['change'].forEach(event => {
+            ticketProductSelect.addEventListener(event, () => {
+                validateStep4();
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // Ticket quantity input
+    if (ticketQuantityInput) {
+        ['input', 'change', 'blur'].forEach(event => {
+            ticketQuantityInput.addEventListener(event, () => {
+                validateStep4();
+                updateStockInfo();
+            });
+        });
+    }
+    
+    // Nom de marque input
+    if (nomMarqueInput) {
+        ['input', 'change', 'blur'].forEach(event => {
+            nomMarqueInput.addEventListener(event, () => {
+                validateStep4();
+            });
+        });
+    }
+    
+    // Numéro d'autorisation input
+    if (numeroAutorisationInput) {
+        ['input', 'change', 'blur'].forEach(event => {
+            numeroAutorisationInput.addEventListener(event, () => {
+                validateStep4();
+            });
+        });
+    }
+    
+    // ===== STEP 1 VALIDATORS =====
+    if (clientSelect) {
+        clientSelect.addEventListener('change', () => {
+            if (clientSelect.value) {
+                validationState.client = true;
+                clearFieldError('client_id');
+            } else {
+                validationState.client = false;
+                setFieldError('client_id', 'Veuillez sélectionner un client');
+            }
+            updateSummary();
+            updateNextButtonState();
+        });
+    }
+}
+
+// Attach all validation listeners
+setupRealtimeValidation();
+
 prevBtn.addEventListener('click', () => {
     if (currentStep > 1) {
         currentStep--;
@@ -397,7 +945,7 @@ prevBtn.addEventListener('click', () => {
 });
 
 nextBtn.addEventListener('click', () => {
-    if (validateStep(currentStep) && currentStep < totalSteps) {
+    if (validateStep(currentStep)) {
         currentStep++;
         updateSummary();
         updateStockInfo();
@@ -405,22 +953,16 @@ nextBtn.addEventListener('click', () => {
     }
 });
 
-// Event listeners for real-time updates
-[quantityInput, filledCapsuleSelect, ...capsulesPerUnitInputs].forEach(el => {
-    el.addEventListener('change', updateStockInfo);
-});
-
-[clientSelect, pilulierSelect, bouchonSelect, filledCapsuleSelect].forEach(el => {
-    el.addEventListener('change', updateSummary);
-});
-
-submitBtn.addEventListener('click', (e) => {
-    if (!validateStep(5)) {
+// Handle form submission
+form.addEventListener('submit', (e) => {
+    // Validate step 4 before submit
+    if (!validateStep(4)) {
         e.preventDefault();
     }
 });
 
 showStep(1);
+updateNextButtonState();  // Initialize button state
 updateSummary();
 updateStockInfo();
 </script>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Commande;
 use App\Models\CommandeEmballage;
 use App\Models\CommandeFilledCapsule;
+use App\Models\CommandeTicket;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductStock;
@@ -55,6 +56,11 @@ class CommandeController extends Controller
             ->with('stock.movements')
             ->first();
         
+        // Get Ticket products with their stock and movements for accurate quantity calculation
+        $tickets = Product::where('name', 'Ticket')
+            ->with('stock.movements')
+            ->get();
+        
         // Get filled capsules for selection
         $filledCapsules = FilledCapsule::with(['herb', 'capsule'])->get();
         
@@ -66,6 +72,7 @@ class CommandeController extends Controller
             'piluliers',
             'bouchons',
             'jointSecurite',
+            'tickets',
             'filledCapsules',
             'capsulesPerUnitOptions'
         ));
@@ -87,6 +94,11 @@ class CommandeController extends Controller
             'bouchon_product_stock_id' => 'required|exists:product_stock,id',
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
             'avec_joint_securite' => 'nullable|boolean',
+            'avec_ticket' => 'nullable|boolean',
+            'ticket_quantity' => 'nullable|integer|min:1',
+            'nom_marque' => 'nullable|string|max:255',
+            'numero_autorisation' => 'nullable|string|max:255',
+            'ticket_product_stock_id' => 'nullable|exists:product_stock,id',
             'notes' => 'nullable|string',
         ]);
         
@@ -166,6 +178,32 @@ class CommandeController extends Controller
                 }
             }
             
+            // Check ticket stock if requested
+            $ticketStock = null;
+            if ($request->avec_ticket) {
+                if (!$request->ticket_quantity || $request->ticket_quantity < 1) {
+                    $validator->errors()->add('ticket_quantity', 'Veuillez entrer une quantité de tickets valide.');
+                }
+                if (!$request->ticket_product_stock_id) {
+                    $validator->errors()->add('ticket_product_stock_id', 'Veuillez sélectionner un produit ticket.');
+                } else {
+                    $ticketStock = ProductStock::find($request->ticket_product_stock_id);
+                    if (!$ticketStock) {
+                        $validator->errors()->add('ticket_product_stock_id', 'Le produit ticket sélectionné n\'existe pas.');
+                    } elseif ($request->ticket_quantity > $ticketStock->quantity) {
+                        $validator->errors()->add('ticket_product_stock_id', 'Stock ticket insuffisant. Disponible: ' . $ticketStock->quantity . ', Demandé: ' . $request->ticket_quantity);
+                    }
+                }
+                
+                // Validate brand name and authorization number are provided if ticket is selected
+                if (!$request->nom_marque || trim($request->nom_marque) === '') {
+                    $validator->errors()->add('nom_marque', 'Le nom de la marque est requis si vous avez sélectionné avec ticket.');
+                }
+                if (!$request->numero_autorisation || trim($request->numero_autorisation) === '') {
+                    $validator->errors()->add('numero_autorisation', 'Le numéro d\'autorisation est requis si vous avez sélectionné avec ticket.');
+                }
+            }
+            
             // If there are validation errors, throw them
             if ($validator->errors()->any()) {
                 throw new ValidationException($validator);
@@ -190,6 +228,11 @@ class CommandeController extends Controller
                 'capsules_per_unit' => $capsulesPerUnit,
                 'status' => 'Confirmé',
                 'avec_joint_securite' => $request->avec_joint_securite ?? false,
+                'avec_ticket' => $request->avec_ticket ?? false,
+                'nom_marque' => $request->nom_marque,
+                'numero_autorisation' => $request->numero_autorisation,
+                'ticket_product_stock_id' => $request->ticket_product_stock_id,
+                'ticket_quantity' => $request->ticket_quantity,
                 'notes' => $request->notes,
             ]);
             
@@ -298,6 +341,21 @@ class CommandeController extends Controller
                 'quantity' => $totalCapsulesNeeded,
             ]);
 
+            // Create ticket record if requested
+            if ($request->avec_ticket && $request->ticket_product_stock_id && $request->ticket_quantity) {
+                CommandeTicket::create([
+                    'commande_id' => $commande->id,
+                    'product_stock_id' => $request->ticket_product_stock_id,
+                    'quantity' => (int)$request->ticket_quantity,
+                    'nom_marque' => $request->nom_marque,
+                    'numero_autorisation' => $request->numero_autorisation,
+                ]);
+                \Log::info('COMMANDE STORE: Ticket record created', [
+                    'quantity' => $request->ticket_quantity,
+                    'nom_marque' => $request->nom_marque,
+                ]);
+            }
+
             // Stock deduction will happen when status changes to "En cours d'emballage"
             // No stock movement on creation (status = Confirmé)
             
@@ -329,7 +387,8 @@ class CommandeController extends Controller
         $commande->load([
             'client',
             'emballages.productStock.product',
-            'filledCapsules.filledCapsule.herb'
+            'filledCapsules.filledCapsule.herb',
+            'ticketStock.product'
         ]);
         return view('commandes.show', compact('commande'));
     }
@@ -362,6 +421,11 @@ class CommandeController extends Controller
             ->with('stock.movements')
             ->first();
         
+        // Get Tickets
+        $tickets = Product::where('name', 'Ticket')
+            ->with('stock')
+            ->get();
+        
         // Get filled capsules for selection
         $filledCapsules = FilledCapsule::with(['herb', 'capsule'])->get();
         
@@ -374,6 +438,7 @@ class CommandeController extends Controller
             'piluliers',
             'bouchons',
             'jointSecurite',
+            'tickets',
             'filledCapsules',
             'capsulesPerUnitOptions'
         ));
@@ -626,6 +691,19 @@ class CommandeController extends Controller
                         $record->filledCapsule->decrement('quantity', $rangeesNeeded);
                     }
 
+                    // Reduce ticket stock if with ticket
+                    if ($commande->avec_ticket && $commande->ticketStock && $commande->ticket_quantity) {
+                        $commande->ticketStock->decrement('quantity', $commande->ticket_quantity);
+                        
+                        StockMovement::create([
+                            'product_stock_id' => $commande->ticket_product_stock_id,
+                            'type' => 'usage',
+                            'quantity' => $commande->ticket_quantity,
+                            'movement_date' => now(),
+                            'notes' => 'Ticket Commande #' . $commande->id . ' supprimée - ' . $commande->nom_marque,
+                        ]);
+                    }
+
                 } else {
                     // stock_applied is true, stock was already deducted
                     // Do nothing - stock reduction already happened when status changed
@@ -779,6 +857,25 @@ class CommandeController extends Controller
                         // Convert capsules to rangées (1 rangée = 420 capsules)
                         $rangeesNeeded = $record->quantity / 420;
                         $record->filledCapsule->decrement('quantity', $rangeesNeeded);
+                    }
+
+                    // Decrement ticket stock if with ticket
+                    if ($commande->avec_ticket && $commande->ticketStock && $commande->ticket_quantity) {
+                        \Log::info('COMMANDE UPDATE STATUS: Decrementing ticket stock', [
+                            'commande_id' => $commande->id,
+                            'ticket_quantity' => $commande->ticket_quantity,
+                            'product_stock_current_qty' => $commande->ticketStock->quantity,
+                        ]);
+                        
+                        $commande->ticketStock->decrement('quantity', $commande->ticket_quantity);
+                        
+                        StockMovement::create([
+                            'product_stock_id' => $commande->ticket_product_stock_id,
+                            'type' => 'usage',
+                            'quantity' => $commande->ticket_quantity,
+                            'movement_date' => now(),
+                            'notes' => 'Ticket Commande #' . $commande->id . ' - ' . $commande->nom_marque,
+                        ]);
                     }
 
                     // ✅ SET GUARD FLAG to prevent re-execution

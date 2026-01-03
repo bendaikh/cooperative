@@ -167,6 +167,10 @@
 
             <!-- Actions Footer -->
             <div style="background: #f9fafb; border-top: 2px solid #e5e7eb; padding: 0.875rem 1.5rem; display: flex; justify-content: flex-end; gap: 0.625rem;">
+                <a href="{{ route('commandes.show', $commande->id) }}" style="display: inline-flex; align-items: center; gap: 0.375rem; color: #2d7a52; text-decoration: none; font-size: 0.875rem; padding: 0.625rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; background: white; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.borderColor='#2d7a52'; this.style.color='white'; this.style.background='#2d7a52'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(45,122,82,0.2)';" onmouseout="this.style.borderColor='#d1d5db'; this.style.color='#2d7a52'; this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    <span style="font-size: 1rem;">👁️</span>
+                    <span>Voir Détails</span>
+                </a>
                 <a href="{{ route('commandes.edit', $commande->id) }}" style="display: inline-flex; align-items: center; gap: 0.375rem; color: #4b5563; text-decoration: none; font-size: 0.875rem; padding: 0.625rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; background: white; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.borderColor='#2d7a52'; this.style.color='#2d7a52'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';" onmouseout="this.style.borderColor='#d1d5db'; this.style.color='#4b5563'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                     <span style="font-size: 1rem;">✏️</span>
                     <span>Modifier</span>
