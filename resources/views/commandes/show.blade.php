@@ -49,33 +49,29 @@
         <!-- Main Content Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
 
-            <!-- Emballages Card -->
+            <!-- Emballages Card (UNIFIED) -->
             <div style="background: white; border-radius: 0.75rem; padding: 1.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #f3f4f6;">
                     <span style="font-size: 1.5rem;">📦</span>
-                    <h2 style="margin: 0; font-size: 1.125rem; font-weight: 700; color: #1f2937;">Emballages</h2>
+                    <h2 style="margin: 0; font-size: 1.125rem; font-weight: 700; color: #1f2937;">Emballage</h2>
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     @forelse($commande->emballages as $emballage)
+                    {{-- Skip Joint de sécurité from main emballage display --}}
+                    @if($emballage->productStock->product->name !== 'Joint de sécurité')
                     <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.625rem;">
                         <div style="width: 40px; height: 40px; background: #2d7a52; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: white;">
-                            @if($emballage->productStock->product->type_emballage === 'PILULIER')
-                                PIL
-                            @elseif($emballage->productStock->product->type_emballage === 'BOUCHON')
-                                BOU
-                            @else
-                                EMB
-                            @endif
+                            EMB
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <div style="font-weight: 600; color: #1f2937; font-size: 0.9375rem; margin-bottom: 0.125rem;">{{ $emballage->productStock->product->name }}</div>
-                            <div style="font-size: 0.75rem; color: #6b7280; font-weight: 500;">{{ $emballage->productStock->product->type_emballage }}</div>
                         </div>
                         <div style="background: #2d7a52; color: white; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 700; text-align: center; min-width: 50px;">
                             ×{{ $emballage->quantity }}
                         </div>
                     </div>
+                    @endif
                     @empty
                     <div style="text-align: center; padding: 1.5rem; color: #9ca3af; background: #f9fafb; border-radius: 0.625rem; border: 1px dashed #e5e7eb;">
                         <div style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5;">📦</div>
@@ -84,8 +80,15 @@
                     @endforelse
                 </div>
 
-                <!-- Joint de sécurité -->
-                @if($commande->avec_joint_securite)
+                <!-- Joint de sécurité (separate section if present) -->
+                @if($commande->emballages->where('productStock.product.name', 'Joint de sécurité')->count() > 0)
+                <div style="margin-top: 1rem; padding: 0.875rem; background: #dcfce7; border: 1px solid #86efac; border-radius: 0.625rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1rem;">🔒</span>
+                        <span style="font-weight: 600; color: #166534; font-size: 0.875rem;">Joint de sécurité inclus (×{{ $commande->emballages->where('productStock.product.name', 'Joint de sécurité')->first()->quantity ?? 0 }})</span>
+                    </div>
+                </div>
+                @elseif($commande->avec_joint_securite)
                 <div style="margin-top: 1rem; padding: 0.875rem; background: #dcfce7; border: 1px solid #86efac; border-radius: 0.625rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span style="font-size: 1rem;">🔒</span>

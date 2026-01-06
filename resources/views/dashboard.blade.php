@@ -1,186 +1,296 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - Co-op ERP')
-@section('page-title', 'Dashboard Overview')
+@section('title', 'Tableau de Bord - Co-op ERP')
+@section('page-title', 'Aperçu du Tableau de Bord')
 
 @section('content')
 <style>
+    /* Dashboard Container */
+    .dashboard-container {
+        padding: 2rem 0;
+    }
+
+    /* KPI Grid */
     .kpi-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
 
     .kpi-card {
-        background: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: flex-start;
-        gap: 1rem;
+        gap: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -30px;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .kpi-card.blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .kpi-card.green {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .kpi-card.purple {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .kpi-card.orange {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
     }
 
     .kpi-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 0.75rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 0.875rem;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
     }
 
-    .kpi-icon.blue {
-        background: #dbeafe;
-        color: #1e40af;
+    .kpi-card.blue .kpi-icon,
+    .kpi-card.green .kpi-icon,
+    .kpi-card.purple .kpi-icon,
+    .kpi-card.orange .kpi-icon {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
     }
 
-    .kpi-icon.purple {
-        background: #ede9fe;
-        color: #6d28d9;
-    }
-
-    .kpi-icon.green {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .kpi-icon.orange {
-        background: #fed7aa;
-        color: #9a3412;
+    .kpi-icon svg {
+        width: 28px;
+        height: 28px;
     }
 
     .kpi-content {
         flex: 1;
+        color: white;
+        position: relative;
+        z-index: 1;
     }
 
     .kpi-label {
         font-size: 0.875rem;
-        color: #6b7280;
+        color: rgba(255, 255, 255, 0.85);
         margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
     }
 
     .kpi-value {
-        font-size: 1.875rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 0.5rem;
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.75rem;
+        line-height: 1;
     }
 
     .kpi-change {
         display: flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 0.5rem;
         font-size: 0.875rem;
-        font-weight: 500;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        width: fit-content;
     }
 
     .kpi-change.positive {
-        color: #059669;
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.2);
     }
 
     .kpi-change.negative {
-        color: #dc2626;
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.2);
     }
 
+    /* Charts Grid */
     .charts-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 2rem;
         margin-bottom: 2rem;
+    }
+
+    .charts-grid-full {
+        grid-template-columns: 1fr;
     }
 
     .chart-card {
         background: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12);
     }
 
     .chart-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .chart-title {
-        font-size: 1.125rem;
-        font-weight: 600;
+        font-size: 1.25rem;
+        font-weight: 700;
         color: #1f2937;
-        margin-bottom: 0.25rem;
     }
 
     .chart-subtitle {
         font-size: 0.875rem;
         color: #6b7280;
+        margin-top: 0.5rem;
+    }
+
+    .chart-meta {
+        text-align: right;
     }
 
     .chart-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #2d7a52;
+        font-size: 1.875rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .chart-container {
-        height: 250px;
         position: relative;
+        height: 300px;
+        margin-bottom: 1rem;
     }
 
+    .chart-legend {
+        display: flex;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        font-size: 0.875rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    /* Activity Section */
     .activity-card {
         background: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
     }
 
     .activity-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f3f4f6;
     }
 
     .activity-title {
-        font-size: 1.125rem;
-        font-weight: 600;
+        font-size: 1.25rem;
+        font-weight: 700;
         color: #1f2937;
     }
 
     .view-all-link {
-        color: #2d7a52;
+        color: #667eea;
         text-decoration: none;
         font-size: 0.875rem;
-        font-weight: 500;
+        font-weight: 600;
+        transition: all 0.3s ease;
     }
 
     .view-all-link:hover {
+        color: #764ba2;
         text-decoration: underline;
+    }
+
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
 
     .activity-item {
         display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        padding: 1rem 0;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem;
         border-bottom: 1px solid #f3f4f6;
+        transition: all 0.3s ease;
     }
 
     .activity-item:last-child {
         border-bottom: none;
     }
 
-    .activity-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+    .activity-item:hover {
+        background: #f9fafb;
+        border-radius: 0.5rem;
+    }
+
+    .activity-icon {
+        font-size: 1.75rem;
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 600;
-        color: white;
+        background: #f3f4f6;
+        border-radius: 0.75rem;
         flex-shrink: 0;
     }
 
@@ -189,317 +299,507 @@
     }
 
     .activity-description {
-        font-size: 0.875rem;
+        font-size: 0.95rem;
         color: #1f2937;
         margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+    .activity-detail {
+        font-size: 0.875rem;
+        color: #6b7280;
     }
 
     .activity-time {
         font-size: 0.75rem;
         color: #9ca3af;
+        margin-top: 0.25rem;
     }
 
     .activity-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
+        padding: 0.4rem 0.875rem;
+        border-radius: 20px;
         font-size: 0.75rem;
-        font-weight: 500;
+        font-weight: 600;
+        text-transform: uppercase;
+        white-space: nowrap;
     }
 
-    .badge-completed {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .badge-system {
+    .badge-stock {
         background: #dbeafe;
         color: #1e40af;
     }
 
-    .badge-pending {
-        background: #fef3c7;
-        color: #92400e;
+    .badge-order {
+        background: #fecaca;
+        color: #991b1b;
     }
 
-    .badge-review {
-        background: #ede9fe;
-        color: #6d28d9;
+    .badge-client {
+        background: #d1fae5;
+        color: #065f46;
     }
 
-    /* Simple chart styling */
-    .line-chart {
-        position: relative;
-        width: 100%;
-        height: 200px;
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .kpi-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
     }
 
-    .bar-chart {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        height: 200px;
-        padding: 1rem 0;
-    }
+    @media (max-width: 640px) {
+        .kpi-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .bar {
-        width: 50px;
-        background: #e5e7eb;
-        border-radius: 4px 4px 0 0;
-        transition: all 0.3s;
-    }
+        .kpi-value {
+            font-size: 1.75rem;
+        }
 
-    .bar:hover {
-        opacity: 0.8;
-    }
+        .chart-container {
+            height: 250px;
+        }
 
-    .bar.active {
-        background: #2d7a52;
-    }
-
-    .bar-label {
-        text-align: center;
-        margin-top: 0.5rem;
-        font-size: 0.75rem;
-        color: #6b7280;
+        .activity-item {
+            flex-wrap: wrap;
+        }
     }
 </style>
 
-<!-- KPI Cards -->
-<div class="kpi-grid">
-    <div class="kpi-card">
-        <div class="kpi-icon blue">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-            </svg>
-        </div>
-        <div class="kpi-content">
-            <div class="kpi-label">Total Stock</div>
-            <div class="kpi-value">1,240 Units</div>
-            <div class="kpi-change positive">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+<div class="dashboard-container">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <!-- Total Stock Card -->
+        <div class="kpi-card blue">
+            <div class="kpi-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
-                <span>+2%</span>
+            </div>
+            <div class="kpi-content">
+                <div class="kpi-label">📦 Stock Total</div>
+                <div class="kpi-value">{{ number_format($stats['totalStock']) }}</div>
+                <div class="kpi-change {{ $stats['stockChange'] >= 0 ? 'positive' : 'negative' }}">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12 5a1 1 0 01.707.293l2.828 2.829a1 1 0 11-1.414 1.414L13 7.414V13a1 1 0 11-2 0V7.414l-1.121 1.121a1 1 0 01-1.414-1.414l2.828-2.829A1 1 0 0112 5z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ abs($stats['stockChange']) > 0 ? number_format(abs($stats['stockChange']), 1) . '%' : 'Stable' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Clients Card -->
+        <div class="kpi-card green">
+            <div class="kpi-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 12H9m4 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </div>
+            <div class="kpi-content">
+                <div class="kpi-label">👥 Clients Actifs</div>
+                <div class="kpi-value">{{ $stats['activeClients'] }}</div>
+                <div class="kpi-change {{ $stats['clientChange'] >= 0 ? 'positive' : 'negative' }}">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12 5a1 1 0 01.707.293l2.828 2.829a1 1 0 11-1.414 1.414L13 7.414V13a1 1 0 11-2 0V7.414l-1.121 1.121a1 1 0 01-1.414-1.414l2.828-2.829A1 1 0 0112 5z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ abs($stats['clientChange']) > 0 ? number_format(abs($stats['clientChange']), 1) . '%' : 'Nouveau' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Revenue Card -->
+        <div class="kpi-card purple">
+            <div class="kpi-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="kpi-content">
+                <div class="kpi-label">💰 Revenu Total</div>
+                <div class="kpi-value">${{ number_format($stats['totalRevenue'], 0) }}</div>
+                <div class="kpi-change {{ $stats['revenueChange'] >= 0 ? 'positive' : 'negative' }}">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12 5a1 1 0 01.707.293l2.828 2.829a1 1 0 11-1.414 1.414L13 7.414V13a1 1 0 11-2 0V7.414l-1.121 1.121a1 1 0 01-1.414-1.414l2.828-2.829A1 1 0 0112 5z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ abs($stats['revenueChange']) > 0 ? number_format(abs($stats['revenueChange']), 1) . '%' : 'Stable' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Expenses Card -->
+        <div class="kpi-card orange">
+            <div class="kpi-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </div>
+            <div class="kpi-content">
+                <div class="kpi-label">💳 Dépenses Totales</div>
+                <div class="kpi-value">${{ number_format($stats['totalExpenses'], 0) }}</div>
+                <div class="kpi-change {{ $stats['expenseChange'] >= 0 ? 'negative' : 'positive' }}">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12 5a1 1 0 01.707.293l2.828 2.829a1 1 0 11-1.414 1.414L13 7.414V13a1 1 0 11-2 0V7.414l-1.121 1.121a1 1 0 01-1.414-1.414l2.828-2.829A1 1 0 0112 5z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ abs($stats['expenseChange']) > 0 ? number_format(abs($stats['expenseChange']), 1) . '%' : 'Stable' }}</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-icon purple">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <!-- Financial Overview Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">📈 Aperçu Financier</div>
+                    <div class="chart-subtitle">Tendance des Revenus et Dépenses sur 12 mois</div>
+                </div>
+                <div class="chart-meta">
+                    <div class="chart-value">${{ number_format($stats['totalRevenue'], 0) }}</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="financialChart"></canvas>
+            </div>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <span>Revenu</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    <span>Dépenses</span>
+                </div>
+            </div>
         </div>
-        <div class="kpi-content">
-            <div class="kpi-label">Active Clients</div>
-            <div class="kpi-value">342 Members</div>
-            <div class="kpi-change positive">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-                <span>+5%</span>
+
+        <!-- Monthly Orders Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">🛒 Commandes Mensuelles</div>
+                    <div class="chart-subtitle">Tendance du Nombre de Commandes</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="ordersChart"></canvas>
             </div>
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-icon green">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+    <!-- Second Row Charts -->
+    <div class="charts-grid">
+        <!-- Top Products Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">⭐ Meilleurs Produits</div>
+                    <div class="chart-subtitle">Par Quantité de Stock</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="topProductsChart"></canvas>
+            </div>
         </div>
-        <div class="kpi-content">
-            <div class="kpi-label">Total Revenue</div>
-            <div class="kpi-value">$45,200</div>
-            <div class="kpi-change positive">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-                <span>+8.5%</span>
+
+        <!-- Category Distribution Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">📊 Distribution des Catégories</div>
+                    <div class="chart-subtitle">Stock par Catégorie de Produit</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
             </div>
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-icon orange">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-        </div>
-        <div class="kpi-content">
-            <div class="kpi-label">Total Expenses</div>
-            <div class="kpi-value">$12,400</div>
-            <div class="kpi-change negative">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17l5-5m0 0l-5-5m5 5H6"></path>
-                </svg>
-                <span>-1.2%</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Charts -->
-<div class="charts-grid">
-    <!-- Financial Overview Chart -->
+    <!-- Stock Levels Chart (Full Width) -->
     <div class="chart-card">
         <div class="chart-header">
             <div>
-                <div class="chart-title">Financial Overview</div>
-                <div class="chart-subtitle">Revenue Growth (Jan - Dec)</div>
+                <div class="chart-title">📦 Niveaux de Stock par Produit</div>
+                <div class="chart-subtitle">Aperçu de l'inventaire actuel</div>
             </div>
-            <div class="chart-value">$45,200</div>
         </div>
-        <div class="chart-container">
-            <canvas id="financialChart" width="400" height="200"></canvas>
+        <div class="chart-container" style="height: 350px;">
+            <canvas id="stockLevelsChart"></canvas>
         </div>
     </div>
 
-    <!-- Operational Costs Chart -->
-    <div class="chart-card">
-        <div class="chart-header">
-            <div>
-                <div class="chart-title">Operational Costs</div>
-                <div class="chart-subtitle">Monthly Expenses</div>
-            </div>
+    <!-- Recent Activity Section -->
+    <div class="activity-card" style="margin-top: 2rem;">
+        <div class="activity-header">
+            <h2 class="activity-title">🕐 Activité Récente</h2>
+            <a href="#" class="view-all-link">Voir Toute l'Historique</a>
         </div>
-        <div class="chart-container">
-            <div class="bar-chart">
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                    <div class="bar" style="height: 60%;"></div>
-                    <div class="bar-label">Jan</div>
+
+        <div class="activity-list">
+            @forelse($activities as $activity)
+                <div class="activity-item">
+                    <div class="activity-icon">{{ $activity['icon'] }}</div>
+                    <div class="activity-content">
+                        <div class="activity-description">{{ $activity['description'] }}</div>
+                        <div class="activity-detail">{{ $activity['detail'] }}</div>
+                        <div class="activity-time">{{ $activity['time'] }}</div>
+                    </div>
+                    <span class="activity-badge badge-{{ $activity['type'] }}">{{ ucfirst($activity['type_fr']) }}</span>
                 </div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                    <div class="bar" style="height: 70%;"></div>
-                    <div class="bar-label">Feb</div>
+            @empty
+                <div style="padding: 2rem; text-align: center; color: #9ca3af;">
+                    Aucune activité récente pour le moment
                 </div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                    <div class="bar" style="height: 65%;"></div>
-                    <div class="bar-label">Mar</div>
-                </div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                    <div class="bar active" style="height: 100%;"></div>
-                    <div class="bar-label">Apr</div>
-                </div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                    <div class="bar" style="height: 80%;"></div>
-                    <div class="bar-label">May</div>
-                </div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                    <div class="bar" style="height: 75%;"></div>
-                    <div class="bar-label">Jun</div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </div>
 
-<!-- Recent Activity -->
-<div class="activity-card">
-    <div class="activity-header">
-        <h2 class="activity-title">Recent Activity</h2>
-        <a href="#" class="view-all-link">View All</a>
-    </div>
-
-    <div class="activity-list">
-        <div class="activity-item">
-            <div class="activity-avatar" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);">MJ</div>
-            <div class="activity-content">
-                <div class="activity-description">
-                    <strong>Marcus Johnson</strong> paid invoice #INV-2023-001
-                </div>
-                <div class="activity-time">2 minutes ago</div>
-            </div>
-            <span class="activity-badge badge-completed">Completed</span>
-        </div>
-
-        <div class="activity-item">
-            <div class="activity-avatar" style="background: linear-gradient(135deg, #6b7280 0%, #374151 100%);">S</div>
-            <div class="activity-content">
-                <div class="activity-description">
-                    <strong>System</strong> updated stock for "Organic Seeds"
-                </div>
-                <div class="activity-time">15 minutes ago</div>
-            </div>
-            <span class="activity-badge badge-system">System</span>
-        </div>
-
-        <div class="activity-item">
-            <div class="activity-avatar" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">SW</div>
-            <div class="activity-content">
-                <div class="activity-description">
-                    <strong>Sarah Wilson</strong> requested a new membership
-                </div>
-                <div class="activity-time">1 hour ago</div>
-            </div>
-            <span class="activity-badge badge-pending">Pending</span>
-        </div>
-
-        <div class="activity-item">
-            <div class="activity-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">DC</div>
-            <div class="activity-content">
-                <div class="activity-description">
-                    <strong>David Chen</strong> submitted expense report "Q3 Supplies"
-                </div>
-                <div class="activity-time">2 hours ago</div>
-            </div>
-            <span class="activity-badge badge-review">Review</span>
-        </div>
-    </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <script>
-    // Simple line chart for Financial Overview
-    const ctx = document.getElementById('financialChart');
-    if (ctx) {
-        const canvas = ctx.getContext('2d');
-        const width = ctx.width;
-        const height = ctx.height;
-        
-        // Draw axes
-        canvas.strokeStyle = '#e5e7eb';
-        canvas.lineWidth = 1;
-        canvas.beginPath();
-        canvas.moveTo(40, 20);
-        canvas.lineTo(40, height - 30);
-        canvas.lineTo(width - 20, height - 30);
-        canvas.stroke();
-        
-        // Draw line chart
-        canvas.strokeStyle = '#2d7a52';
-        canvas.lineWidth = 3;
-        canvas.beginPath();
-        
-        const points = [
-            {x: 60, y: 150}, {x: 100, y: 140}, {x: 140, y: 130},
-            {x: 180, y: 120}, {x: 220, y: 110}, {x: 260, y: 100},
-            {x: 300, y: 90}, {x: 340, y: 85}, {x: 380, y: 80}
-        ];
-        
-        canvas.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            canvas.lineTo(points[i].x, points[i].y);
+    // Chart colors
+    const colors = {
+        primary: '#667eea',
+        secondary: '#764ba2',
+        success: '#10b981',
+        danger: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6',
+    };
+
+    // Financial Overview Chart
+    @if($chartData['financialData'])
+    const financialCtx = document.getElementById('financialChart').getContext('2d');
+    new Chart(financialCtx, {
+        type: 'line',
+        data: {
+            labels: @json($chartData['financialData']['labels']),
+            datasets: [
+                {
+                    label: 'Revenue',
+                    data: @json($chartData['financialData']['revenue']),
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: colors.primary,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                },
+                {
+                    label: 'Expenses',
+                    data: @json($chartData['financialData']['expenses']),
+                    borderColor: colors.danger,
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: colors.danger,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f3f4f6',
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                    }
+                }
+            }
         }
-        canvas.stroke();
-        
-        // Fill area under line
-        canvas.fillStyle = 'rgba(45, 122, 82, 0.1)';
-        canvas.beginPath();
-        canvas.moveTo(points[0].x, height - 30);
-        for (let i = 0; i < points.length; i++) {
-            canvas.lineTo(points[i].x, points[i].y);
+    });
+    @endif
+
+    // Monthly Orders Chart
+    @if($chartData['monthlyOrders'])
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    new Chart(ordersCtx, {
+        type: 'bar',
+        data: {
+            labels: @json($chartData['monthlyOrders']['labels']),
+            datasets: [{
+                label: 'Orders',
+                data: @json($chartData['monthlyOrders']['data']),
+                backgroundColor: [
+                    '#667eea', '#764ba2', '#6366f1', '#667eea',
+                    '#764ba2', '#6366f1', '#667eea', '#764ba2',
+                    '#6366f1', '#667eea', '#764ba2', '#6366f1'
+                ],
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f3f4f6',
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                    }
+                }
+            }
         }
-        canvas.lineTo(points[points.length - 1].x, height - 30);
-        canvas.closePath();
-        canvas.fill();
-        
-        // Draw points
-        canvas.fillStyle = '#2d7a52';
-        points.forEach(point => {
-            canvas.beginPath();
-            canvas.arc(point.x, point.y, 4, 0, Math.PI * 2);
-            canvas.fill();
-        });
-    }
+    });
+    @endif
+
+    // Top Products Chart
+    @if($chartData['topProducts'])
+    const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+    new Chart(topProductsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: @json($chartData['topProducts']['labels']),
+            datasets: [{
+                data: @json($chartData['topProducts']['data']),
+                backgroundColor: [
+                    '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'
+                ],
+                borderColor: '#fff',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12,
+                        }
+                    }
+                },
+            }
+        }
+    });
+    @endif
+
+    // Category Distribution Chart
+    @if($chartData['categoryDistribution'])
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'polarArea',
+        data: {
+            labels: @json($chartData['categoryDistribution']['labels']),
+            datasets: [{
+                data: @json($chartData['categoryDistribution']['data']),
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.6)',
+                    'rgba(118, 75, 162, 0.6)',
+                    'rgba(240, 147, 251, 0.6)',
+                    'rgba(245, 87, 108, 0.6)',
+                    'rgba(79, 172, 254, 0.6)',
+                    'rgba(250, 112, 154, 0.6)',
+                ],
+                borderColor: [
+                    '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#fa709a'
+                ],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12,
+                        }
+                    }
+                },
+            }
+        }
+    });
+    @endif
+
+    // Stock Levels Chart
+    @if($chartData['stockLevels'])
+    const stockLevelsCtx = document.getElementById('stockLevelsChart').getContext('2d');
+    new Chart(stockLevelsCtx, {
+        type: 'bar',
+        data: {
+            labels: @json($chartData['stockLevels']['labels']),
+            datasets: [{
+                label: 'Stock Quantity',
+                data: @json($chartData['stockLevels']['data']),
+                backgroundColor: [
+                    '#667eea', '#764ba2', '#f093fb', '#f5576c',
+                    '#4facfe', '#00f2fe', '#fa709a', '#fee140'
+                ],
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f3f4f6',
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false,
+                    }
+                }
+            }
+        }
+    });
+    @endif
 </script>
 @endsection

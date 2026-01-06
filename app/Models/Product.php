@@ -38,19 +38,19 @@ class Product extends Model
         return !is_null($this->type_emballage) || $this->name === 'Joint de sécurité';
     }
 
-    // Get type of emballage
+    // Get type of emballage (generic - no pilulier/bouchon separation)
     public function getTypeEmballageLabel()
     {
-        $types = [
-            'PILULIER' => '📦 Pilulier',
-            'BOUCHON' => '🔓 Bouchon',
-        ];
-        
         if ($this->name === 'Joint de sécurité') {
             return '🔒 Joint de sécurité';
         }
         
-        return $types[$this->type_emballage] ?? $this->type_emballage;
+        if ($this->name === 'Ticket') {
+            return '🎫 Ticket';
+        }
+        
+        // For generic emballage products, return a generic label
+        return !is_null($this->type_emballage) ? '📦 Emballage' : '';
     }
 }
 

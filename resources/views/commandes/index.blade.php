@@ -71,24 +71,31 @@
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 0.625rem;">
                             @foreach($commande->emballages as $emballage)
+                                @if($emballage->productStock->product->name !== 'Joint de sécurité')
                             <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); border: 1px solid #e5e7eb; border-radius: 0.5rem; transition: all 0.2s;" onmouseover="this.style.transform='translateX(4px)'; this.style.borderColor='#2d7a52';" onmouseout="this.style.transform='translateX(0)'; this.style.borderColor='#e5e7eb';">
                                 <div style="width: 36px; height: 36px; background: white; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: #2d7a52; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 0.025em;">
-                                    @if($emballage->productStock->product->type_emballage === 'PILULIER')
-                                        PIL
-                                    @elseif($emballage->productStock->product->type_emballage === 'BOUCHON')
-                                        BOU
-                                    @endif
+                                    EMB
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
                                     <div style="font-weight: 600; color: #1f2937; font-size: 0.875rem; margin-bottom: 0.125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $emballage->productStock->product->name }}</div>
-                                    <div style="display: inline-block; background: #e5e7eb; color: #4b5563; padding: 0.0625rem 0.5rem; border-radius: 0.25rem; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em;">
-                                        {{ $emballage->productStock->product->type_emballage }}
-                                    </div>
                                 </div>
                                 <div style="background: linear-gradient(135deg, #2d7a52 0%, #236844 100%); color: white; padding: 0.375rem 0.75rem; border-radius: 0.5rem; font-size: 0.9375rem; font-weight: 700; min-width: 48px; text-align: center; box-shadow: 0 2px 4px rgba(45,122,82,0.3);">
                                     ×{{ $emballage->quantity }}
                                 </div>
                             </div>
+                                @elseif($emballage->productStock->product->name === 'Joint de sécurité')
+                            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #fbbf24; border-radius: 0.5rem; transition: all 0.2s;" onmouseover="this.style.transform='translateX(4px)'; this.style.borderColor='#2d7a52';" onmouseout="this.style.transform='translateX(0)'; this.style.borderColor='#fbbf24';">
+                                <div style="width: 36px; height: 36px; background: white; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; color: #b45309; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 0.025em;">
+                                    🔒
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-weight: 600; color: #1f2937; font-size: 0.875rem;">Joint de sécurité</div>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.375rem 0.75rem; border-radius: 0.5rem; font-size: 0.9375rem; font-weight: 700; min-width: 48px; text-align: center; box-shadow: 0 2px 4px rgba(245,158,11,0.3);">
+                                    ×{{ $emballage->quantity }}
+                                </div>
+                            </div>
+                                @endif
                             @endforeach
                         </div>
                     </div>

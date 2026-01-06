@@ -20,15 +20,14 @@ use App\Http\Controllers\StockHerbController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\HerbController;
 use App\Http\Controllers\FornisseurController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return redirect('/login');
 });
 
 Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Stock Management
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');

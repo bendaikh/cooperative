@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Modifier Commande - Co-op ERP')
-@section('page-title', 'Modifier une Commande (Gestion Emballage)')
+@section('page-title', 'Modifier une Commande (Emballage Unifié)')
 
 @section('content')
 <div style="max-width: 1000px;">
@@ -45,50 +45,11 @@
             @if($errors->any())
                 <div style="background: #fee2e2; border: 3px solid #dc2626; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
                     <p style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600; color: #991b1b;">⚠️ ERREURS DE VALIDATION</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                        @if($errors->has('pilulier_product_stock_id'))
-                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
-                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🥤 PILULIER</p>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('pilulier_product_stock_id') }}</p>
-                            </div>
-                        @endif
-                        
-                        @if($errors->has('bouchon_product_stock_id'))
-                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
-                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🧢 BOUCHON</p>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('bouchon_product_stock_id') }}</p>
-                            </div>
-                        @endif
-                        
-                        @if($errors->has('filled_capsule_id'))
-                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
-                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">💊 CAPSULES</p>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('filled_capsule_id') }}</p>
-                            </div>
-                        @endif
-                        
-                        @if($errors->has('avec_joint_securite'))
-                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
-                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🔒 JOINT</p>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('avec_joint_securite') }}</p>
-                            </div>
-                        @endif
-                        
-                        @if($errors->has('ticket_product_stock_id'))
-                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
-                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🎫 TICKET</p>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('ticket_product_stock_id') }}</p>
-                            </div>
-                        @endif
-                        
-                        @if($errors->has('ticket_quantity'))
-                            <div style="background: #fecaca; padding: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #dc2626;">
-                                <p style="font-weight: 600; margin: 0; color: #7f1d1d; font-size: 0.85rem;">🎫 QTÉ TICKET</p>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #7f1d1d;">{{ $errors->first('ticket_quantity') }}</p>
-                            </div>
-                        @endif
-                    </div>
+                    <ul style="margin: 0; padding-left: 2rem; list-style: disc;">
+                        @foreach($errors->all() as $error)
+                            <li style="margin-bottom: 0.5rem; color: #991b1b;">{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -101,7 +62,7 @@
                     <select name="client_id" id="client_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
                         <option value="">Sélectionner un client</option>
                         @foreach($clients as $client)
-                            <option value="{{ $client->id }}" {{ old('client_id', $commande->client_id) == $client->id ? 'selected' : '' }}>
+                            <option value="{{ $client->id }}" {{ $commande->client_id == $client->id ? 'selected' : '' }}>
                                 {{ $client->name }} @if($client->email)- {{ $client->email }}@endif
                             </option>
                         @endforeach
@@ -112,66 +73,25 @@
                 </div>
             </div>
 
-            <!-- Step 2: Packaging Selection (PILULIER + BOUCHON) -->
+            <!-- Step 2: Emballage Selection (UNIFIED) -->
             <div class="form-step" data-step="2" style="display: none;">
-                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 2: Sélectionner les emballages</h2>
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 2: Sélectionner l'emballage</h2>
                 
-                <p style="color: #4b5563; font-size: 0.875rem; margin-bottom: 1rem;">Sélectionnez le PILULIER et le BOUCHON pour cette commande.</p>
-
-                <!-- PILULIER Selection -->
+                <!-- Single Emballage Selection -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.75rem; border: 2px solid #e5e7eb;">
-                    <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">🥛 PILULIER <span style="color: #dc2626;">*</span></label>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">📦 Emballage <span style="color: #dc2626;">*</span></label>
                     
-                    <select name="pilulier_product_stock_id" id="pilulier_product_stock_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; margin-bottom: 0.5rem;">
-                        <option value="">Sélectionner un PILULIER</option>
-                        @foreach($piluliers as $pilulier)
-                            @foreach($pilulier->stock as $stock)
-                                @php
-                                    $isSelected = false;
-                                    foreach($commande->emballages as $ce) {
-                                        if($ce->productStock->product->type_emballage === 'PILULIER' && $ce->product_stock_id == $stock->id) {
-                                            $isSelected = true;
-                                            break;
-                                        }
-                                    }
-                                @endphp
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-type="PILULIER" {{ $isSelected ? 'selected' : '' }}>
-                                    {{ $pilulier->name }} - Stock: {{ $stock->global_quantity }}
+                    <select name="emballage_product_stock_id" id="emballage_product_stock_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; margin-bottom: 0.5rem;">
+                        <option value="">Sélectionner un emballage</option>
+                        @foreach($emballages as $emballage)
+                            @foreach($emballage->stock as $stock)
+                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" {{ $currentEmballage && $currentEmballage->product_stock_id == $stock->id ? 'selected' : '' }}>
+                                    {{ $emballage->name }} - Stock: {{ $stock->global_quantity }}
                                 </option>
                             @endforeach
                         @endforeach
                     </select>
-                    <p id="pilulier-stock-info" style="color: #6b7280; font-size: 0.75rem;"></p>
-                    @error('pilulier_product_stock_id')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- BOUCHON Selection -->
-                <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.75rem; border: 2px solid #e5e7eb;">
-                    <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">🔗 BOUCHON <span style="color: #dc2626;">*</span></label>
-                    
-                    <select name="bouchon_product_stock_id" id="bouchon_product_stock_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; margin-bottom: 0.5rem;">
-                        <option value="">Sélectionner un BOUCHON</option>
-                        @foreach($bouchons as $bouchon)
-                            @foreach($bouchon->stock as $stock)
-                                @php
-                                    $isSelected = false;
-                                    foreach($commande->emballages as $ce) {
-                                        if($ce->productStock->product->type_emballage === 'BOUCHON' && $ce->product_stock_id == $stock->id) {
-                                            $isSelected = true;
-                                            break;
-                                        }
-                                    }
-                                @endphp
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-type="BOUCHON" {{ $isSelected ? 'selected' : '' }}>
-                                    {{ $bouchon->name }} - Stock: {{ $stock->global_quantity }}
-                                </option>
-                            @endforeach
-                        @endforeach
-                    </select>
-                    <p id="bouchon-stock-info" style="color: #6b7280; font-size: 0.75rem;"></p>
-                    @error('bouchon_product_stock_id')
+                    @error('emballage_product_stock_id')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
@@ -180,16 +100,15 @@
                 <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #fef3c7; border-radius: 0.75rem; border: 2px solid #fbbf24;">
                     @if($jointSecurite && $jointSecurite->stock->count() > 0)
                         <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" name="avec_joint_securite" id="avec_joint_securite" value="1" {{ old('avec_joint_securite', $commande->avec_joint_securite) ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem;">
+                            <input type="checkbox" name="avec_joint_securite" id="avec_joint_securite" value="1" {{ $commande->avec_joint_securite ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem;">
                             <span style="font-size: 0.875rem; font-weight: 600; color: #1f2937;">🔒 Avec Joint de sécurité</span>
                         </label>
                         <p style="color: #78350f; font-size: 0.75rem; margin-top: 0.5rem; margin-left: 2rem;">
                             Si coché, la même quantité sera appliquée pour le Joint de sécurité.
-                            Stock disponible: {{ $jointSecurite->stock->first()->global_quantity }}
                         </p>
                     @else
                         <p style="color: #92400e; font-size: 0.875rem; font-weight: 600;">🔒 Joint de sécurité</p>
-                        <p style="color: #b45309; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible - Créez d'abord un produit "Joint de sécurité" et son stock.</p>
+                        <p style="color: #b45309; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible</p>
                     @endif
                     @error('avec_joint_securite')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
@@ -200,7 +119,7 @@
                 <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%); border-radius: 0.75rem; border: 2px solid #d8b4fe;">
                     @if($tickets && $tickets->count() > 0)
                         <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 0.75rem;">
-                            <input type="checkbox" name="avec_ticket" id="avec_ticket" value="1" {{ old('avec_ticket', $commande->avec_ticket) ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem; accent-color: #a855f7;">
+                            <input type="checkbox" name="avec_ticket" id="avec_ticket" value="1" {{ $commande->tickets()->exists() ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem; accent-color: #a855f7;">
                             <span style="font-size: 0.95rem; font-weight: 600; color: #1f2937;">🎫 Avec Ticket</span>
                         </label>
                         <p style="color: #6b21a8; font-size: 0.75rem; margin-left: 2rem; margin-top: 0.25rem;">
@@ -208,84 +127,58 @@
                         </p>
                         
                         <!-- Hidden ticket fields that show when checkbox is checked -->
-                        <div id="ticket-fields" style="display: {{ old('avec_ticket', $commande->avec_ticket) ? 'block' : 'none' }}; margin-top: 1.25rem; padding: 1.25rem; background: white; border: 2px solid #d8b4fe; border-radius: 0.5rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+                        <div id="ticket-fields" style="display: {{ $commande->tickets()->exists() ? 'block' : 'none' }}; margin-top: 1.25rem; padding: 1.25rem; background: white; border: 2px solid #d8b4fe; border-radius: 0.5rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
-                                <!-- Ticket Product Selection -->
                                 <div>
                                     <label for="ticket_product_stock_id" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Produit Ticket <span style="color: #dc2626;">*</span></label>
                                     <select name="ticket_product_stock_id" id="ticket_product_stock_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
                                         <option value="">Sélectionner un ticket</option>
                                         @foreach($tickets as $ticket)
                                             @foreach($ticket->stock as $stock)
-                                                @php
-                                                    $isSelected = false;
-                                                    if($commande->ticket_product_stock_id == $stock->id) {
-                                                        $isSelected = true;
-                                                    }
-                                                @endphp
-                                                <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}" {{ $isSelected ? 'selected' : '' }}>
+                                                <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}" {{ $commande->tickets()->first()?->product_stock_id == $stock->id ? 'selected' : '' }}>
                                                     {{ $ticket->name }} (Stock: {{ $stock->quantity }})
                                                 </option>
                                             @endforeach
                                         @endforeach
                                     </select>
-                                    <p id="ticket-stock-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; font-weight: 500;"></p>
                                 </div>
 
-                                <!-- Ticket Quantity -->
                                 <div>
                                     <label for="ticket_quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité de Tickets <span style="color: #dc2626;">*</span></label>
-                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="1" value="{{ old('ticket_quantity', $commande->ticket_quantity) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
-                                    <p id="ticket-quantity-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; font-weight: 500;"></p>
+                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="1" value="{{ $commande->tickets()->first()?->quantity ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
                                 </div>
 
-                                <!-- Brand Name -->
                                 <div>
                                     <label for="nom_marque" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Nom de la marque <span style="color: #dc2626;">*</span></label>
-                                    <input type="text" name="nom_marque" id="nom_marque" value="{{ old('nom_marque', $commande->nom_marque) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    <input type="text" name="nom_marque" id="nom_marque" value="{{ $commande->tickets()->first()?->nom_marque ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
                                 </div>
 
-                                <!-- Authorization Number -->
                                 <div>
                                     <label for="numero_autorisation" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Numéro d'autorisation <span style="color: #dc2626;">*</span></label>
-                                    <input type="text" name="numero_autorisation" id="numero_autorisation" value="{{ old('numero_autorisation', $commande->numero_autorisation) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    <input type="text" name="numero_autorisation" id="numero_autorisation" value="{{ $commande->tickets()->first()?->numero_autorisation ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
                                 </div>
                             </div>
                         </div>
                     @else
-                        <p style="color: #7e22ce; font-size: 0.875rem; font-weight: 600;">🎫 Tickets</p>
-                        <p style="color: #a855f7; font-size: 0.75rem; margin-top: 0.5rem;">Non disponibles - Créez d'abord un produit "Ticket" et son stock.</p>
+                        <p style="color: #7e22ce; font-size: 0.875rem; font-weight: 600;">🎫 Ticket</p>
+                        <p style="color: #a855f7; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible - Créez d'abord un produit "Ticket" et son stock.</p>
                     @endif
                     @error('avec_ticket')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
-                    @enderror
-                    @error('ticket_product_stock_id')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
-                    @enderror
-                    @error('ticket_quantity')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
-                    @enderror
-                    @error('nom_marque')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
-                    @enderror
-                    @error('numero_autorisation')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
-            <!-- Step 3: Quantity Input (applies to BOTH packaging types) -->
+            <!-- Step 3: Quantity Input -->
             <div class="form-step" data-step="3" style="display: none;">
                 <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 3: Quantité</h2>
                 
-                <p style="color: #4b5563; font-size: 0.875rem; margin-bottom: 1.5rem;"><strong>⚠️ Attention:</strong> Cette quantité s'applique aux DEUX emballages (PILULIER et BOUCHON).</p>
-
-                <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #f0fdf4; border-radius: 0.75rem; border: 2px solid #86efac;">
-                    <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité (pour PILULIER ET BOUCHON) <span style="color: #dc2626;">*</span></label>
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité d'emballage <span style="color: #dc2626;">*</span></label>
                     <input type="number" name="quantity" id="quantity" required min="1" value="{{ old('quantity', $commande->quantity) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
                     <p id="quantity-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;"></p>
                     @error('quantity')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                        <p style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem; font-weight: 600;">❌ {{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -299,21 +192,14 @@
                     <select name="filled_capsule_id" id="filled_capsule_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
                         <option value="">Sélectionner des capsules remplies</option>
                         @foreach($filledCapsules as $capsule)
-                            @php
-                                $isSelected = false;
-                                if($commande->filledCapsules && $commande->filledCapsules->first()) {
-                                    $isSelected = $commande->filledCapsules->first()->filled_capsule_id == $capsule->id;
-                                }
-                            @endphp
-                            <option value="{{ $capsule->id }}" data-quantity="{{ $capsule->quantity }}" {{ $isSelected ? 'selected' : '' }}>
-                                {{ $capsule->herb->name ?? 'Herbe inconnue' }} - Stock: {{ $capsule->quantity }} rangées
+                            <option value="{{ $capsule->id }}" data-quantity="{{ $capsule->quantity }}" {{ $commande->filledCapsules()->first()?->filled_capsule_id == $capsule->id ? 'selected' : '' }}>
+                                {{ $capsule->herb->name ?? 'Herbe inconnue' }} - Stock: {{ round($capsule->quantity, 2) }} rangées
                             </option>
                         @endforeach
                     </select>
                     @error('filled_capsule_id')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
-                    <p id="capsule-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;"></p>
                 </div>
 
                 <!-- Capsules Per Unit Selection -->
@@ -322,7 +208,7 @@
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                         @foreach($capsulesPerUnitOptions as $option)
                             <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;">
-                                <input type="radio" name="capsules_per_unit" value="{{ $option }}" required style="width: 1.25rem; height: 1.25rem; cursor: pointer;" {{ old('capsules_per_unit', $commande->capsules_per_unit) == $option ? 'checked' : '' }}>
+                                <input type="radio" name="capsules_per_unit" value="{{ $option }}" required style="width: 1.25rem; height: 1.25rem; cursor: pointer;" @if($commande->capsules_per_unit == $option) checked @endif>
                                 <span style="margin-left: 0.75rem; font-weight: 500; color: #1f2937;">{{ $option }} capsules</span>
                             </label>
                         @endforeach
@@ -344,16 +230,12 @@
                             <p id="summary-client" style="font-size: 1rem; color: #1f2937; font-weight: 600;">-</p>
                         </div>
                         <div>
-                            <p style="font-size: 0.75rem; color: #6b7280; font-weight: 500; margin-bottom: 0.25rem;">QUANTITÉ (×2 emballages)</p>
+                            <p style="font-size: 0.75rem; color: #6b7280; font-weight: 500; margin-bottom: 0.25rem;">QUANTITÉ EMBALLAGE</p>
                             <p id="summary-quantity" style="font-size: 1rem; color: #1f2937; font-weight: 600;">-</p>
                         </div>
                         <div>
-                            <p style="font-size: 0.75rem; color: #6b7280; font-weight: 500; margin-bottom: 0.25rem;">PILULIER</p>
-                            <p id="summary-pilulier" style="font-size: 1rem; color: #1f2937; font-weight: 600;">-</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 0.75rem; color: #6b7280; font-weight: 500; margin-bottom: 0.25rem;">BOUCHON</p>
-                            <p id="summary-bouchon" style="font-size: 1rem; color: #1f2937; font-weight: 600;">-</p>
+                            <p style="font-size: 0.75rem; color: #6b7280; font-weight: 500; margin-bottom: 0.25rem;">EMBALLAGE</p>
+                            <p id="summary-emballage" style="font-size: 1rem; color: #1f2937; font-weight: 600;">-</p>
                         </div>
                         <div>
                             <p style="font-size: 0.75rem; color: #6b7280; font-weight: 500; margin-bottom: 0.25rem;">CAPSULES REMPLIES</p>
@@ -369,10 +251,7 @@
                 <!-- Notes -->
                 <div style="margin-bottom: 1.5rem;">
                     <label for="notes" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Notes (optionnel)</label>
-                    <textarea name="notes" id="notes" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; resize: vertical;">{{ old('notes', $commande->notes) }}</textarea>
-                    @error('notes')
-                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
-                    @enderror
+                    <textarea name="notes" id="notes" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; resize: vertical;">{{ $commande->notes }}</textarea>
                 </div>
             </div>
 
@@ -408,44 +287,24 @@ const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const submitBtn = document.getElementById('submitBtn');
 
-// Elements for real-time info
 const clientSelect = document.getElementById('client_id');
 const quantityInput = document.getElementById('quantity');
-const pilulierSelect = document.getElementById('pilulier_product_stock_id');
-const bouchonSelect = document.getElementById('bouchon_product_stock_id');
+const emballageSelect = document.getElementById('emballage_product_stock_id');
 const filledCapsuleSelect = document.getElementById('filled_capsule_id');
 const capsulesPerUnitInputs = document.querySelectorAll('input[name="capsules_per_unit"]');
-const ticketCheckbox = document.getElementById('avec_ticket');
-const ticketFields = document.getElementById('ticket-fields');
-const ticketProductSelect = document.getElementById('ticket_product_stock_id');
-const ticketQuantityInput = document.getElementById('ticket_quantity');
-const nomMarqueInput = document.getElementById('nom_marque');
-const numeroAutorisationInput = document.getElementById('numero_autorisation');
-
-// Field validation state - tracks which fields are valid
-const validationState = {
-    client: false,  // Client is required - start as false
-    pilulier: true,
-    bouchon: true,
-    quantity: true,
-    capsules: true,
-    jointSecurite: true,
-    tickets: true
-};
 
 function showStep(step) {
-    // Hide all steps
     document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
     
-    // Show current step
-    document.querySelector(`.form-step[data-step="${step}"]`).style.display = 'block';
+    const currentStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+    if (currentStepEl) {
+        currentStepEl.style.display = 'block';
+    }
     
-    // Update button visibility
     prevBtn.style.display = step > 1 ? 'block' : 'none';
     nextBtn.style.display = step < totalSteps ? 'block' : 'none';
     submitBtn.style.display = step === totalSteps ? 'block' : 'none';
     
-    // Update progress indicator - update all circles
     document.querySelectorAll('.step-circle').forEach((circle) => {
         const stepNum = parseInt(circle.dataset.step);
         if (stepNum <= step) {
@@ -457,485 +316,52 @@ function showStep(step) {
         }
     });
     
+    updateSummary();
     window.scrollTo(0, 0);
 }
 
-function setFieldError(fieldId, errorMessage) {
-    const field = document.getElementById(fieldId);
-    if (!field) return;
-    
-    // Add error styling to field
-    field.style.borderColor = '#dc2626';
-    field.style.borderWidth = '2px';
-    field.style.backgroundColor = '#fef2f2';
-    
-    // Create or update error message
-    let errorElement = field.parentElement.querySelector('.field-error-message');
-    if (!errorElement) {
-        errorElement = document.createElement('p');
-        errorElement.className = 'field-error-message';
-        errorElement.style.color = '#dc2626';
-        errorElement.style.fontSize = '0.75rem';
-        errorElement.style.marginTop = '0.25rem';
-        errorElement.style.fontWeight = '500';
-        field.parentElement.appendChild(errorElement);
-    }
-    errorElement.textContent = errorMessage;
-}
-
-function clearFieldError(fieldId) {
-    const field = document.getElementById(fieldId);
-    if (!field) return;
-    
-    // Remove error styling
-    field.style.borderColor = '#d1d5db';
-    field.style.borderWidth = '1px';
-    field.style.backgroundColor = 'white';
-    
-    // Remove error message
-    const errorElement = field.parentElement.querySelector('.field-error-message');
-    if (errorElement) {
-        errorElement.remove();
-    }
-}
-
-function validateStep2() {
-    let isValid = true;
-    
-    // Get quantity from step 3 (will be 0 if not yet entered)
-    const pilulierQty = quantityInput.value ? parseInt(quantityInput.value) : 0;
-    
-    // Validate Pilulier selection
-    if (!pilulierSelect.value) {
-        setFieldError('pilulier_product_stock_id', 'Veuillez sélectionner un PILULIER');
-        validationState.pilulier = false;
-        isValid = false;
-    } else {
-        const pilulierOption = pilulierSelect.options[pilulierSelect.selectedIndex];
-        const pilulierStock = pilulierOption?.dataset?.stock ? parseInt(pilulierOption.dataset.stock) : 0;
-        
-        if (pilulierQty > 0 && pilulierQty > pilulierStock) {
-            setFieldError('pilulier_product_stock_id', `Stock PILULIER insuffisant (disponible : ${pilulierStock})`);
-            validationState.pilulier = false;
-            isValid = false;
-        } else {
-            clearFieldError('pilulier_product_stock_id');
-            validationState.pilulier = true;
-        }
-    }
-    
-    // Validate Bouchon selection
-    if (!bouchonSelect.value) {
-        setFieldError('bouchon_product_stock_id', 'Veuillez sélectionner un BOUCHON');
-        validationState.bouchon = false;
-        isValid = false;
-    } else {
-        const bouchonOption = bouchonSelect.options[bouchonSelect.selectedIndex];
-        const bouchonStock = bouchonOption?.dataset?.stock ? parseInt(bouchonOption.dataset.stock) : 0;
-        
-        if (pilulierQty > 0 && pilulierQty > bouchonStock) {
-            setFieldError('bouchon_product_stock_id', `Stock BOUCHON insuffisant (disponible : ${bouchonStock})`);
-            validationState.bouchon = false;
-            isValid = false;
-        } else {
-            clearFieldError('bouchon_product_stock_id');
-            validationState.bouchon = true;
-        }
-    }
-    
-    updateNextButtonState();
-    return isValid;
-}
-
-function validateStep3() {
-    let isValid = true;
-    
-    // Validate Quantity
-    const qty = quantityInput.value ? parseInt(quantityInput.value) : 0;
-    if (!quantityInput.value || qty < 1) {
-        setFieldError('quantity', 'Veuillez entrer une quantité valide (minimum 1)');
-        validationState.quantity = false;
-        isValid = false;
-    } else {
-        // Check stock against entered quantity
-        const pilulierOption = pilulierSelect.options[pilulierSelect.selectedIndex];
-        const pilulierStock = pilulierOption?.dataset?.stock ? parseInt(pilulierOption.dataset.stock) : 0;
-        
-        const bouchonOption = bouchonSelect.options[bouchonSelect.selectedIndex];
-        const bouchonStock = bouchonOption?.dataset?.stock ? parseInt(bouchonOption.dataset.stock) : 0;
-        
-        // Check if quantity exceeds either PILULIER or BOUCHON stock
-        if (qty > pilulierStock) {
-            setFieldError('quantity', `Quantité dépasse stock PILULIER (disponible : ${pilulierStock})`);
-            validationState.quantity = false;
-            isValid = false;
-        } else if (qty > bouchonStock) {
-            setFieldError('quantity', `Quantité dépasse stock BOUCHON (disponible : ${bouchonStock})`);
-            validationState.quantity = false;
-            isValid = false;
-        } else {
-            clearFieldError('quantity');
-            validationState.quantity = true;
-        }
-    }
-    
-    updateNextButtonState();
-    return isValid;
-}
-
-function validateStep4() {
-    let isValid = true;
-    
-    const qty = quantityInput.value ? parseInt(quantityInput.value) : 0;
-    const capsulesPer = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
-    const totalCapsulesNeeded = qty * capsulesPer;
-    
-    // Validate Filled Capsules
-    if (!filledCapsuleSelect.value) {
-        setFieldError('filled_capsule_id', 'Veuillez sélectionner des capsules remplies');
-        validationState.capsules = false;
-        isValid = false;
-    } else {
-        const capsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
-        const availableCapsules = capsuleOption?.dataset?.quantity ? parseFloat(capsuleOption.dataset.quantity) * 420 : 0;
-        
-        if (totalCapsulesNeeded > 0 && totalCapsulesNeeded > availableCapsules) {
-            const availableCapsuleCount = Math.floor(availableCapsules);
-            setFieldError('filled_capsule_id', `Stock capsules insuffisant (disponible : ${availableCapsuleCount})`);
-            validationState.capsules = false;
-            isValid = false;
-        } else {
-            clearFieldError('filled_capsule_id');
-            validationState.capsules = true;
-        }
-    }
-    
-    // Validate Capsules Per Unit is selected
-    if (!document.querySelector('input[name="capsules_per_unit"]:checked')) {
-        const firstRadio = document.querySelector('input[name="capsules_per_unit"]');
-        if (firstRadio) {
-            setFieldError('capsules_per_unit_container', 'Veuillez sélectionner le nombre de capsules par unité');
-            isValid = false;
-        }
-    } else {
-        clearFieldError('capsules_per_unit_container');
-    }
-    
-    // Validate Tickets if enabled
-    if (ticketCheckbox && ticketCheckbox.checked) {
-        let ticketValid = true;
-        
-        if (!ticketProductSelect.value) {
-            setFieldError('ticket_product_stock_id', 'Veuillez sélectionner un produit ticket');
-            ticketValid = false;
-        } else {
-            const ticketOption = ticketProductSelect.options[ticketProductSelect.selectedIndex];
-            const ticketStock = ticketOption?.dataset?.quantity ? parseInt(ticketOption.dataset.quantity) : 0;
-            const ticketQty = ticketQuantityInput.value ? parseInt(ticketQuantityInput.value) : 0;
-            
-            if (ticketQty < 1) {
-                setFieldError('ticket_quantity', 'Veuillez entrer une quantité de tickets valide (minimum 1)');
-                ticketValid = false;
-            } else if (ticketQty > ticketStock) {
-                setFieldError('ticket_product_stock_id', `Stock tickets insuffisant (disponible : ${ticketStock})`);
-                ticketValid = false;
-            } else {
-                clearFieldError('ticket_product_stock_id');
-                clearFieldError('ticket_quantity');
-            }
-        }
-        
-        if (!nomMarqueInput.value || nomMarqueInput.value.trim() === '') {
-            setFieldError('nom_marque', 'Le nom de la marque est requis');
-            ticketValid = false;
-        } else {
-            clearFieldError('nom_marque');
-        }
-        
-        if (!numeroAutorisationInput.value || numeroAutorisationInput.value.trim() === '') {
-            setFieldError('numero_autorisation', 'Le numéro d\'autorisation est requis');
-            ticketValid = false;
-        } else {
-            clearFieldError('numero_autorisation');
-        }
-        
-        validationState.tickets = ticketValid;
-        isValid = isValid && ticketValid;
-    } else {
-        clearFieldError('ticket_product_stock_id');
-        clearFieldError('ticket_quantity');
-        clearFieldError('nom_marque');
-        clearFieldError('numero_autorisation');
-        validationState.tickets = true;
-    }
-    
-    updateNextButtonState();
-    return isValid;
-}
-
-function updateNextButtonState() {
-    const stepsValidation = {
-        1: clientSelect.value !== '',
-        2: validationState.pilulier && validationState.bouchon,
-        3: validationState.quantity,
-        4: validationState.capsules
-    };
-    
-    const currentStepValid = stepsValidation[currentStep] !== undefined ? stepsValidation[currentStep] : true;
-    
-    if (currentStep < totalSteps) {
-        if (currentStepValid) {
-            nextBtn.disabled = false;
-            nextBtn.style.opacity = '1';
-            nextBtn.style.cursor = 'pointer';
-            nextBtn.style.backgroundColor = '#2d7a52';
-        } else {
-            nextBtn.disabled = true;
-            nextBtn.style.opacity = '0.5';
-            nextBtn.style.cursor = 'not-allowed';
-            nextBtn.style.backgroundColor = '#a0a0a0';
-        }
-    }
-}
-
-function validateStep(step) {
-    if (step === 1) {
-        if (!clientSelect.value) {
-            setFieldError('client_id', 'Veuillez sélectionner un client');
-            validationState.client = false;
-            updateNextButtonState();
-            return false;
-        } else {
-            clearFieldError('client_id');
-            validationState.client = true;
-            updateNextButtonState();
-            return true;
-        }
-    } else if (step === 2) {
-        const result = validateStep2();
-        updateNextButtonState();
-        return result;
-    } else if (step === 3) {
-        const result = validateStep3();
-        updateNextButtonState();
-        return result;
-    } else if (step === 4) {
-        const result = validateStep4();
-        updateNextButtonState();
-        return result;
-    }
-    updateNextButtonState();
-    return true;
-}
-
 function updateSummary() {
-    // Client
     const clientOption = clientSelect.options[clientSelect.selectedIndex];
     document.getElementById('summary-client').textContent = clientOption.text || '-';
     
-    // Quantity
-    document.getElementById('summary-quantity').textContent = quantityInput.value ? quantityInput.value + ' × 2 emballages' : '-';
+    document.getElementById('summary-quantity').textContent = quantityInput.value || '-';
     
-    // Pilulier
-    const pilulierOption = pilulierSelect.options[pilulierSelect.selectedIndex];
-    document.getElementById('summary-pilulier').textContent = pilulierOption.text?.split(' - Stock')[0] || '-';
+    const emballageOption = emballageSelect.options[emballageSelect.selectedIndex];
+    document.getElementById('summary-emballage').textContent = emballageOption.text || '-';
     
-    // Bouchon
-    const bouchonOption = bouchonSelect.options[bouchonSelect.selectedIndex];
-    document.getElementById('summary-bouchon').textContent = bouchonOption.text?.split(' - Stock')[0] || '-';
-    
-    // Capsules
     const capsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
-    document.getElementById('summary-capsules').textContent = capsuleOption.text?.split(' - Stock')[0] || '-';
+    document.getElementById('summary-capsules').textContent = capsuleOption.text || '-';
     
-    // Total capsules needed
-    const capsulesPer = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
-    const qty = quantityInput.value || 0;
-    const totalCapsules = qty * capsulesPer;
-    document.getElementById('summary-total-capsules').textContent = totalCapsules + ' capsules';
+    const qty = parseInt(quantityInput.value) || 0;
+    const cpuVal = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
+    const totalCapsules = qty * cpuVal;
+    document.getElementById('summary-total-capsules').textContent = totalCapsules > 0 ? totalCapsules : '-';
 }
 
-function updateStockInfo() {
-    const pilulierOption = pilulierSelect.options[pilulierSelect.selectedIndex];
-    const bouchonOption = bouchonSelect.options[bouchonSelect.selectedIndex];
-    const capsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
-    const capsulesPer = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 30;
-    const qty = quantityInput.value || 0;
-    
-    if (pilulierOption.dataset.stock) {
-        document.getElementById('pilulier-stock-info').textContent = `Stock disponible: ${pilulierOption.dataset.stock} unités`;
+function canAdvanceToNextStep() {
+    if (currentStep === 1) {
+        return clientSelect.value !== '';
+    } else if (currentStep === 2) {
+        return emballageSelect.value !== '';
+    } else if (currentStep === 3) {
+        return quantityInput.value && parseInt(quantityInput.value) >= 1;
+    } else if (currentStep === 4) {
+        return filledCapsuleSelect.value !== '' && document.querySelector('input[name="capsules_per_unit"]:checked') !== null;
     }
-    
-    if (bouchonOption.dataset.stock) {
-        document.getElementById('bouchon-stock-info').textContent = `Stock disponible: ${bouchonOption.dataset.stock} unités`;
-    }
-    
-    if (capsuleOption.dataset.quantity) {
-        const totalNeeded = qty * capsulesPer;
-        document.getElementById('capsule-info').textContent = `Stock: ${capsuleOption.dataset.quantity} rangées | Besoin: ${totalNeeded} capsules`;
-    }
-    
-    if (qty > 0 && capsulesPer) {
-        document.getElementById('quantity-info').textContent = `Total: ${qty} × ${capsulesPer} = ${qty * capsulesPer} capsules`;
-    }
+    return true;
 }
 
-// Real-time validation system - validates continuously on every change
-function setupRealtimeValidation() {
-    
-    // ===== STEP 2 VALIDATORS =====
-    // Quantity input affects both Pilulier and Bouchon stock validation
-    if (quantityInput) {
-        ['input', 'change'].forEach(event => {
-            quantityInput.addEventListener(event, () => {
-                validateStep2();
-                updateStockInfo();
-            });
-        });
+nextBtn.addEventListener('click', () => {
+    if (!canAdvanceToNextStep()) {
+        alert('Veuillez remplir tous les champs requis de cette étape.');
+        return;
     }
     
-    // Pilulier selection validator
-    if (pilulierSelect) {
-        ['change'].forEach(event => {
-            pilulierSelect.addEventListener(event, () => {
-                validateStep2();
-                updateSummary();
-                updateStockInfo();
-            });
-        });
+    if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
     }
-    
-    // Bouchon selection validator
-    if (bouchonSelect) {
-        ['change'].forEach(event => {
-            bouchonSelect.addEventListener(event, () => {
-                validateStep2();
-                updateSummary();
-                updateStockInfo();
-            });
-        });
-    }
-    
-    // ===== STEP 3 VALIDATORS =====
-    // Quantity input validator for step 3
-    if (quantityInput) {
-        ['input', 'change', 'blur'].forEach(event => {
-            quantityInput.addEventListener(event, () => {
-                validateStep3();
-                validateStep2();  // Also revalidate step 2 since quantity affects PILULIER/BOUCHON
-                updateStockInfo();
-            });
-        });
-    }
-    
-    // ===== STEP 4 VALIDATORS =====
-    // Filled Capsules validator
-    if (filledCapsuleSelect) {
-        ['change'].forEach(event => {
-            filledCapsuleSelect.addEventListener(event, () => {
-                validateStep4();
-                updateSummary();
-                updateStockInfo();
-            });
-        });
-    }
-    
-    // Capsules per unit radio buttons
-    capsulesPerUnitInputs.forEach(radio => {
-        ['change'].forEach(event => {
-            radio.addEventListener(event, () => {
-                validateStep4();
-                updateSummary();
-                updateStockInfo();
-            });
-        });
-    });
-    
-    // Ticket checkbox toggle
-    if (ticketCheckbox) {
-        ticketCheckbox.addEventListener('change', function() {
-            validateStep4();
-            if (this.checked) {
-                ticketFields.style.display = 'block';
-                ticketProductSelect.setAttribute('required', 'required');
-                ticketQuantityInput.setAttribute('required', 'required');
-                nomMarqueInput.setAttribute('required', 'required');
-                numeroAutorisationInput.setAttribute('required', 'required');
-            } else {
-                ticketFields.style.display = 'none';
-                ticketProductSelect.removeAttribute('required');
-                ticketQuantityInput.removeAttribute('required');
-                nomMarqueInput.removeAttribute('required');
-                numeroAutorisationInput.removeAttribute('required');
-                ticketProductSelect.value = '';
-                ticketQuantityInput.value = '';
-                nomMarqueInput.value = '';
-                numeroAutorisationInput.value = '';
-                clearFieldError('ticket_product_stock_id');
-                clearFieldError('ticket_quantity');
-                clearFieldError('nom_marque');
-                clearFieldError('numero_autorisation');
-            }
-            updateStockInfo();
-        });
-    }
-    
-    // Ticket product selector
-    if (ticketProductSelect) {
-        ['change'].forEach(event => {
-            ticketProductSelect.addEventListener(event, () => {
-                validateStep4();
-                updateStockInfo();
-            });
-        });
-    }
-    
-    // Ticket quantity input
-    if (ticketQuantityInput) {
-        ['input', 'change', 'blur'].forEach(event => {
-            ticketQuantityInput.addEventListener(event, () => {
-                validateStep4();
-                updateStockInfo();
-            });
-        });
-    }
-    
-    // Nom de marque input
-    if (nomMarqueInput) {
-        ['input', 'change', 'blur'].forEach(event => {
-            nomMarqueInput.addEventListener(event, () => {
-                validateStep4();
-            });
-        });
-    }
-    
-    // Numéro d'autorisation input
-    if (numeroAutorisationInput) {
-        ['input', 'change', 'blur'].forEach(event => {
-            numeroAutorisationInput.addEventListener(event, () => {
-                validateStep4();
-            });
-        });
-    }
-    
-    // ===== STEP 1 VALIDATORS =====
-    if (clientSelect) {
-        clientSelect.addEventListener('change', () => {
-            if (clientSelect.value) {
-                validationState.client = true;
-                clearFieldError('client_id');
-            } else {
-                validationState.client = false;
-                setFieldError('client_id', 'Veuillez sélectionner un client');
-            }
-            updateSummary();
-            updateNextButtonState();
-        });
-    }
-}
-
-// Attach all validation listeners
-setupRealtimeValidation();
+});
 
 prevBtn.addEventListener('click', () => {
     if (currentStep > 1) {
@@ -944,28 +370,36 @@ prevBtn.addEventListener('click', () => {
     }
 });
 
-nextBtn.addEventListener('click', () => {
-    if (validateStep(currentStep)) {
-        currentStep++;
-        updateSummary();
-        updateStockInfo();
-        showStep(currentStep);
+[clientSelect, emballageSelect, quantityInput, filledCapsuleSelect, ...capsulesPerUnitInputs].forEach(el => {
+    el.addEventListener('change', updateSummary);
+    el.addEventListener('input', updateSummary);
+});
+
+// Handle ticket checkbox visibility
+const avecTicketCheckbox = document.getElementById('avec_ticket');
+const ticketFields = document.getElementById('ticket-fields');
+if (avecTicketCheckbox) {
+    avecTicketCheckbox.addEventListener('change', () => {
+        if (ticketFields) {
+            ticketFields.style.display = avecTicketCheckbox.checked ? 'block' : 'none';
+        }
+    });
+}
+
+// Update quantity info when emballage changes
+emballageSelect.addEventListener('change', () => {
+    const selectedOption = emballageSelect.options[emballageSelect.selectedIndex];
+    const stockQty = selectedOption.dataset.stock;
+    const quantityInfoEl = document.getElementById('quantity-info');
+    if (stockQty) {
+        quantityInfoEl.textContent = `Stock disponible: ${stockQty}`;
+    } else {
+        quantityInfoEl.textContent = '';
     }
 });
 
-// Handle form submission
-form.addEventListener('submit', (e) => {
-    // Validate step 4 before submit
-    if (!validateStep(4)) {
-        e.preventDefault();
-    }
-});
-
-showStep(1);
-updateNextButtonState();  // Initialize button state
-updateSummary();
-updateStockInfo();
+showStep(currentStep);
 </script>
 @endpush
-@endsection
 
+@endsection
