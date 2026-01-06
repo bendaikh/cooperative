@@ -92,7 +92,13 @@ class OncaController extends Controller
 
     public function print(OncaDocument $onca)
     {
-        return view('onca.print', ['document' => $onca]);
+        // Use type-specific print view if it exists
+        $printView = 'onca.print_' . $onca->type;
+        if (!view()->exists($printView)) {
+            $printView = 'onca.print';
+        }
+        
+        return view($printView, ['document' => $onca]);
     }
 
     private function normalizeContent($content)
@@ -184,6 +190,48 @@ class OncaController extends Controller
                 'title' => 'سجل تخزين المواد الأولية', 
                 'title_en' => 'FICHE DE STOCK (MATIERES PREMIERES)',
                 'ref' => 'PR-T-EN4', 
+                'ver' => '01'
+            ],
+            'alerts' => [
+                'title' => 'تسجيل تفاصيل حالة الإنذارات', 
+                'title_en' => 'ENREGISTREMENT DES DETAILS D\'ETAT DES ALERTES',
+                'ref' => 'PR-R-EN1', 
+                'ver' => '01'
+            ],
+            'mca' => [
+                'title' => 'مراقبة الإنتاج (المكملات الغذائية)', 
+                'title_en' => 'SURVEILLANCE DE LA PRODUCTION (SUPPLEMENTS)',
+                'ref' => 'MCA-EN1', 
+                'ver' => '01'
+            ],
+            'guarantee' => [
+                'title' => 'شهادة الضمان', 
+                'title_en' => 'CERTIFICAT DE GARANTIE',
+                'ref' => 'CERT-GAR-001', 
+                'ver' => '01'
+            ],
+            'withdrawal' => [
+                'title' => 'استمارة اشعار بالسحب', 
+                'title_en' => 'FORMULAIRE D\'AVIS DE RETRAIT',
+                'ref' => 'PR-R-FR2', 
+                'ver' => '01'
+            ],
+            'training' => [
+                'title' => 'لائحة المشاركين في التكوين', 
+                'title_en' => 'LISTE DES PARTICIPANTS A LA FORMATION',
+                'ref' => 'PR-S-EN2', 
+                'ver' => '01'
+            ],
+            'mca2' => [
+                'title' => 'سجل التحاليل المكروبيولوجية', 
+                'title_en' => 'ENREGISTREMENT DES ANALYSES MICROBIOLOGIQUES',
+                'ref' => 'MCA-EN2', 
+                'ver' => '01'
+            ],
+            'training2' => [
+                'title' => 'لائحة المشاركين في التكوين', 
+                'title_en' => 'LISTE DES PARTICIPANTS A LA FORMATION',
+                'ref' => 'PR-S-EN2', 
                 'ver' => '01'
             ],
         ];

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des documents ONCA - Co-op ERP')
-@section('page-title', 'Gestion des documents ONCA')
+@section('title', 'gestion des manuelles - Co-op ERP')
+@section('page-title', 'gestion des manuelles')
 
 @push('styles')
 <style>
@@ -389,6 +389,14 @@
                         <div class="onca-title-cell">{{ $doc->title }}</div>
                         @if($doc->version)
                         <div class="onca-version">Version {{ $doc->version }}</div>
+                        @endif
+                        @if($doc->hasDocuments())
+                        <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; color: #059669;">
+                            <svg style="width: 0.875rem; height: 0.875rem;" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Document(s) attaché(s)
+                        </div>
                         @endif
                     </td>
                     <td>

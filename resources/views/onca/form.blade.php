@@ -318,12 +318,43 @@
                 @include('onca.forms.batch')
             @elseif($type === 'storage')
                 @include('onca.forms.storage')
+            @elseif($type === 'alerts')
+                @include('onca.forms.alerts')
+            @elseif($type === 'mca')
+                @include('onca.forms.mca')
+            @elseif($type === 'guarantee')
+                @include('onca.forms.guarantee')
+            @elseif($type === 'withdrawal')
+                @include('onca.forms.withdrawal')
+            @elseif($type === 'training')
+                @include('onca.forms.training')
+            @elseif($type === 'mca2')
+                @include('onca.forms.mca2')
+            @elseif($type === 'training2')
+                @include('onca.forms.training2')
             @endif
         </div>
 
+        <!-- Include Document Upload Component -->
+        @include('onca.components.document-upload')
+
         <div class="onca-form-footer">
             <button type="submit" class="onca-btn-submit">
-                Enregistrer le Document
+                @if($type === 'guarantee')
+                    Enregistrer le Certificat
+                @elseif($type === 'withdrawal')
+                    Enregistrer l'Avis de Retrait
+                @elseif($type === 'training')
+                    Enregistrer la Liste
+                @elseif($type === 'alerts')
+                    Enregistrer l'Alerte
+                @elseif($type === 'mca' || $type === 'mca2')
+                    Enregistrer le Document
+                @elseif($type === 'training2')
+                    Enregistrer la Liste
+                @else
+                    Enregistrer le Document
+                @endif
             </button>
         </div>
     </form>

@@ -39,5 +39,45 @@
              <iframe src="{{ route('onca.print', $document) }}" class="w-full h-[600px] border bg-white" style="transform: scale(0.95); transform-origin: top center;"></iframe>
         </div>
     </div>
+
+    @if($document->hasDocuments())
+    <div class="border-t border-gray-200 pt-6 mt-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Documents Numérisés</h3>
+        
+        @php
+            $allUrls = $document->getAllDocumentUrls();
+        @endphp
+        
+        @if(!empty($allUrls))
+            <div class="grid grid-cols-1 gap-3">
+                @foreach($allUrls as $index => $url)
+                    <div class="flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <div class="flex items-center gap-3 flex-1">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800">Document {{ $index + 1 }}</p>
+                                <p class="text-xs text-gray-600 truncate">{{ $url }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ $url }}" target="_blank" class="ml-2 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition flex items-center whitespace-nowrap">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            Ouvrir
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p class="text-sm text-green-800">
+                    <strong>Note:</strong> {{ count($allUrls) }} document(s) associé(s) à ce dossier. Vous pouvez les consulter directement via les liens ci-dessus.
+                </p>
+            </div>
+        @endif
+    </div>
+    @endif
 </div>
 @endsection

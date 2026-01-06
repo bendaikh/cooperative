@@ -4,32 +4,188 @@
     <meta charset="utf-8">
     <title>{{ $document->title }}</title>
     <style>
-        @page { size: A4 landscape; margin: 10mm; } /* Landscape might be better for some */
-        body { font-family: sans-serif; -webkit-print-color-adjust: exact; margin: 0; padding: 0; }
+        @page { size: A4 portrait; margin: 5mm; }
+        * { margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         
         .container { width: 100%; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { border: 1px solid black; padding: 3px; font-size: 10px; text-align: right; }
         
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th, td { border: 1px solid black; padding: 4px; text-align: center; vertical-align: middle; font-size: 12px; }
-        
-        .header-box { border: 1px solid black; display: flex; margin-bottom: 10px; }
-        .header-right { width: 25%; border-left: 1px solid black; padding: 10px; text-align: center; }
-        .header-center { flex: 1; text-align: center; padding: 10px; display: flex; flex-direction: column; justify-content: center; }
-        .header-left { width: 15%; border-right: 1px solid black; padding: 5px; font-size: 12px; }
-        
-        .info-bar { display: flex; justify-content: space-between; border: 1px solid black; padding: 5px 10px; margin-bottom: 10px; background: #f9f9f9; }
-        
-        /* Health Specific */
-        .health-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid black; }
-        .health-col { border-left: 1px solid black; }
-        .health-col:last-child { border-left: none; }
-        .health-col-header { background: #eee; font-weight: bold; padding: 5px; text-align: center; border-bottom: 1px solid black; writing-mode: vertical-rl; transform: rotate(180deg); height: 100px; display: flex; align-items: center; justify-content: center; } /* Vertical text attempt */
-        /* Actually horizontal header is better unless space constrained */
-        
-        .vertical-header { writing-mode: vertical-rl; text-orientation: mixed; height: 100px; }
+        .header-table { width: 100%; margin-bottom: 2px; }
+        .header-table td { padding: 2px; font-size: 9px; }
+        .logo { height: 30px; width: auto; }
+        .title-cell { font-weight: bold; font-size: 12px; }
+        .section-header { background: #f0f0f0; font-weight: bold; }
     </style>
 </head>
 <body onload="window.print()">
+
+    <div class="container">
+        <!-- Header Table -->
+        <table class="header-table" style="margin-bottom: 3px;">
+            <tr>
+                <!-- Left: Logo -->
+                <td style="width: 15%; text-align: center; border: 1px solid black; padding: 3px;">
+                    <img src="/logo.png" alt="Logo" style="max-height: 35px;">
+                </td>
+                <!-- Center: Main Title -->
+                <td style="width: 55%; text-align: center; border: 1px solid black; padding: 5px 3px;">
+                    <div style="font-weight: bold; font-size: 13px;">تسجيل:</div>
+                    <div style="font-weight: bold; font-size: 12px;">{{ $document->title }}</div>
+                </td>
+                <!-- Right: Reference and Version -->
+                <td style="width: 30%; text-align: center; border: 1px solid black; padding: 3px;">
+                    <div style="font-size: 9px;">
+                        <div>الرمز: <span style="font-weight: bold;">{{ $document->reference }}</span></div>
+                        <div>الإصدار: <span style="font-weight: bold;">{{ $document->version }}</span></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Info Row -->
+        <table style="margin-bottom: 3px;">
+            <tr>
+                <td style="text-align: left; padding: 2px; width: 50%; border: 1px solid black;">ملف رقم: ................................</td>
+                <td style="text-align: center; padding: 2px; width: 50%; border: 1px solid black;">فتح بتاريخ: ................................</td>
+            </tr>
+        </table>
+
+        <!-- Main Content Table -->
+        <table style="font-size: 9px; line-height: 1.2;">
+            <!-- Section 1: مصدر الشكاية -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">1. مصدر الشكاية:</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">- الاسم</td>
+                <td colspan="3">{{ $c['complaint_source']['name'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">- العنوان</td>
+                <td colspan="3">{{ $c['complaint_source']['address'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">- الهاتف</td>
+                <td colspan="3">{{ $c['complaint_source']['phone'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 2: المنتج المعني -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">2. المنتج المعني:</td>
+            </tr>
+            <tr>
+                <td style="width: 15%; text-align: right;">- المنتج</td>
+                <td style="width: 28%;">{{ $c['product']['product_name'] ?? '' }}</td>
+                <td style="width: 15%; text-align: right;">- الماركة</td>
+                <td style="width: 42%;">{{ $c['product']['brand'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right;">- رقم الدفعة: {{ $c['product']['batch_number'] ?? '' }}</td>
+                <td colspan="2" style="text-align: right;">- نوع وشكل التعبئة: {{ $c['product']['packaging_type'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center; padding: 2px;">
+                    <input type="checkbox" {{ ($c['product']['sample_provided'] ?? '') === 'نعم' ? 'checked' : '' }} disabled>
+                    نعم
+                </td>
+                <td colspan="2" style="text-align: center; padding: 2px;">
+                    <input type="checkbox" {{ ($c['product']['sample_provided'] ?? '') === 'لا' ? 'checked' : '' }} disabled>
+                    لا
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right; font-size: 8px;">- هل قدمت عينة؟</td>
+            </tr>
+
+            <!-- Section 3: العيوب -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">3. العيوب المنسوبة للمنتج:</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 35px; vertical-align: top;">{{ $c['product_defects']['description'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 4: أصل المنتج -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">4. أصل المنتج (الحاصل):</td>
+            </tr>
+            <tr>
+                <td style="width: 15%; text-align: right;">- الاسم</td>
+                <td style="width: 28%;">{{ $c['product_origin']['name'] ?? '' }}</td>
+                <td style="width: 15%; text-align: right;">- العنوان</td>
+                <td style="width: 42%;">{{ $c['product_origin']['address'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right;">- تاريخ الشراء: {{ $c['product_origin']['purchase_date'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 5: التخزين والتعامل -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">5. كيف قام صاحب الشكوى بتخزين المنتج والتعامل معه بعد الشراء:</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 35px; vertical-align: top;">{{ $c['storage_handling'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 6: المرض / الإصابة -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">6. حالة المرض / الإصابة:</td>
+            </tr>
+            <tr>
+                <td style="width: 25%; text-align: right;">- عدد الأشخاص الذين استهلكوا المنتج:</td>
+                <td style="width: 25%; text-align: center;">{{ $c['illness']['total_consumers'] ?? '' }}</td>
+                <td style="width: 25%; text-align: right;">- عدد الأشخاص المصابين / الجرحى:</td>
+                <td style="width: 25%; text-align: center;">{{ $c['illness']['affected_count'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right; font-size: 8px;">
+                    - معلوماتهم (الأسماء – الأعمار – الكميات المستهلكة – التواريخ وأوقات الحدث):
+                    {{ $c['illness']['affected_info'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 7: الأعراض -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">- أعراض المرض (حسب الشدة) أو وصف الإصابة:</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 35px; vertical-align: top;">{{ $c['symptoms'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 8: الأطباء -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">- الأطباء الذين تمت استشارتهم (الأسماء – العناوين – تواريخ الاستشارات):</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 35px; vertical-align: top;">{{ $c['doctors'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 9: الحالة الراهنة -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">- الحالة الراهنة للمرض / الإصابة:</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 30px; vertical-align: top;">{{ $c['current_status'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 10: المؤسسات -->
+            <tr>
+                <td colspan="4" class="section-header" style="text-align: right;">- المؤسسات أو الأماكن الأخرى التي اشتكى فيها مقدم الشكوى:</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 30px; vertical-align: top;">{{ $c['other_institutions'] ?? '' }}</td>
+            </tr>
+
+            <!-- Signature -->
+            <tr>
+                <td colspan="4" style="text-align: right; padding: 5px;">
+                    تأشير مسسئول الجودة: .................................
+                </td>
+            </tr>
+        </table>
+    </div>
 
     <div class="header-box">
         <div class="header-right" style="width: 20%; font-size: 10px;">
@@ -44,8 +200,8 @@
         </div>
         <div class="header-left" style="width: 25%; display: flex; align-items: center; justify-content: space-between;">
              <div style="text-align: right; font-size: 11px; line-height: 1.2;">
-                <strong>تعاونية أنوار نكادير</strong><br>
-                Cooperative Anwar Ngadirin
+                <strong>تعاونية أنرار نتجادرين</strong><br>
+                Cooperative Anrar Ntgadirin
             </div>
             <img src="/logo.png" alt="Logo" style="max-height: 50px; margin-left: 10px;">
         </div>
@@ -277,6 +433,148 @@
             </tbody>
         </table>
          <div style="margin-top: 20px; font-weight: bold; text-align: left;">تأشير مسئول الإنتاج: .................................</div>
+
+    @elseif($document->type === 'alerts')
+        <!-- Alerts Type - Single Page Table Layout -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px; line-height: 1.3;">
+            <!-- Section 1: مصدر الشكاية -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">1. مصدر الشكاية:</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 3px; width: 33%; text-align: right;">- الاسم</td>
+                <td colspan="2" style="border: 1px solid black; padding: 3px;">{{ $c['complaint_source']['name'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 3px; width: 33%; text-align: right;">- العنوان</td>
+                <td colspan="2" style="border: 1px solid black; padding: 3px;">{{ $c['complaint_source']['address'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 3px; width: 33%; text-align: right;">- الهاتف</td>
+                <td colspan="2" style="border: 1px solid black; padding: 3px;">{{ $c['complaint_source']['phone'] ?? '' }}</td>
+            </tr>
+
+            <!-- Section 2: المنتج المعني -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">2. المنتج المعني:</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 3px; text-align: right;">- المنتج</td>
+                <td style="border: 1px solid black; padding: 3px; text-align: right;">- الماركة</td>
+                <td style="border: 1px solid black; padding: 3px;">{{ $c['product']['brand'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid black; padding: 3px;">{{ $c['product']['product_name'] ?? '' }}</td>
+                <td style="border: 1px solid black; padding: 3px;">{{ $c['product']['batch_number'] ?? '' }} - رقم الدفعة</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid black; padding: 3px;">{{ $c['product']['packaging_type'] ?? '' }} - نوع وشكل التعبئة</td>
+                <td style="border: 1px solid black; padding: 3px; text-align: center;">
+                    {{ ($c['product']['sample_provided'] ?? '') === 'نعم' ? '✓' : '✗' }}
+                    <br><small>هل قدمت عينة؟</small>
+                </td>
+            </tr>
+
+            <!-- Section 3: العيوب -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">3. العيوب المنسوبة للمنتج:</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; height: 40px; text-align: right; vertical-align: top;">
+                    {{ $c['product_defects']['description'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 4: أصل المنتج -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">4. أصل المنتج (الإنتاج):</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 3px; text-align: right;">- الاسم</td>
+                <td style="border: 1px solid black; padding: 3px; text-align: right;">- العنوان</td>
+                <td style="border: 1px solid black; padding: 3px;">{{ $c['product_origin']['address'] ?? '' }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border: 1px solid black; padding: 3px;">{{ $c['product_origin']['name'] ?? '' }}</td>
+                <td style="border: 1px solid black; padding: 3px;">{{ $c['product_origin']['purchase_date'] ?? '' }} - تاريخ الشراء</td>
+            </tr>
+
+            <!-- Section 5: التخزين والتعامل -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">5. كيف قام صاحب الشكوى بتخزين المنتج والتعامل معه بعد الشراء:</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; height: 40px; text-align: right; vertical-align: top;">
+                    {{ $c['storage_handling'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 6: المرض / الإصابة -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">6. حالة المرض / الإصابة:</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 3px; text-align: right;">
+                    {{ $c['illness']['total_consumers'] ?? '' }}<br>
+                    <small>عدد الأشخاص الذين استهلكوا المنتج</small>
+                </td>
+                <td style="border: 1px solid black; padding: 3px; text-align: right;">
+                    {{ $c['illness']['affected_count'] ?? '' }}<br>
+                    <small>عدد الأشخاص المصابين / الجرحى</small>
+                </td>
+                <td style="border: 1px solid black; padding: 3px; text-align: right; vertical-align: top;">
+                    <small>معلوماتهم (الأسماء - الأعمار - الكميات المستهلكة - التواريخ وأوقات الحدث):</small><br>
+                    {{ $c['illness']['affected_info'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 7: الأعراض -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">- أعراض المرض (حسب الشدة) أو وصف الإصابة:</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; height: 40px; text-align: right; vertical-align: top;">
+                    {{ $c['symptoms'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 8: الأطباء -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">- الأطباء الذين تمت استشارتهم (الأسماء – العناوين – تواريخ الاستشارات):</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; height: 40px; text-align: right; vertical-align: top;">
+                    {{ $c['doctors'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 9: الحالة الراهنة -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">- الحالة الراهنة للمرض / الإصابة:</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; height: 40px; text-align: right; vertical-align: top;">
+                    {{ $c['current_status'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Section 10: المؤسسات -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; background: #f2f2f2; padding: 3px; font-weight: bold; text-align: right;">- المؤسسات أو الأماكن الآخرى التي اشتكى فيها مقدم الشكوى:</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; height: 40px; text-align: right; vertical-align: top;">
+                    {{ $c['other_institutions'] ?? '' }}
+                </td>
+            </tr>
+
+            <!-- Signature -->
+            <tr>
+                <td colspan="3" style="border: 1px solid black; padding: 5px; text-align: right; font-weight: bold;">
+                    تأشير مسئول الجودة: ................................
+                </td>
+            </tr>
+        </table>
 
     @endif
 

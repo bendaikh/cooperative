@@ -120,7 +120,47 @@
     .onca-doc-card:hover .onca-doc-icon-storage {
         background: #ddd6fe;
     }
-    
+
+    .onca-doc-icon-alerts {
+        background: #fed7aa;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-alerts {
+        background: #fdba74;
+    }
+
+    .onca-doc-icon-mca {
+        background: #bfdbfe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-mca {
+        background: #93c5fd;
+    }
+
+    .onca-doc-icon-guarantee {
+        background: #d1d5ff;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-guarantee {
+        background: #bfdbfe;
+    }
+
+    .onca-doc-icon-withdrawal {
+        background: #fce7f3;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-withdrawal {
+        background: #fbcfe8;
+    }
+
+    .onca-doc-icon-training {
+        background: #dbeafe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-training {
+        background: #bfdbfe;
+    }
+
     .onca-doc-info {
         margin-left: 1rem;
         flex: 1;
@@ -234,6 +274,104 @@
                     <h3 class="onca-doc-name">Fiche de Stock</h3>
                     <p class="onca-doc-description">Entrées, sorties et solde.</p>
                     <span class="onca-doc-code">PR-T-EN4</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 6: Alerts -->
+        <a href="{{ route('onca.create-form', 'alerts') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-alerts">
+                    <span>🚨</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">Enregistrement des Alertes</h3>
+                    <p class="onca-doc-description">Détails d'état des alertes et incidents.</p>
+                    <span class="onca-doc-code">PR-R-EN1</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 7: MCA -->
+        <a href="{{ route('onca.create-form', 'mca') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-mca">
+                    <span>📋</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">مراقبة الإنتاج</h3>
+                    <p class="onca-doc-description">مراقبة الإنتاج (المكملات الغذائية)</p>
+                    <span class="onca-doc-code">MCA-EN1</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 8: Guarantee Certificate -->
+        <a href="{{ route('onca.create-form', 'guarantee') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-guarantee">
+                    <span>📄</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">Certificat de Garantie</h3>
+                    <p class="onca-doc-description">Attestation de garantie et qualité des produits.</p>
+                    <span class="onca-doc-code">CERT-GAR-001</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 9: Withdrawal Notification -->
+        <a href="{{ route('onca.create-form', 'withdrawal') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-withdrawal">
+                    <span>⚠️</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">استمارة اشعار بالسحب</h3>
+                    <p class="onca-doc-description">إخطار بسحب المنتجات من السوق</p>
+                    <span class="onca-doc-code">PR-R-FR2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 10: Training Participants -->
+        <a href="{{ route('onca.create-form', 'training') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-training">
+                    <span>🎓</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">لائحة المشاركين في التكوين</h3>
+                    <p class="onca-doc-description">تسجيل المشاركين في برامج التدريب والتكوين</p>
+                    <span class="onca-doc-code">PR-S-EN2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 11: MCA-EN2 Microbiological Analysis -->
+        <a href="{{ route('onca.create-form', 'mca2') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-mca2">
+                    <span>🔬</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">سجل التحاليل المكروبيولوجية</h3>
+                    <p class="onca-doc-description">تسجيل نتائج التحاليل المكروبيولوجية للمنتج النهائي</p>
+                    <span class="onca-doc-code">MCA-EN2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 12: PR-S-EN2 Training Participants -->
+        <a href="{{ route('onca.create-form', 'training2') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-training2">
+                    <span>📚</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">لائحة المشاركين في التكوين</h3>
+                    <p class="onca-doc-description">تسجيل المشاركين والفترات الزمنية لبرامج التدريب</p>
+                    <span class="onca-doc-code">PR-S-EN2</span>
                 </div>
             </div>
         </a>
