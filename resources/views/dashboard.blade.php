@@ -420,7 +420,7 @@
             </div>
             <div class="kpi-content">
                 <div class="kpi-label">💰 Revenu Total</div>
-                <div class="kpi-value">${{ number_format($stats['totalRevenue'], 0) }}</div>
+                <div class="kpi-value">{{ number_format($stats['totalRevenue'], 0) }} DH</div>
                 <div class="kpi-change {{ $stats['revenueChange'] >= 0 ? 'positive' : 'negative' }}">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M12 5a1 1 0 01.707.293l2.828 2.829a1 1 0 11-1.414 1.414L13 7.414V13a1 1 0 11-2 0V7.414l-1.121 1.121a1 1 0 01-1.414-1.414l2.828-2.829A1 1 0 0112 5z" clip-rule="evenodd"></path>
@@ -439,7 +439,7 @@
             </div>
             <div class="kpi-content">
                 <div class="kpi-label">💳 Dépenses Totales</div>
-                <div class="kpi-value">${{ number_format($stats['totalExpenses'], 0) }}</div>
+                <div class="kpi-value">{{ number_format($stats['totalExpenses'], 0) }} DH</div>
                 <div class="kpi-change {{ $stats['expenseChange'] >= 0 ? 'negative' : 'positive' }}">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M12 5a1 1 0 01.707.293l2.828 2.829a1 1 0 11-1.414 1.414L13 7.414V13a1 1 0 11-2 0V7.414l-1.121 1.121a1 1 0 01-1.414-1.414l2.828-2.829A1 1 0 0112 5z" clip-rule="evenodd"></path>
@@ -460,7 +460,7 @@
                     <div class="chart-subtitle">Tendance des Revenus et Dépenses sur 12 mois</div>
                 </div>
                 <div class="chart-meta">
-                    <div class="chart-value">${{ number_format($stats['totalRevenue'], 0) }}</div>
+                    <div class="chart-value">{{ number_format($stats['totalRevenue'], 0) }} DH</div>
                 </div>
             </div>
             <div class="chart-container">

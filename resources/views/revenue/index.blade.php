@@ -11,11 +11,11 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
         <div style="padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem;">
             <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Revenu Total</div>
-            <div style="font-size: 2rem; font-weight: 700; color: #059669;">$45,200</div>
+            <div style="font-size: 2rem; font-weight: 700; color: #059669;">45,200 DH</div>
         </div>
         <div style="padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem;">
             <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Ce Mois</div>
-            <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">$8,450</div>
+            <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">8,450 DH</div>
         </div>
         <div style="padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem;">
             <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Croissance</div>
