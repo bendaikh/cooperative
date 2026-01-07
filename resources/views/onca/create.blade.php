@@ -193,6 +193,14 @@
         background: #a5f3fc;
     }
 
+    .onca-doc-icon-final_stock {
+        background: #fef3c7;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-final_stock {
+        background: #fde68a;
+    }
+
     .onca-doc-info {
         margin-left: 1rem;
         flex: 1;
@@ -394,7 +402,21 @@
             </div>
         </a>
 
-        <!-- Document 11: Guarantee Certificate -->
+        <!-- Document 11: Final Product Stock -->
+        <a href="{{ route('onca.create-form', 'final_stock') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-final_stock">
+                    <span>📦</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">دخول وخروج المنتج النهائي</h3>
+                    <p class="onca-doc-description">سجل دخول وخروج المنتج النهائي والمخزون.</p>
+                    <span class="onca-doc-code">PR-T-EN5</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 12: Guarantee Certificate -->
         <a href="{{ route('onca.create-form', 'guarantee') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-guarantee">
@@ -408,7 +430,7 @@
             </div>
         </a>
 
-        <!-- Document 12: Training Participants -->
+        <!-- Document 13: Training Participants -->
         <a href="{{ route('onca.create-form', 'training') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-training">

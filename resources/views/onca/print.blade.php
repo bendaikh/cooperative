@@ -592,6 +592,10 @@
         <!-- Include Warehouse Path Tracking Print Template -->
         @include('onca.print_warehouse_path')
 
+    @elseif($document->type === 'final_stock')
+        <!-- Include Final Product Stock Print Template -->
+        @include('onca.print_final_stock')
+
     @endif
 
 </body>

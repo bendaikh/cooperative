@@ -258,6 +258,12 @@ class OncaController extends Controller
                 'ref' => 'PR-T-EN9', 
                 'ver' => '01'
             ],
+            'final_stock' => [
+                'title' => 'سجل دخول وخروج المنتج النهائي', 
+                'title_en' => 'FINAL PRODUCT STOCK REGISTER',
+                'ref' => 'PR-T-EN5', 
+                'ver' => '01'
+            ],
         ];
         return $types[$type] ?? null;
     }

@@ -330,6 +330,8 @@
                 @include('onca.forms.corrective')
             @elseif($type === 'warehouse_path')
                 @include('onca.forms.warehouse_path')
+            @elseif($type === 'final_stock')
+                @include('onca.forms.final_stock')
             @elseif($type === 'guarantee')
                 @include('onca.forms.guarantee')
             @elseif($type === 'withdrawal')
