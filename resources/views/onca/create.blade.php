@@ -112,6 +112,14 @@
     .onca-doc-card:hover .onca-doc-icon-batch {
         background: #fde68a;
     }
+
+    .onca-doc-icon-batch_mixture {
+        background: #f3d5ff;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-batch_mixture {
+        background: #e9d5ff;
+    }
     
     .onca-doc-icon-storage {
         background: #e9d5ff;
@@ -199,6 +207,30 @@
 
     .onca-doc-card:hover .onca-doc-icon-final_stock {
         background: #fde68a;
+    }
+
+    .onca-doc-icon-recall_verification {
+        background: #dbeafe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-recall_verification {
+        background: #bfdbfe;
+    }
+
+    .onca-doc-icon-defects_report {
+        background: #fed7aa;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-defects_report {
+        background: #fdba74;
+    }
+
+    .onca-doc-icon-withdrawal_notice {
+        background: #e9d5ff;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-withdrawal_notice {
+        background: #ddd6fe;
     }
 
     .onca-doc-info {
@@ -300,6 +332,20 @@
                     <h3 class="onca-doc-name">Codification des Lots</h3>
                     <p class="onca-doc-description">Traçabilité des matières premières reçues.</p>
                     <span class="onca-doc-code">PR-T-EN2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 4B: Batch Mixture -->
+        <a href="{{ route('onca.create-form', 'batch_mixture') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-batch_mixture">
+                    <span>🥣</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">Codification des Mélange</h3>
+                    <p class="onca-doc-description">Traçabilité des mélanges de lots.</p>
+                    <span class="onca-doc-code">PR-T-EN3</span>
                 </div>
             </div>
         </a>
@@ -416,7 +462,49 @@
             </div>
         </a>
 
-        <!-- Document 12: Guarantee Certificate -->
+        <!-- Document 12: Recall Verification -->
+        <a href="{{ route('onca.create-form', 'recall_verification') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-recall_verification">
+                    <span>🔍</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">التحقق من السحب/التجميع</h3>
+                    <p class="onca-doc-description">التحقق من فعالية عملية السحب أو التجميع.</p>
+                    <span class="onca-doc-code">PR-R-EN9</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 13: Defects Report -->
+        <a href="{{ route('onca.create-form', 'defects_report') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-defects_report">
+                    <span>⚠️</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">تقرير العيوب</h3>
+                    <p class="onca-doc-description">تسجيل وتحقيق العيوب المكتشفة في المنتجات.</p>
+                    <span class="onca-doc-code">PR-R-EN2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 14: Withdrawal Notice -->
+        <a href="{{ route('onca.create-form', 'withdrawal_notice') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-withdrawal_notice">
+                    <span>📢</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">إشعار بالسحب</h3>
+                    <p class="onca-doc-description">إشعار رسمي بسحب المنتجات من السوق.</p>
+                    <span class="onca-doc-code">PR-R-FR2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 15: Guarantee Certificate -->
         <a href="{{ route('onca.create-form', 'guarantee') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-guarantee">

@@ -596,6 +596,18 @@
         <!-- Include Final Product Stock Print Template -->
         @include('onca.print_final_stock')
 
+    @elseif($document->type === 'recall_verification')
+        <!-- Include Recall Verification Print Template -->
+        @include('onca.print_recall_verification')
+
+    @elseif($document->type === 'defects_report')
+        <!-- Include Defects Report Print Template -->
+        @include('onca.print_defects_report')
+
+    @elseif($document->type === 'withdrawal_notice')
+        <!-- Include Withdrawal Notice Print Template -->
+        @include('onca.print_withdrawal_notice')
+
     @endif
 
 </body>

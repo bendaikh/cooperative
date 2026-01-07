@@ -186,6 +186,12 @@ class OncaController extends Controller
                 'ref' => 'PR-T-EN2', 
                 'ver' => '01'
             ],
+            'batch_mixture' => [
+                'title' => 'قائمة ترميز الدفعة (الخلطات)', 
+                'title_en' => 'BATCH MIXTURE CODING LIST',
+                'ref' => 'PR-T-EN3', 
+                'ver' => '01'
+            ],
             'storage' => [
                 'title' => 'سجل تخزين المواد الأولية', 
                 'title_en' => 'FICHE DE STOCK (MATIERES PREMIERES)',
@@ -262,6 +268,24 @@ class OncaController extends Controller
                 'title' => 'سجل دخول وخروج المنتج النهائي', 
                 'title_en' => 'FINAL PRODUCT STOCK REGISTER',
                 'ref' => 'PR-T-EN5', 
+                'ver' => '01'
+            ],
+            'recall_verification' => [
+                'title' => 'التحقق من عملية السحب أو التجميع', 
+                'title_en' => 'RECALL/COLLECTION VERIFICATION',
+                'ref' => 'PR-R-EN9', 
+                'ver' => '01'
+            ],
+            'defects_report' => [
+                'title' => 'تقرير العيوب', 
+                'title_en' => 'DEFECTS REPORT',
+                'ref' => 'PR-R-EN2', 
+                'ver' => '01'
+            ],
+            'withdrawal_notice' => [
+                'title' => 'إشعار بالسحب', 
+                'title_en' => 'WITHDRAWAL NOTICE',
+                'ref' => 'PR-R-FR2', 
                 'ver' => '01'
             ],
         ];
