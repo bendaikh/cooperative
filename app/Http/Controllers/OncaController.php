@@ -204,6 +204,18 @@ class OncaController extends Controller
                 'ref' => 'MCA-EN1', 
                 'ver' => '01'
             ],
+            'quality' => [
+                'title' => 'نموذج مراقبة الجودة', 
+                'title_en' => 'QUALITY CONTROL MONITORING',
+                'ref' => 'PR-R-EN7', 
+                'ver' => '01'
+            ],
+            'traceability' => [
+                'title' => 'تسجيل إعادة التتبع (السحب / التجميع)', 
+                'title_en' => 'TRACEABILITY RECORDING (WITHDRAWAL/RECALL)',
+                'ref' => 'PR-R-EN3', 
+                'ver' => '01'
+            ],
             'guarantee' => [
                 'title' => 'شهادة الضمان', 
                 'title_en' => 'CERTIFICAT DE GARANTIE',
@@ -232,6 +244,18 @@ class OncaController extends Controller
                 'title' => 'لائحة المشاركين في التكوين', 
                 'title_en' => 'LISTE DES PARTICIPANTS A LA FORMATION',
                 'ref' => 'PR-S-EN2', 
+                'ver' => '01'
+            ],
+            'corrective' => [
+                'title' => 'سجل الإجراءات التصحيحية والوقائية', 
+                'title_en' => 'CORRECTIVE AND PREVENTIVE ACTIONS RECORD',
+                'ref' => 'PR-R-EN8', 
+                'ver' => '01'
+            ],
+            'warehouse_path' => [
+                'title' => 'تسجيل مسار الدفعة', 
+                'title_en' => 'WAREHOUSE PATH TRACKING RECORD',
+                'ref' => 'PR-T-EN9', 
                 'ver' => '01'
             ],
         ];

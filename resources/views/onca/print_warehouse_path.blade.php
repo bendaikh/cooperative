@@ -1,0 +1,116 @@
+<!-- Warehouse Path Tracking Print Template -->
+<div style="page-break-after: avoid; direction: rtl; text-align: right;">
+    <div class="onca-print-header" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 0.5rem; flex-direction: row-reverse;">
+            @if(file_exists(public_path('logo.png')))
+                <img src="{{ asset('logo.png') }}" alt="Logo" style="height: 50px; width: auto;">
+            @endif
+            <div style="text-align: right;">
+                <h1 style="margin: 0; font-size: 1.5rem; font-weight: bold;">تسجيل مسار الدفعة</h1>
+                <p style="margin: 0; font-size: 0.875rem; opacity: 0.9;">WAREHOUSE PATH TRACKING RECORD</p>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 1rem; text-align: right;">
+            <div>
+                <span style="opacity: 0.8;">Version / الإصدار:</span>
+                <strong>01</strong>
+            </div>
+            <div>
+                <span style="opacity: 0.8;">Batch Number / رقم الدفعة:</span>
+                <strong>{{ $document->content['batch_number'] ?? '_______________' }}</strong>
+            </div>
+            <div>
+                <span style="opacity: 0.8;">Reference / المرجع:</span>
+                <strong>PR-T-EN9</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Path Tracking Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.75rem; border: 1px solid #d1d5db; direction: rtl;">
+        <thead>
+            <tr style="background: #f3f4f6;">
+                <th colspan="2" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التموين / Supplies</th>
+                <th colspan="2" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الفرز والتنقية / Sorting & Cleaning</th>
+                <th colspan="2" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الخلط / Mixing</th>
+                <th colspan="2" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التحويل / Transformation</th>
+                <th colspan="2" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التعبئة والعنونة / Packaging & Labeling</th>
+            </tr>
+            <tr style="background: #f9fafb;">
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ / Date</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الكمية / Qty</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ / Date</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الكمية / Qty</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ / Date</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الكمية / Qty</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ / Date</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الكمية / Qty</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ / Date</th>
+                <th style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">الكمية / Qty</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(isset($document->content['path_records']) && is_array($document->content['path_records']) && count($document->content['path_records']) > 0)
+                @foreach($document->content['path_records'] as $row)
+                    <tr>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['supply_date'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['supply_qty'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['sorting_date'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['sorting_qty'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['mixing_date'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['mixing_qty'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['transformation_date'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['transformation_qty'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['packaging_date'] ?? '-' }}</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center;">{{ $row['packaging_qty'] ?? '-' }}</td>
+                    </tr>
+                @endforeach
+            @else
+                @for($i = 0; $i < 8; $i++)
+                    <tr>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                        <td style="border: 1px solid #d1d5db; padding: 0.5rem; height: 28px;">&nbsp;</td>
+                    </tr>
+                @endfor
+            @endif
+        </tbody>
+    </table>
+
+    <!-- Totals Row (Optional) -->
+    <div style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; direction: rtl; text-align: right;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; direction: rtl;">
+            <tr>
+                <td style="width: 20%; text-align: center;"><strong>إجمالي التموين / Total Supply</strong><br>{{ $document->content['total_supply'] ?? '___' }} kg</td>
+                <td style="width: 20%; text-align: center;"><strong>إجمالي الفرز / Total Sorting</strong><br>{{ $document->content['total_sorting'] ?? '___' }} kg</td>
+                <td style="width: 20%; text-align: center;"><strong>إجمالي الخلط / Total Mixing</strong><br>{{ $document->content['total_mixing'] ?? '___' }} kg</td>
+                <td style="width: 20%; text-align: center;"><strong>إجمالي التحويل / Total Transformation</strong><br>{{ $document->content['total_transformation'] ?? '___' }} kg</td>
+                <td style="width: 20%; text-align: center;"><strong>إجمالي التعبئة / Total Packaging</strong><br>{{ $document->content['total_packaging'] ?? '___' }} kg</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Signature Section -->
+    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; direction: rtl; text-align: right;">
+        <p style="margin: 0 0 1rem 0; font-size: 0.875rem; font-weight: 600;">بتأشير مسئول المستودع / Warehouse Manager Signature</p>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; margin-top: 2rem;">
+            <div style="text-align: center;">
+                <p style="margin: 0; font-size: 0.875rem; font-weight: 600;">الختم / Stamp</p>
+                <div style="height: 60px; border-bottom: 2px solid #000; margin-bottom: 0.5rem;"></div>
+                <p style="margin: 0.25rem 0 0; font-size: 0.75rem; color: #666;">_______________</p>
+            </div>
+            <div style="text-align: center;">
+                <p style="margin: 0; font-size: 0.875rem; font-weight: 600;">الاسم / Name</p>
+                <div style="height: 60px; border-bottom: 2px solid #000; margin-bottom: 0.5rem;"></div>
+                <p style="margin: 0.25rem 0 0; font-size: 0.75rem; color: #666;">التاريخ / Date: _______________</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -576,6 +576,22 @@
             </tr>
         </table>
 
+    @elseif($document->type === 'quality')
+        <!-- Include Quality Print Template -->
+        @include('onca.print_quality')
+
+    @elseif($document->type === 'traceability')
+        <!-- Include Traceability Print Template -->
+        @include('onca.print_traceability')
+
+    @elseif($document->type === 'corrective')
+        <!-- Include Corrective Actions Print Template -->
+        @include('onca.print_corrective')
+
+    @elseif($document->type === 'warehouse_path')
+        <!-- Include Warehouse Path Tracking Print Template -->
+        @include('onca.print_warehouse_path')
+
     @endif
 
 </body>

@@ -137,6 +137,22 @@
         background: #93c5fd;
     }
 
+    .onca-doc-icon-quality {
+        background: #dcfce7;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-quality {
+        background: #bbf7d0;
+    }
+
+    .onca-doc-icon-traceability {
+        background: #fce7f3;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-traceability {
+        background: #fbcfe8;
+    }
+
     .onca-doc-icon-guarantee {
         background: #d1d5ff;
     }
@@ -159,6 +175,22 @@
 
     .onca-doc-card:hover .onca-doc-icon-training {
         background: #bfdbfe;
+    }
+
+    .onca-doc-icon-corrective {
+        background: #f3e8ff;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-corrective {
+        background: #e9d5ff;
+    }
+
+    .onca-doc-icon-warehouse_path {
+        background: #cffafe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-warehouse_path {
+        background: #a5f3fc;
     }
 
     .onca-doc-info {
@@ -306,7 +338,63 @@
             </div>
         </a>
 
-        <!-- Document 8: Guarantee Certificate -->
+        <!-- Document 8: Quality Control -->
+        <a href="{{ route('onca.create-form', 'quality') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-quality">
+                    <span>✅</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">نموذج مراقبة الجودة</h3>
+                    <p class="onca-doc-description">مراقبة جودة الإنتاج والمواد.</p>
+                    <span class="onca-doc-code">PR-R-EN7</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 8: Traceability Recording -->
+        <a href="{{ route('onca.create-form', 'traceability') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-traceability">
+                    <span>🔍</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">إعادة التتبع</h3>
+                    <p class="onca-doc-description">تسجيل السحب والتجميع والمواد الأولية.</p>
+                    <span class="onca-doc-code">PR-R-EN3</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 9: Corrective and Preventive Actions -->
+        <a href="{{ route('onca.create-form', 'corrective') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-corrective">
+                    <span>🔧</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">الإجراءات التصحيحية والوقائية</h3>
+                    <p class="onca-doc-description">سجل الإجراءات التصحيحية والوقائية المتخذة.</p>
+                    <span class="onca-doc-code">PR-R-EN8</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 10: Warehouse Path Tracking -->
+        <a href="{{ route('onca.create-form', 'warehouse_path') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-warehouse_path">
+                    <span>📊</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">تسجيل مسار الدفعة</h3>
+                    <p class="onca-doc-description">تتبع مسار الدفعة عبر مراحل الإنتاج.</p>
+                    <span class="onca-doc-code">PR-T-EN9</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 11: Guarantee Certificate -->
         <a href="{{ route('onca.create-form', 'guarantee') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-guarantee">
@@ -320,21 +408,7 @@
             </div>
         </a>
 
-        <!-- Document 9: Withdrawal Notification -->
-        <a href="{{ route('onca.create-form', 'withdrawal') }}" class="onca-doc-card">
-            <div class="onca-doc-content">
-                <div class="onca-doc-icon-wrapper onca-doc-icon-withdrawal">
-                    <span>⚠️</span>
-                </div>
-                <div class="onca-doc-info">
-                    <h3 class="onca-doc-name">استمارة اشعار بالسحب</h3>
-                    <p class="onca-doc-description">إخطار بسحب المنتجات من السوق</p>
-                    <span class="onca-doc-code">PR-R-FR2</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- Document 10: Training Participants -->
+        <!-- Document 12: Training Participants -->
         <a href="{{ route('onca.create-form', 'training') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-training">
@@ -343,34 +417,6 @@
                 <div class="onca-doc-info">
                     <h3 class="onca-doc-name">لائحة المشاركين في التكوين</h3>
                     <p class="onca-doc-description">تسجيل المشاركين في برامج التدريب والتكوين</p>
-                    <span class="onca-doc-code">PR-S-EN2</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- Document 11: MCA-EN2 Microbiological Analysis -->
-        <a href="{{ route('onca.create-form', 'mca2') }}" class="onca-doc-card">
-            <div class="onca-doc-content">
-                <div class="onca-doc-icon-wrapper onca-doc-icon-mca2">
-                    <span>🔬</span>
-                </div>
-                <div class="onca-doc-info">
-                    <h3 class="onca-doc-name">سجل التحاليل المكروبيولوجية</h3>
-                    <p class="onca-doc-description">تسجيل نتائج التحاليل المكروبيولوجية للمنتج النهائي</p>
-                    <span class="onca-doc-code">MCA-EN2</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- Document 12: PR-S-EN2 Training Participants -->
-        <a href="{{ route('onca.create-form', 'training2') }}" class="onca-doc-card">
-            <div class="onca-doc-content">
-                <div class="onca-doc-icon-wrapper onca-doc-icon-training2">
-                    <span>📚</span>
-                </div>
-                <div class="onca-doc-info">
-                    <h3 class="onca-doc-name">لائحة المشاركين في التكوين</h3>
-                    <p class="onca-doc-description">تسجيل المشاركين والفترات الزمنية لبرامج التدريب</p>
                     <span class="onca-doc-code">PR-S-EN2</span>
                 </div>
             </div>
