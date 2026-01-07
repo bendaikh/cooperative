@@ -145,7 +145,7 @@
 
                                 <div>
                                     <label for="ticket_quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité de Tickets <span style="color: #dc2626;">*</span></label>
-                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="1" value="{{ $commande->tickets()->first()?->quantity ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="0.001" step="0.001" value="{{ $commande->tickets()->first()?->quantity ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
                                 </div>
 
                                 <div>
@@ -175,7 +175,7 @@
                 
                 <div style="margin-bottom: 1.5rem;">
                     <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité d'emballage <span style="color: #dc2626;">*</span></label>
-                    <input type="number" name="quantity" id="quantity" required min="1" value="{{ old('quantity', $commande->quantity) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
+                    <input type="number" name="quantity" id="quantity" required min="0.001" step="0.001" value="{{ old('quantity', $commande->quantity) }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
                     <p id="quantity-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;"></p>
                     @error('quantity')
                         <p style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem; font-weight: 600;">❌ {{ $message }}</p>

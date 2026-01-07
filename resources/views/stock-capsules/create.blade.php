@@ -21,7 +21,7 @@
 
             <div style="margin-bottom: 1.5rem;">
                 <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Quantité de cartons</label>
-                <input type="number" name="quantity" id="quantity" required min="0" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0" value="{{ old('quantity') }}">
+                <input type="number" name="quantity" id="quantity" required min="0" step="0.001" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0.000" value="{{ old('quantity') }}">
                 @error('quantity')
                     <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror

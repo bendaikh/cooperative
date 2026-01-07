@@ -43,7 +43,7 @@ class StockCapsuleController extends Controller
     {
         $request->validate([
             'carton' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
+            'quantity' => 'required|numeric|min:0',
             'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'notes' => 'nullable|string',
         ]);
@@ -131,7 +131,7 @@ class StockCapsuleController extends Controller
         $capsule = Capsule::findOrFail($id);
         
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
@@ -163,7 +163,7 @@ class StockCapsuleController extends Controller
         $capsule = Capsule::findOrFail($id);
         
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'herb_id' => 'required|exists:herbs,id',
             'herb_quantity' => 'required|numeric|min:0.01',
             'movement_date' => 'required|date',

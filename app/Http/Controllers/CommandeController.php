@@ -84,13 +84,13 @@ class CommandeController extends Controller
         // Validation - Single emballage field
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'capsules_per_unit' => 'required|integer|in:30,60,90,120',
             'emballage_product_stock_id' => 'required|exists:product_stock,id',
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
             'avec_joint_securite' => 'nullable|boolean',
             'avec_ticket' => 'nullable|boolean',
-            'ticket_quantity' => 'nullable|integer|min:1',
+            'ticket_quantity' => 'nullable|numeric|min:0.001',
             'nom_marque' => 'nullable|string|max:255',
             'numero_autorisation' => 'nullable|string|max:255',
             'ticket_product_stock_id' => 'nullable|exists:product_stock,id',
@@ -103,7 +103,7 @@ class CommandeController extends Controller
             DB::beginTransaction();
             \Log::info('COMMANDE STORE: Transaction started');
 
-            $quantity = (int) $request->quantity;
+            $quantity = (float) $request->quantity;
             $capsulesPerUnit = $request->capsules_per_unit;
             $totalCapsulesNeeded = $quantity * $capsulesPerUnit;
             
@@ -219,7 +219,7 @@ class CommandeController extends Controller
             CommandeEmballage::create([
                 'commande_id' => $commande->id,
                 'product_stock_id' => $request->emballage_product_stock_id,
-                'quantity' => (int)$quantity,
+                'quantity' => $quantity,
             ]);
             
             \Log::info('COMMANDE STORE: Emballage created');
@@ -354,7 +354,7 @@ class CommandeController extends Controller
     {
         $rules = [
             'client_id' => 'required|exists:clients,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'capsules_per_unit' => 'required|integer|in:30,60,90,120',
             'emballage_product_stock_id' => 'required|exists:product_stock,id',
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
@@ -366,7 +366,7 @@ class CommandeController extends Controller
         // Add ticket validation if avec_ticket is checked
         if ($request->avec_ticket) {
             $rules['ticket_product_stock_id'] = 'required|exists:product_stock,id';
-            $rules['ticket_quantity'] = 'required|integer|min:1';
+            $rules['ticket_quantity'] = 'required|numeric|min:0.001';
             $rules['nom_marque'] = 'required|string';
             $rules['numero_autorisation'] = 'required|string';
         }

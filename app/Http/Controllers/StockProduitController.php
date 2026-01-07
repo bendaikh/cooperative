@@ -61,7 +61,7 @@ class StockProduitController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'color_id' => 'nullable|exists:colors,id',
             'size_id' => 'nullable|exists:sizes,id',
-            'quantity' => 'required|integer|min:0',
+            'quantity' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
@@ -129,7 +129,7 @@ class StockProduitController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'color_id' => 'nullable|exists:colors,id',
             'size_id' => 'nullable|exists:sizes,id',
-            'quantity' => 'required|integer|min:0',
+            'quantity' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
@@ -172,7 +172,7 @@ class StockProduitController extends Controller
         $stock = ProductStock::findOrFail($id);
         
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
@@ -198,7 +198,7 @@ class StockProduitController extends Controller
         $stock = ProductStock::findOrFail($id);
         
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);

@@ -295,7 +295,7 @@
             <div class="section-content-withdrawal">
                 <div class="form-field-withdrawal">
                     <label class="form-label-withdrawal">الكمية المسحوبة</label>
-                    <input type="number" name="content[scope][quantity]" class="form-input-withdrawal" step="0.01"
+                    <input type="number" name="content[scope][quantity]" class="form-input-withdrawal" step="0.001"
                         value="{{ old('content.scope.quantity', $document->content['scope']['quantity'] ?? '') }}">
                 </div>
                 <div class="form-field-withdrawal">

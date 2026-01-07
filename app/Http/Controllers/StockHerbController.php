@@ -41,7 +41,7 @@ class StockHerbController extends Controller
         $request->validate([
             'herb_id' => 'required|exists:herbs,id',
             'fornisseur_id' => 'nullable|exists:fornisseurs,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.001',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);

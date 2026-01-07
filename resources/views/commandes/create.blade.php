@@ -142,7 +142,7 @@
 
                                 <div>
                                     <label for="ticket_quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité de Tickets <span style="color: #dc2626;">*</span></label>
-                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="1" value="{{ old('ticket_quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    <input type="number" name="ticket_quantity" id="ticket_quantity" min="0.001" step="0.001" value="{{ old('ticket_quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
                                 </div>
 
                                 <div>
@@ -172,7 +172,7 @@
                 
                 <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #f0fdf4; border-radius: 0.75rem; border: 2px solid #86efac;">
                     <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité d'emballage <span style="color: #dc2626;">*</span></label>
-                    <input type="number" name="quantity" id="quantity" required min="1" value="{{ old('quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
+                    <input type="number" name="quantity" id="quantity" required min="0.001" step="0.001" value="{{ old('quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
                     <p id="quantity-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;"></p>
                     @error('quantity')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -340,7 +340,7 @@ function updateSummary() {
     const capsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
     document.getElementById('summary-capsules').textContent = capsuleOption.text || '-';
     
-    const qty = parseInt(quantityInput.value) || 0;
+    const qty = parseFloat(quantityInput.value) || 0;
     const cpuVal = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
     const totalCapsules = qty * cpuVal;
     document.getElementById('summary-total-capsules').textContent = totalCapsules > 0 ? totalCapsules : '-';
@@ -352,7 +352,7 @@ function canAdvanceToNextStep() {
     } else if (currentStep === 2) {
         return emballageSelect.value !== '';
     } else if (currentStep === 3) {
-        return quantityInput.value && parseInt(quantityInput.value) >= 1;
+        return quantityInput.value && parseFloat(quantityInput.value) >= 0.001;
     } else if (currentStep === 4) {
         return filledCapsuleSelect.value !== '' && document.querySelector('input[name="capsules_per_unit"]:checked') !== null;
     }
