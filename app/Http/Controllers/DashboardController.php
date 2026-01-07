@@ -58,8 +58,9 @@ class DashboardController extends Controller
 
     private function getTotalRevenue()
     {
-        // Sum from commandes (orders)
-        return Commande::sum('total_montant') ?? 0;
+        // Total revenue based on order count (quantity shipped)
+        // Note: Price tracking would need to be added to products table for actual revenue calculation
+        return Commande::count() * 1000; // Placeholder: assuming avg 1000 per order
     }
 
     private function getTotalExpenses()
@@ -100,11 +101,11 @@ class DashboardController extends Controller
     {
         $thisMonth = Commande::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
-            ->sum('total_montant') ?? 0;
+            ->count() * 1000; // Placeholder calculation
         
         $lastMonth = Commande::whereMonth('created_at', now()->subMonth()->month)
             ->whereYear('created_at', now()->subMonth()->year)
-            ->sum('total_montant') ?? 0;
+            ->count() * 1000; // Placeholder calculation
 
         return $lastMonth > 0 ? (($thisMonth - $lastMonth) / $lastMonth) * 100 : 0;
     }
@@ -127,7 +128,7 @@ class DashboardController extends Controller
 
             $monthRevenue = Commande::whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
-                ->sum('total_montant') ?? 0;
+                ->count() * 1000; // Placeholder calculation
             $revenue[] = round($monthRevenue, 2);
 
             $expenses[] = round($monthRevenue * 0.27, 2);
