@@ -780,11 +780,11 @@ class CommandeController extends Controller
                         ]);
                     }
 
-                    // ✅ SET GUARD FLAG to prevent re-execution
-                    $commande->update([
-                        'status' => $newStatus,
-                        'stock_applied' => true
-                    ]);
+                    // ✅ APPLY STOCK DEDUCTIONS AND EXPENSE TRACKING
+                    $commande->applyStockDeductions();
+
+                    // ✅ SET GUARD FLAG to prevent re-execution (already done in applyStockDeductions)
+                    // $commande is already updated with stock_applied = true
 
                     DB::commit();
 

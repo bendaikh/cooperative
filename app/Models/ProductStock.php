@@ -8,7 +8,11 @@ class ProductStock extends Model
 {
     protected $table = 'product_stock';
     
-    protected $fillable = ['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes'];
+    protected $fillable = ['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes'];
+
+    protected $casts = [
+        'purchase_price' => 'decimal:2',
+    ];
 
     public function product()
     {

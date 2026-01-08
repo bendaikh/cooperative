@@ -32,9 +32,10 @@ class HerbController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'source' => 'required|string|max:255',
+            'purchase_price' => 'nullable|numeric|min:0',
         ]);
 
-        Herb::create($request->only(['name', 'source']));
+        Herb::create($request->only(['name', 'source', 'purchase_price']));
 
         return redirect()->route('herbs.index')->with('success', 'Herb créé avec succès.');
     }
@@ -66,9 +67,10 @@ class HerbController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'source' => 'required|string|max:255',
+            'purchase_price' => 'nullable|numeric|min:0',
         ]);
 
-        $herb->update($request->only(['name', 'source']));
+        $herb->update($request->only(['name', 'source', 'purchase_price']));
 
         return redirect()->route('herbs.index')->with('success', 'Herb mis à jour avec succès.');
     }

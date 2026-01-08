@@ -302,10 +302,15 @@
                             </span>
                         </div>
                         @php
-                            $isPartial = ($capsule->nombre_capsules % 125000) != 0;
+                            $capsulesPerCarton = $capsule->getCapsulesPerCarton();
+                            // Check if there's a remainder (partial carton)
+                            // remainder = nombre_capsules % capacity
+                            // Show message if remainder exists and is not full carton
+                            $remainder = $capsule->nombre_capsules % $capsulesPerCarton;
+                            $isPartial = ($remainder > 0);
                         @endphp
                         @if($isPartial)
-                            <div style="color: #f59e0b; font-size: 0.75rem; font-style: italic; margin-top: 0.25rem; display: block;">
+                            <div style="color: #7c2d12; background-color: #fed7aa; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 600; margin-top: 0.5rem; border-left: 3px solid #ea580c;">
                                 📦 1 carton en cours d'utilisation
                             </div>
                         @endif
@@ -337,7 +342,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
                             </button>
-                            <button onclick="openUsageModal({{ $capsule->id }}, {{ $capsule->nombre_capsules }})" class="btn-icon btn-icon-usage tooltip" data-tooltip="Utilisation">
+                            <button onclick="openUsageModal({{ $capsule->id }}, {{ $capsule->nombre_capsules }}, {{ $capsule->getCapsulesPerCarton() }})" class="btn-icon btn-icon-usage tooltip" data-tooltip="Utilisation">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                                 </svg>
@@ -427,7 +432,7 @@
             @csrf
             <!-- Information Box -->
             <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.75rem 1rem; margin-bottom: 1.5rem; border-radius: 0.375rem; font-size: 0.875rem; color: #1e40af;">
-                <strong>📌 Informations:</strong> 1 carton = 125,000 capsules | 1 rangée = 420 capsules
+                <strong>📌 Informations:</strong> 1 carton = <span id="info_carton_capacity">125,000</span> capsules | 1 rangée = 420 capsules
             </div>
 
             <div class="form-group">
@@ -516,7 +521,7 @@
         form.reset();
     }
 
-    function openUsageModal(capsuleId, numberOfCapsules) {
+    function openUsageModal(capsuleId, numberOfCapsules, capsulesPerCarton) {
         const modal = document.getElementById('usageModal');
         const form = document.getElementById('usageForm');
         
@@ -524,8 +529,12 @@
         currentCapsuleData = {
             id: capsuleId,
             nombreCapsules: numberOfCapsules,
-            nombreCartons: Math.floor(numberOfCapsules / 125000)
+            capsulesPerCarton: capsulesPerCarton || 125000,
+            nombreCartons: Math.floor(numberOfCapsules / (capsulesPerCarton || 125000))
         };
+
+        // Update information box with dynamic capacity
+        document.getElementById('info_carton_capacity').textContent = currentCapsuleData.capsulesPerCarton.toLocaleString('fr-FR');
 
         form.action = '{{ route("stock-capsules.usage", ":id") }}'.replace(':id', capsuleId);
         
@@ -557,9 +566,9 @@
         const rangesInput = document.getElementById('usage_quantity');
         const ranges = parseInt(rangesInput.value) || 0;
 
-        // Constants: 1 range = 420 capsules, 1 carton = 125,000 capsules
+        // Constants: 1 range = 420 capsules
         const CAPSULES_PER_RANGE = 420;
-        const CAPSULES_PER_CARTON = 125000;
+        const CAPSULES_PER_CARTON = currentCapsuleData.capsulesPerCarton || 125000;
 
         // Calculate capsules used
         const capsulesUsed = ranges * CAPSULES_PER_RANGE;

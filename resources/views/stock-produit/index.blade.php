@@ -284,6 +284,7 @@
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Couleur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Taille</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Quantité</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Prix d'achat (DH)</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Fournisseur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Notes</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
@@ -305,6 +306,9 @@
                         <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                             {{ intval($globalQuantity) }} unités
                         </span>
+                    </td>
+                    <td style="padding: 1rem; color: #4b5563; font-weight: 500;">
+                        {{ $stock->purchase_price ? number_format($stock->purchase_price, 2) : '-' }}
                     </td>
                     <td style="padding: 1rem; color: #6b7280;">
                         @if($latestRestock && $latestRestock->fornisseur)

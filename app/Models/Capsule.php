@@ -6,7 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Capsule extends Model
 {
-    protected $fillable = ['carton', 'quantity', 'nombre_capsules', 'notes'];
+    protected $fillable = ['carton', 'quantity', 'nombre_capsules', 'carton_type_id', 'carton_price', 'notes'];
+
+    protected $casts = [
+        'carton_price' => 'decimal:2',
+    ];
+
+    /**
+     * Relationship to CartonType
+     */
+    public function cartonType()
+    {
+        return $this->belongsTo(CartonType::class);
+    }
 
     public function movements()
     {
@@ -57,24 +69,49 @@ class Capsule extends Model
     }
 
     /**
-     * Calculate nombre_capsules from quantity (cartons)
-     * nombre_capsules = quantity * 125000
+     * Get capsules per carton based on carton type
      */
-    public static function calculateNombreCapsules($quantity)
+    public function getCapsulesPerCarton()
     {
-        return $quantity * 125000;
+        if ($this->cartonType) {
+            return $this->cartonType->capacity;
+        }
+        // Fallback to default Type A (125000)
+        return 125000;
     }
 
     /**
-     * Boot the model to set nombre_capsules when creating
+     * Calculate nombre_capsules from quantity (cartons) and carton type
+     */
+    public static function calculateNombreCapsules($quantity, $cartonTypeId)
+    {
+        $cartonType = CartonType::find($cartonTypeId);
+        $capacity = $cartonType ? $cartonType->capacity : 125000;
+        return $quantity * $capacity;
+    }
+
+    /**
+     * Boot the model to set nombre_capsules when creating/updating
      */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->nombre_capsules && $model->quantity) {
-                $model->nombre_capsules = self::calculateNombreCapsules($model->quantity);
+            if (!$model->nombre_capsules && $model->quantity && $model->carton_type_id) {
+                $cartonType = CartonType::find($model->carton_type_id);
+                $capacity = $cartonType ? $cartonType->capacity : 125000;
+                $model->nombre_capsules = $model->quantity * $capacity;
+            }
+        });
+
+        static::updating(function ($model) {
+            // Only recalculate nombre_capsules if carton_type_id changed, NOT if only quantity changed
+            // (quantity is recalculated FROM nombre_capsules after usage, not the other way around)
+            if ($model->isDirty('carton_type_id') && $model->carton_type_id) {
+                $cartonType = CartonType::find($model->carton_type_id);
+                $capacity = $cartonType ? $cartonType->capacity : 125000;
+                $model->nombre_capsules = $model->quantity * $capacity;
             }
         });
     }

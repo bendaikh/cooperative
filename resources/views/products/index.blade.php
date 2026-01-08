@@ -29,6 +29,7 @@
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Catégorie</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Couleur</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Taille</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Prix d'achat (DH)</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
                 </tr>
             </thead>
@@ -51,6 +52,12 @@
                             <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $size->name }}</span>
                         @endforeach
                     </td>
+                    <td style="padding: 1rem; color: #4b5563; font-weight: 500;">
+                        @php
+                            $avgPrice = $product->stock->whereNotNull('purchase_price')->avg('purchase_price');
+                        @endphp
+                        {{ $avgPrice ? number_format($avgPrice, 2) : '-' }}
+                    </td>
                     <td style="padding: 1rem; text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                             <a href="{{ route('products.edit', $product->id) }}" style="color: #4b5563; text-decoration: none; font-size: 0.875rem; padding: 0.25rem 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.25rem;">Modifier</a>
@@ -64,7 +71,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun produit trouvé.</td>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: #9ca3af;">Aucun produit trouvé.</td>
                 </tr>
                 @endforelse
             </tbody>

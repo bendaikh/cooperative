@@ -50,6 +50,69 @@ class Commande extends Model
         return $this->belongsTo(ProductStock::class, 'ticket_product_stock_id');
     }
 
+    public function revenue()
+    {
+        return $this->hasOne(Revenue::class);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    /**
+     * Check if commande is in a status that allows stock/financial operations
+     */
+    public function isInProductionStatus()
+    {
+        return $this->status === 'En cours d\'emballage';
+    }
+
+    /**
+     * Check if commande can have preview calculations
+     */
+    public function canPreviewCalculations()
+    {
+        return true; // Always allow preview
+    }
+
+    /**
+     * Apply stock deductions (only when status changes to "En cours d'emballage")
+     */
+    public function applyStockDeductions()
+    {
+        if ($this->stock_applied || !$this->isInProductionStatus()) {
+            return false;
+        }
+
+        // Deduct packaging (emballage)
+        foreach ($this->emballages as $emballage) {
+            $emballage->productStock->quantity -= $emballage->quantity;
+            $emballage->productStock->save();
+
+            // Record expense
+            Expense::recordExpense(
+                'packaging',
+                $emballage->quantity,
+                $emballage->productStock->purchase_price ?? 0,
+                $this,
+                null,
+                $emballage->productStock,
+                null,
+                'From commande #' . $this->id
+            );
+        }
+
+        // Mark as applied
+        $this->stock_applied = true;
+        $this->save();
+
+        // Sync revenue
+        Revenue::syncForCommande($this);
+
+        return true;
+    }
+
     public static function getStatuses()
     {
         return ['Confirmé', 'En cours d\'emballage', 'Sortie'];

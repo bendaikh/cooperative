@@ -85,6 +85,15 @@
                 @enderror
             </div>
 
+            <div style="margin-bottom: 1.5rem;">
+                <label for="purchase_price" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Prix d'achat par unité (DH)</label>
+                <input type="number" name="purchase_price" id="purchase_price" min="0" step="0.01" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0.00" value="{{ old('purchase_price') }}">
+                <p style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem;">Le coût d'achat par unité de ce produit en Dirhams</p>
+                @error('purchase_price')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div style="display: flex; gap: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
                 <button type="submit" style="background: #2d7a52; color: white; padding: 0.75rem 2rem; border-radius: 0.5rem; border: none; font-weight: 500; cursor: pointer;">
                     Enregistrer le stock

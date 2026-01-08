@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Herb extends Model
 {
-    protected $fillable = ['name', 'source'];
+    protected $fillable = ['name', 'source', 'purchase_price'];
+
+    protected $casts = [
+        'purchase_price' => 'decimal:2',
+    ];
 
     public function movements()
     {

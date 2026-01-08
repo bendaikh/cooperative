@@ -20,6 +20,21 @@
                 @enderror
             </div>
 
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Type de carton</label>
+                    <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 0.5rem; color: #1f2937; font-weight: 500;">
+                        {{ $capsule->cartonType->name ?? 'Type A' }} ({{ number_format($capsule->getCapsulesPerCarton(), 0, ',', ' ') }} capsules)
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Prix d'achat par carton</label>
+                    <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 0.5rem; color: #1f2937; font-weight: 500;">
+                        {{ number_format($capsule->carton_price ?? 0, 2) }} DH
+                    </div>
+                </div>
+            </div>
+
             <div style="margin-bottom: 1.5rem;">
                 <label for="notes" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Notes (optionnel)</label>
                 <textarea name="notes" id="notes" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; resize: vertical;">{{ old('notes', $capsule->notes) }}</textarea>

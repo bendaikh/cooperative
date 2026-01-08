@@ -28,6 +28,7 @@
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">ID</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Nom</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500;">Source</th>
+                    <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Prix d'achat (DH)</th>
                     <th style="padding: 1rem; color: #6b7280; font-weight: 500; text-align: right;">Actions</th>
                 </tr>
             </thead>
@@ -37,6 +38,7 @@
                     <td style="padding: 1rem; color: #1f2937;">#{{ $herb->id }}</td>
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $herb->name }}</td>
                     <td style="padding: 1rem; color: #4b5563;">{{ $herb->source }}</td>
+                    <td style="padding: 1rem; color: #4b5563; text-align: right;">{{ $herb->purchase_price ? number_format($herb->purchase_price, 2) : '-' }}</td>
                     <td style="padding: 1rem; text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                             <a href="{{ route('herbs.edit', $herb->id) }}" style="color: #4b5563; text-decoration: none; font-size: 0.875rem; padding: 0.25rem 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.25rem;">Modifier</a>

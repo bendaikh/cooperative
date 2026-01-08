@@ -20,7 +20,8 @@ use App\Http\Controllers\StockHerbController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\HerbController;
 use App\Http\Controllers\FornisseurController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinancialController;
+use App\Http\Controllers\CartonTypeController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -35,6 +36,11 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::get('/stock-produit/product/{productId}/attributes', [StockProduitController::class, 'getProductAttributes'])->name('stock-produit.product-attributes');
     Route::post('/stock-produit/{id}/restock', [StockProduitController::class, 'restock'])->name('stock-produit.restock');
     Route::post('/stock-produit/{id}/usage', [StockProduitController::class, 'usage'])->name('stock-produit.usage');
+    
+    // Carton Types Management
+    Route::resource('carton-types', CartonTypeController::class);
+    Route::patch('/carton-types/{cartonType}/toggle', [CartonTypeController::class, 'toggleActive'])->name('carton-types.toggle');
+    
     Route::resource('stock-capsules', StockCapsuleController::class);
     Route::post('/stock-capsules/{id}/restock', [StockCapsuleController::class, 'restock'])->name('stock-capsules.restock');
     Route::post('/stock-capsules/{id}/usage', [StockCapsuleController::class, 'usage'])->name('stock-capsules.usage');
@@ -57,6 +63,12 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     // Commandes
     Route::resource('commandes', CommandeController::class);
     Route::post('/commandes/{commande}/update-status', [CommandeController::class, 'updateStatus'])->name('commandes.update-status');
+
+    // Financial Management
+    Route::get('/financial', [FinancialController::class, 'index'])->name('financial.index');
+    Route::get('/commandes/{commande}/revenue', [FinancialController::class, 'showCommandeRevenue'])->name('financial.show-revenue');
+    Route::post('/commandes/{commande}/revenue', [FinancialController::class, 'storeCommandeRevenue'])->name('financial.store-revenue');
+    Route::post('/commandes/{commande}/revenue/confirm', [FinancialController::class, 'confirmRevenue'])->name('financial.confirm-revenue');
 
     // Revenue
     Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');

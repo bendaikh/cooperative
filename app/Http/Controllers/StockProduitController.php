@@ -62,6 +62,7 @@ class StockProduitController extends Controller
             'color_id' => 'nullable|exists:colors,id',
             'size_id' => 'nullable|exists:sizes,id',
             'quantity' => 'required|numeric|min:0',
+            'purchase_price' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
@@ -91,7 +92,7 @@ class StockProduitController extends Controller
             return back()->withErrors(['product_id' => 'Ce produit existe déjà dans le stock avec ces attributs. Veuillez utiliser l\'option "Réapprovisionner" pour ajouter du stock.'])->withInput();
         }
 
-        $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
+        $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes']));
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit créé avec succès.');
     }
@@ -130,6 +131,7 @@ class StockProduitController extends Controller
             'color_id' => 'nullable|exists:colors,id',
             'size_id' => 'nullable|exists:sizes,id',
             'quantity' => 'required|numeric|min:0',
+            'purchase_price' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
@@ -148,7 +150,7 @@ class StockProduitController extends Controller
             return back()->withErrors(['size_id' => 'La taille sélectionnée n\'appartient pas à ce produit.'])->withInput();
         }
 
-        $stock->update($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'notes']));
+        $stock->update($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes']));
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit mis à jour avec succès.');
     }

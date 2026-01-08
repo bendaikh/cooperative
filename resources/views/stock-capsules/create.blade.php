@@ -20,9 +20,37 @@
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Quantité de cartons</label>
-                <input type="number" name="quantity" id="quantity" required min="0" step="0.001" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0.000" value="{{ old('quantity') }}">
+                <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Nombre de cartons <span style="color: #dc2626;">*</span></label>
+                <input type="number" name="quantity" id="quantity" required min="1" step="1" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="1" value="{{ old('quantity') }}">
                 @error('quantity')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="carton_type_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Type de carton <span style="color: #dc2626;">*</span></label>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <select name="carton_type_id" id="carton_type_id" required style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                        <option value="">Sélectionner un type</option>
+                        @foreach($cartonTypes as $type)
+                            <option value="{{ $type->id }}" {{ old('carton_type_id') == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }} - {{ number_format($type->capacity, 0, ',', ' ') }} capsules
+                            </option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('carton-types.create', ['from' => 'stock-capsules']) }}" style="background: #f0f9ff; color: #0369a1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #0369a1; text-decoration: none; font-weight: 500; white-space: nowrap;">
+                        + Nouveau type
+                    </a>
+                </div>
+                @error('carton_type_id')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="carton_price" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Prix d'achat par carton (DH) <span style="color: #dc2626;">*</span></label>
+                <input type="number" name="carton_price" id="carton_price" required min="0" step="0.01" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0.00" value="{{ old('carton_price') }}">
+                @error('carton_price')
                     <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
             </div>
