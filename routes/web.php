@@ -78,6 +78,10 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
 
     // Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+
+    // Profile
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
 require __DIR__.'/auth.php';

@@ -454,13 +454,13 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="user-profile">
+            <a href="{{ route('profile.edit') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; text-decoration: none; color: #1f2937; transition: all 0.2s; margin-bottom: 1rem;">
                 <div class="user-avatar">{{ substr(Auth::user()->name ?? 'A', 0, 1) }}</div>
                 <div class="user-info">
                     <div class="user-name">{{ Auth::user()->name ?? 'Alex Morgan' }}</div>
-                    <div class="user-role">Admin</div>
+                    <div class="user-role">Profil</div>
                 </div>
-            </div>
+            </a>
             <form method="POST" action="{{ route('logout') }}" style="margin-top: 1rem;">
                 @csrf
                 <button type="submit" style="width: 100%; padding: 0.5rem; background: transparent; border: 1px solid #e5e7eb; border-radius: 0.5rem; color: #6b7280; cursor: pointer; font-size: 0.875rem; transition: all 0.2s;">
