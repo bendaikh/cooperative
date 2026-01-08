@@ -213,16 +213,32 @@ class StockCapsuleController extends Controller
             'notes' => 'Utilisation via capsules: ' . $capsule->carton . ' (' . $rangeCount . ' rangées = ' . $capsulesUsed . ' capsules)',
         ]);
 
-        // Create filled capsule record
-        FilledCapsule::create([
-            'capsule_id' => $capsule->id,
-            'herb_id' => $request->herb_id,
-            'quantity' => $rangeCount, // Store as ranges
-            'herb_quantity' => $request->herb_quantity,
-            'filled_date' => $request->movement_date,
-            'capsule_movement_id' => $capsuleMovement->id,
-            'notes' => $request->notes,
-        ]);
+        // Check if a filled capsule record already exists for this capsule and herb
+        $filledCapsule = FilledCapsule::where('capsule_id', $capsule->id)
+            ->where('herb_id', $request->herb_id)
+            ->first();
+
+        if ($filledCapsule) {
+            // Update existing filled capsule record
+            $filledCapsule->update([
+                'quantity' => $filledCapsule->quantity + $rangeCount, // Increment ranges
+                'herb_quantity' => $filledCapsule->herb_quantity + $request->herb_quantity, // Increment herb quantity
+                'filled_date' => $request->movement_date, // Update to latest date
+                'capsule_movement_id' => $capsuleMovement->id, // Update to latest movement
+                'notes' => $request->notes,
+            ]);
+        } else {
+            // Create new filled capsule record
+            FilledCapsule::create([
+                'capsule_id' => $capsule->id,
+                'herb_id' => $request->herb_id,
+                'quantity' => $rangeCount, // Store as ranges
+                'herb_quantity' => $request->herb_quantity,
+                'filled_date' => $request->movement_date,
+                'capsule_movement_id' => $capsuleMovement->id,
+                'notes' => $request->notes,
+            ]);
+        }
 
         return redirect()->route('stock-capsules.index')->with('success', 'Utilisation enregistrée avec succès. Stock d\'herbe déduit automatiquement. Capsules remplies ajoutées au stock rempli.');
     }

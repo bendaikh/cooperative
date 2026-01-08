@@ -12,7 +12,17 @@ class StockCapsuleRemplieController extends Controller
      */
     public function index()
     {
-        $filledCapsules = FilledCapsule::with(['capsule', 'herb'])->orderBy('filled_date', 'desc')->orderBy('created_at', 'desc')->get();
+        // Get all filled capsules grouped by capsule_id and herb_id to avoid duplicates
+        $filledCapsules = FilledCapsule::with(['capsule', 'herb'])
+            ->orderBy('filled_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique(function ($item) {
+                // Group by capsule_id and herb_id combination
+                return $item->capsule_id . '_' . $item->herb_id;
+            })
+            ->values(); // Re-index array
+        
         return view('stock-capsules-remplie.index', compact('filledCapsules'));
     }
 

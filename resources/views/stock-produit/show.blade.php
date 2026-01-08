@@ -43,7 +43,7 @@
             @endif
             <div>
                 <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Quantité de Base</label>
-                <p style="font-size: 1rem; color: #1f2937; font-weight: 500;">{{ $stock->quantity }} unités</p>
+                <p style="font-size: 1rem; color: #1f2937; font-weight: 500;">{{ intval($stock->quantity) }} unités</p>
             </div>
             @php
                 $globalQuantity = $stock->global_quantity;
@@ -52,7 +52,7 @@
                 <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">Quantité Globale</label>
                 <p style="font-size: 1rem; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; font-weight: 600;">
                     <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem;">
-                        {{ $globalQuantity }} unités
+                        {{ intval($globalQuantity) }} unités
                     </span>
                 </p>
             </div>
@@ -96,7 +96,7 @@
                             @endif
                         </td>
                         <td style="padding: 1rem; color: #1f2937; font-weight: 500;">
-                            {{ $movement->quantity }} unités
+                            {{ intval($movement->quantity) }} unités
                         </td>
                         <td style="padding: 1rem; color: #1f2937;">
                             @if($movement->fornisseur)

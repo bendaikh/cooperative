@@ -303,7 +303,7 @@
                     <td style="padding: 1rem; color: #4b5563;">{{ $stock->size->name ?? '-' }}</td>
                     <td style="padding: 1rem; color: #4b5563;">
                         <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
-                            {{ $globalQuantity }} unités
+                            {{ intval($globalQuantity) }} unités
                         </span>
                     </td>
                     <td style="padding: 1rem; color: #6b7280;">
@@ -373,7 +373,7 @@
             @csrf
             <div class="form-group">
                 <label class="form-label" for="restock_quantity">Quantité</label>
-                <input type="number" id="restock_quantity" name="quantity" class="form-input" min="0.001" step="0.001" required>
+                <input type="number" id="restock_quantity" name="quantity" class="form-input" min="1" step="1" required>
                 @error('quantity')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
@@ -420,7 +420,7 @@
             @csrf
             <div class="form-group">
                 <label class="form-label" for="usage_quantity">Quantité utilisée</label>
-                <input type="number" id="usage_quantity" name="quantity" class="form-input" min="0.001" step="0.001" required>
+                <input type="number" id="usage_quantity" name="quantity" class="form-input" min="1" step="1" required>
                 <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Stock disponible: <span id="available_quantity">0</span> unités</small>
                 @error('quantity')
                     <div class="error-message">{{ $message }}</div>
@@ -467,7 +467,7 @@
         const form = document.getElementById('usageForm');
         const availableQuantitySpan = document.getElementById('available_quantity');
         form.action = '{{ route("stock-produit.usage", ":id") }}'.replace(':id', stockId);
-        availableQuantitySpan.textContent = availableQuantity;
+        availableQuantitySpan.textContent = Math.floor(availableQuantity);
         modal.classList.add('active');
     }
 
