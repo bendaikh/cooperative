@@ -5,7 +5,8 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\RevenueController;
-use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ExpenseCreateController;
+use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OncaController;
 use App\Http\Controllers\ArchiveController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\HerbController;
 use App\Http\Controllers\FornisseurController;
 use App\Http\Controllers\FinancialController;
 use App\Http\Controllers\CartonTypeController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -61,8 +63,9 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::resource('clients', ClientController::class);
 
     // Commandes
-    Route::resource('commandes', CommandeController::class);
+    Route::post('/commandes/preview', [CommandeController::class, 'preview'])->name('commandes.preview');
     Route::post('/commandes/{commande}/update-status', [CommandeController::class, 'updateStatus'])->name('commandes.update-status');
+    Route::resource('commandes', CommandeController::class);
 
     // Financial Management
     Route::get('/financial', [FinancialController::class, 'index'])->name('financial.index');
@@ -74,7 +77,12 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
 
     // Expenses
-    Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+    Route::get('/expenses/create', [ExpenseCreateController::class, 'create'])->name('expenses.create');
+    Route::post('/expenses', [ExpenseCreateController::class, 'store'])->name('expenses.store');
+    
+    // Expense Categories
+    Route::get('/expense-categories/create', [ExpenseCategoryController::class, 'create'])->name('expense-categories.create');
+    Route::post('/expense-categories', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
 
     // Reports & Statistics
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

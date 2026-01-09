@@ -11,6 +11,7 @@ class Expense extends Model
         'herb_id',
         'product_stock_id',
         'capsule_id',
+        'category_id',
         'quantity',
         'unit_price',
         'total_cost',
@@ -25,6 +26,11 @@ class Expense extends Model
         'total_cost' => 'decimal:2',
         'expense_date' => 'date',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(ExpenseCategory::class, 'category_id');
+    }
 
     public function herb()
     {

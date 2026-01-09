@@ -34,7 +34,7 @@
                         <option value="">Sélectionner un type</option>
                         @foreach($cartonTypes as $type)
                             <option value="{{ $type->id }}" {{ old('carton_type_id') == $type->id ? 'selected' : '' }}>
-                                {{ $type->name }} - {{ number_format($type->capacity, 0, ',', ' ') }} capsules
+                                {{ $type->name }} - {{ number_format($type->capacity, 0, ',', ' ') }} capsules {{ $type->purchase_price ? '(' . number_format($type->purchase_price, 2) . ' DH)' : '(Prix à définir)' }}
                             </option>
                         @endforeach
                     </select>

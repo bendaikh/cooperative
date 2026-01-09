@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Co-op ERP')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Co-op ERP'); ?></title>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>
         * {
             margin: 0;
@@ -311,7 +311,7 @@
             border-right: 3px solid #2d7a52;
         }
     </style>
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 <body>
     <!-- Sidebar -->
@@ -323,14 +323,14 @@
 
         <nav class="sidebar-nav">
             <div class="nav-section">
-                <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="<?php echo e(route('dashboard')); ?>" class="nav-item <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                     </svg>
                     <span>Tableau de bord</span>
                 </a>
-                <div class="nav-dropdown {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-capsules-remplie.*', 'stock-herb.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-capsules-remplie.*', 'stock-herb.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown <?php echo e(request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-capsules-remplie.*', 'stock-herb.*') ? 'open' : ''); ?>">
+                    <button class="nav-dropdown-trigger <?php echo e(request()->routeIs('stock-produit.*', 'stock-capsules.*', 'stock-capsules-remplie.*', 'stock-herb.*') ? 'active' : ''); ?>" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -342,22 +342,22 @@
                         </svg>
                     </button>
                     <div class="nav-dropdown-content">
-                        <a href="{{ route('stock-produit.index') }}" class="sub-nav-item {{ request()->routeIs('stock-produit.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('stock-produit.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('stock-produit.*') ? 'active' : ''); ?>">
                             <span>Stock Embalage</span>
                         </a>
-                        <a href="{{ route('stock-capsules.index') }}" class="sub-nav-item {{ request()->routeIs('stock-capsules.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('stock-capsules.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('stock-capsules.*') ? 'active' : ''); ?>">
                             <span>Stock Capsules vide</span>
                         </a>
-                        <a href="{{ route('stock-capsules-remplie.index') }}" class="sub-nav-item {{ request()->routeIs('stock-capsules-remplie.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('stock-capsules-remplie.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('stock-capsules-remplie.*') ? 'active' : ''); ?>">
                             <span>Stock Capsules remplie</span>
                         </a>
-                        <a href="{{ route('stock-herb.index') }}" class="sub-nav-item {{ request()->routeIs('stock-herb.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('stock-herb.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('stock-herb.*') ? 'active' : ''); ?>">
                             <span>Stock Herb</span>
                         </a>
                     </div>
                 </div>
-                <div class="nav-dropdown {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown <?php echo e(request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'open' : ''); ?>">
+                    <button class="nav-dropdown-trigger <?php echo e(request()->routeIs('products.*', 'categories.*', 'colors.*', 'sizes.*') ? 'active' : ''); ?>" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -369,22 +369,22 @@
                         </svg>
                     </button>
                     <div class="nav-dropdown-content">
-                        <a href="{{ route('products.index') }}" class="sub-nav-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('products.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('products.*') ? 'active' : ''); ?>">
                             <span>Embalage</span>
                         </a>
-                        <a href="{{ route('categories.index') }}" class="sub-nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('categories.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('categories.*') ? 'active' : ''); ?>">
                             <span>Catégories</span>
                         </a>
-                        <a href="{{ route('colors.index') }}" class="sub-nav-item {{ request()->routeIs('colors.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('colors.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('colors.*') ? 'active' : ''); ?>">
                             <span>Couleurs</span>
                         </a>
-                        <a href="{{ route('sizes.index') }}" class="sub-nav-item {{ request()->routeIs('sizes.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('sizes.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('sizes.*') ? 'active' : ''); ?>">
                             <span>Tailles</span>
                         </a>
                     </div>
                 </div>
-                <div class="nav-dropdown {{ request()->routeIs('herbs.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('herbs.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown <?php echo e(request()->routeIs('herbs.*') ? 'open' : ''); ?>">
+                    <button class="nav-dropdown-trigger <?php echo e(request()->routeIs('herbs.*') ? 'active' : ''); ?>" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -396,37 +396,37 @@
                         </svg>
                     </button>
                     <div class="nav-dropdown-content">
-                        <a href="{{ route('herbs.index') }}" class="sub-nav-item {{ request()->routeIs('herbs.*') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('herbs.index')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('herbs.*') ? 'active' : ''); ?>">
                             <span>Herb</span>
                         </a>
                     </div>
                 </div>
-                <a href="{{ route('clients.index') }}" class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('clients.index')); ?>" class="nav-item <?php echo e(request()->routeIs('clients.*') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                     </svg>
                     <span>Clients</span>
                 </a>
-                <a href="{{ route('fornisseurs.index') }}" class="nav-item {{ request()->routeIs('fornisseurs.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('fornisseurs.index')); ?>" class="nav-item <?php echo e(request()->routeIs('fornisseurs.*') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
                     <span>Fournisseurs</span>
                 </a>
-                <a href="{{ route('commandes.index') }}" class="nav-item {{ request()->routeIs('commandes.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('commandes.index')); ?>" class="nav-item <?php echo e(request()->routeIs('commandes.*') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <span>Gestion Commandes</span>
                 </a>
-                <a href="{{ route('revenue.index') }}" class="nav-item {{ request()->routeIs('revenue.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('revenue.index')); ?>" class="nav-item <?php echo e(request()->routeIs('revenue.*') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span>Revenus</span>
                 </a>
-                <div class="nav-dropdown {{ request()->routeIs('expenses.*', 'expense-categories.*') ? 'open' : '' }}">
-                    <button class="nav-dropdown-trigger {{ request()->routeIs('expenses.*', 'expense-categories.*') ? 'active' : '' }}" onclick="toggleDropdown(this)">
+                <div class="nav-dropdown <?php echo e(request()->routeIs('expenses.*', 'expense-categories.*') ? 'open' : ''); ?>">
+                    <button class="nav-dropdown-trigger <?php echo e(request()->routeIs('expenses.*', 'expense-categories.*') ? 'active' : ''); ?>" onclick="toggleDropdown(this)">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -438,10 +438,10 @@
                         </svg>
                     </button>
                     <div class="nav-dropdown-content">
-                        <a href="{{ route('expenses.create') }}" class="sub-nav-item {{ request()->routeIs('expenses.create') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('expenses.create')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('expenses.create') ? 'active' : ''); ?>">
                             <span>Créer Dépense</span>
                         </a>
-                        <a href="{{ route('expense-categories.create') }}" class="sub-nav-item {{ request()->routeIs('expense-categories.create') ? 'active' : '' }}">
+                        <a href="<?php echo e(route('expense-categories.create')); ?>" class="sub-nav-item <?php echo e(request()->routeIs('expense-categories.create') ? 'active' : ''); ?>">
                             <span>Créer Catégorie</span>
                         </a>
                     </div>
@@ -451,14 +451,14 @@
 
             <div class="nav-section">
                 <div class="nav-section-title">ADMINISTRATION</div>
-                <a href="{{ route('onca.index') }}" class="nav-item {{ request()->routeIs('onca.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('onca.index')); ?>" class="nav-item <?php echo e(request()->routeIs('onca.*') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <span>gestion des manuelles</span>
                 </a>
 
-                <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('settings.index')); ?>" class="nav-item <?php echo e(request()->routeIs('settings.*') ? 'active' : ''); ?>">
                     <svg class="nav-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -469,15 +469,15 @@
         </nav>
 
         <div class="sidebar-footer">
-            <a href="{{ route('profile.edit') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; text-decoration: none; color: #1f2937; transition: all 0.2s; margin-bottom: 1rem;">
-                <div class="user-avatar">{{ substr(Auth::user()->name ?? 'A', 0, 1) }}</div>
+            <a href="<?php echo e(route('profile.edit')); ?>" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; text-decoration: none; color: #1f2937; transition: all 0.2s; margin-bottom: 1rem;">
+                <div class="user-avatar"><?php echo e(substr(Auth::user()->name ?? 'A', 0, 1)); ?></div>
                 <div class="user-info">
-                    <div class="user-name">{{ Auth::user()->name ?? 'Alex Morgan' }}</div>
+                    <div class="user-name"><?php echo e(Auth::user()->name ?? 'Alex Morgan'); ?></div>
                     <div class="user-role">Profil</div>
                 </div>
             </a>
-            <form method="POST" action="{{ route('logout') }}" style="margin-top: 1rem;">
-                @csrf
+            <form method="POST" action="<?php echo e(route('logout')); ?>" style="margin-top: 1rem;">
+                <?php echo csrf_field(); ?>
                 <button type="submit" style="width: 100%; padding: 0.5rem; background: transparent; border: 1px solid #e5e7eb; border-radius: 0.5rem; color: #6b7280; cursor: pointer; font-size: 0.875rem; transition: all 0.2s;">
                     Déconnexion
                 </button>
@@ -488,13 +488,13 @@
     <!-- Main Content -->
     <main class="main-content">
         <header class="main-header">
-            <h1 class="page-title">@yield('page-title', 'Dashboard Overview')</h1>
+            <h1 class="page-title"><?php echo $__env->yieldContent('page-title', 'Dashboard Overview'); ?></h1>
             <div class="header-actions">
-                <form class="search-box" id="global-search-form" method="GET" action="{{ url()->current() }}">
+                <form class="search-box" id="global-search-form" method="GET" action="<?php echo e(url()->current()); ?>">
                     <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                    <input type="text" name="search" class="search-input" value="{{ request('search') }}" placeholder="Recherche...">
+                    <input type="text" name="search" class="search-input" value="<?php echo e(request('search')); ?>" placeholder="Recherche...">
                 </form>
                 <button class="icon-button" title="Notifications">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -510,7 +510,7 @@
         </header>
 
         <div class="content-area">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
     </main>
 
@@ -520,7 +520,8 @@
             dropdown.classList.toggle('open');
         }
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
 
+<?php /**PATH /Users/fatimazahradarir/cooperative/resources/views/layouts/app.blade.php ENDPATH**/ ?>

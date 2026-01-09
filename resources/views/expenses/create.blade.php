@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Dépenses - Co-op ERP')
-@section('page-title', 'Dépenses')
+@section('title', 'Créer Dépense - Co-op ERP')
+@section('page-title', 'Créer Dépense')
 
 @section('content')
 <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: -2rem -2rem 2rem; border-radius: 8px; color: white;">
@@ -34,7 +34,7 @@
         <div style="display: flex; justify-content: space-between; align-items: start;">
             <div>
                 <p style="margin: 0; color: #6b7280; font-size: 0.875rem; font-weight: 500;">Dépenses Totales</p>
-                <p style="margin: 0.5rem 0 0; font-size: 1.875rem; font-weight: bold; color: #111827;">{{ number_format($totalExpenses, 2) }} DH</p>
+                <p style="margin: 0.5rem 0 0; font-size: 1.875rem; font-weight: bold; color: #111827;">{{ number_format($totalExpenses ?? 0, 2) }} DH</p>
             </div>
             <span style="font-size: 2rem;">💰</span>
         </div>
@@ -45,31 +45,31 @@
         <div style="display: flex; justify-content: space-between; align-items: start;">
             <div>
                 <p style="margin: 0; color: #6b7280; font-size: 0.875rem; font-weight: 500;">Dépenses ce mois</p>
-                <p style="margin: 0.5rem 0 0; font-size: 1.875rem; font-weight: bold; color: #111827;">{{ number_format($thisMonthExpenses, 2) }} DH</p>
+                <p style="margin: 0.5rem 0 0; font-size: 1.875rem; font-weight: bold; color: #111827;">{{ number_format($thisMonthExpenses ?? 0, 2) }} DH</p>
             </div>
             <span style="font-size: 2rem;">📅</span>
         </div>
     </div>
 
     <!-- Growth -->
-    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid {{ $expenseGrowth > 0 ? '#ef4444' : '#10b981' }};">
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid {{ ($expenseGrowth ?? 0) > 0 ? '#ef4444' : '#10b981' }};">
         <div style="display: flex; justify-content: space-between; align-items: start;">
             <div>
                 <p style="margin: 0; color: #6b7280; font-size: 0.875rem; font-weight: 500;">Croissance vs mois dernier</p>
-                <p style="margin: 0.5rem 0 0; font-size: 1.875rem; font-weight: bold; color: {{ $expenseGrowth > 0 ? '#ef4444' : '#10b981' }};">{{ number_format($expenseGrowth, 1) }}%</p>
+                <p style="margin: 0.5rem 0 0; font-size: 1.875rem; font-weight: bold; color: {{ ($expenseGrowth ?? 0) > 0 ? '#ef4444' : '#10b981' }};">{{ number_format($expenseGrowth ?? 0, 1) }}%</p>
             </div>
-            <span style="font-size: 2rem;">{{ $expenseGrowth > 0 ? '📈' : '📉' }}</span>
+            <span style="font-size: 2rem;">{{ ($expenseGrowth ?? 0) > 0 ? '📈' : '📉' }}</span>
         </div>
     </div>
 
     <!-- Top Category -->
-    @if ($topExpenses->count() > 0)
+    @if (isset($topExpenses) && $topExpenses->count() > 0)
     <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #8b5cf6;">
         <div style="display: flex; justify-content: space-between; align-items: start;">
             <div>
                 <p style="margin: 0; color: #6b7280; font-size: 0.875rem; font-weight: 500;">Catégorie top (ce mois)</p>
                 <p style="margin: 0.5rem 0 0; font-size: 1.125rem; font-weight: bold; color: #111827;">{{ $topExpenses[0]->category->name ?? 'N/A' }}</p>
-                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: #6b7280;">{{ number_format($topExpenses[0]->total, 2) }} DH</p>
+                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: #6b7280;">{{ number_format($topExpenses[0]->total ?? 0, 2) }} DH</p>
             </div>
             <span style="font-size: 2rem;">🏆</span>
         </div>
@@ -77,14 +77,90 @@
     @endif
 </div>
 
-<!-- TWO SUBSECTIONS SIDE BY SIDE -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-    @include('expenses.categories.index')
-    @include('expenses.create')
+<!-- CREATE EXPENSE FORM -->
+<div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: bold; color: #111827;">➕ Créer une Dépense</h2>
+    
+    <form action="{{ route('expenses.store') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        @csrf
+        
+        <!-- Category Selection -->
+        <div>
+            <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: #374151; font-size: 1rem;">Catégorie <span style="color: #ef4444;">*</span></label>
+            <select 
+                name="category_id"
+                style="width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s;"
+                required
+            >
+                <option value="">-- Sélectionnez une catégorie --</option>
+                @foreach ($categories as $category)
+                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
+            @error('category_id')
+                <span style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <!-- Amount -->
+        <div>
+            <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: #374151; font-size: 1rem;">Montant (DH) <span style="color: #ef4444;">*</span></label>
+            <input 
+                type="number" 
+                name="amount" 
+                step="0.01"
+                placeholder="0.00"
+                style="width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s;"
+                value="{{ old('amount') }}"
+                required
+            >
+            @error('amount')
+                <span style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <!-- Date -->
+        <div>
+            <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: #374151; font-size: 1rem;">Date de dépense <span style="color: #ef4444;">*</span></label>
+            <input 
+                type="date" 
+                name="expense_date"
+                value="{{ old('expense_date', date('Y-m-d')) }}"
+                style="width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s;"
+                required
+            >
+            @error('expense_date')
+                <span style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <!-- Notes -->
+        <div>
+            <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: #374151; font-size: 1rem;">Notes (optionnel)</label>
+            <textarea 
+                name="notes"
+                rows="4"
+                placeholder="Détails supplémentaires..."
+                style="width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; font-family: inherit; resize: vertical; transition: border-color 0.2s;">{{ old('notes') }}</textarea>
+            @error('notes')
+                <span style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+            type="submit"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: transform 0.2s, box-shadow 0.2s; margin-top: 1rem;"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+        >
+            💾 Enregistrer la dépense
+        </button>
+    </form>
 </div>
 
-<!-- SECTION 3: RECENT EXPENSES TABLE -->
-<div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+<!-- SECTION: RECENT EXPENSES TABLE -->
+<div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 2rem;">
     <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: bold; color: #111827;">📋 Dépenses Récentes</h2>
     
     @if ($expenses->count() > 0)
@@ -127,4 +203,3 @@
     @endif
 </div>
 @endsection
-

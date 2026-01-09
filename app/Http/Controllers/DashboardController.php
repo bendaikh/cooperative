@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Client;
 use App\Models\Commande;
+use App\Models\Revenue;
+use App\Models\Expense;
 use App\Models\ProductStock;
 use App\Models\HerbStockMovement;
 use App\Models\CapsuleStockMovement;
@@ -58,17 +60,14 @@ class DashboardController extends Controller
 
     private function getTotalRevenue()
     {
-        // Total revenue based on order count (quantity shipped)
-        // Note: Price tracking would need to be added to products table for actual revenue calculation
-        return Commande::count() * 1000; // Placeholder: assuming avg 1000 per order
+        // Total revenue from confirmed revenues (selling prices from commandes)
+        return Revenue::where('status', 'confirmed')->sum('selling_price') ?? 0;
     }
 
     private function getTotalExpenses()
     {
-        // This would depend on your expense tracking
-        // For now, using a percentage of revenue
-        $revenue = $this->getTotalRevenue();
-        return $revenue * 0.27; // Assume 27% operational cost
+        // Total expenses = production costs from confirmed revenues (cost of goods sold)
+        return Revenue::where('status', 'confirmed')->sum('cost') ?? 0;
     }
 
     private function getStockChange()
@@ -112,8 +111,21 @@ class DashboardController extends Controller
 
     private function getExpenseChange()
     {
-        // Assume expenses change proportionally with revenue
-        return $this->getRevenueChange();
+        $now = now();
+        
+        // Get expenses from confirmed revenues (COGS) this month
+        $thisMonth = Revenue::where('status', 'confirmed')
+            ->whereMonth('revenue_date', $now->month)
+            ->whereYear('revenue_date', $now->year)
+            ->sum('cost') ?? 0;
+        
+        // Get expenses from last month
+        $lastMonth = Revenue::where('status', 'confirmed')
+            ->whereMonth('revenue_date', $now->subMonth()->month)
+            ->whereYear('revenue_date', $now->subMonth()->year)
+            ->sum('cost') ?? 0;
+
+        return $lastMonth > 0 ? (($thisMonth - $lastMonth) / $lastMonth) * 100 : 0;
     }
 
     private function getFinancialChartData()
@@ -121,23 +133,35 @@ class DashboardController extends Controller
         $months = [];
         $revenue = [];
         $expenses = [];
+        $profit = [];
 
         for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $months[] = $date->format('M');
 
-            $monthRevenue = Commande::whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->count() * 1000; // Placeholder calculation
-            $revenue[] = round($monthRevenue, 2);
+            // Get actual revenue data from confirmed revenues
+            $monthRevenue = Revenue::where('status', 'confirmed')
+                ->whereMonth('revenue_date', $date->month)
+                ->whereYear('revenue_date', $date->year)
+                ->sum('selling_price') ?? 0;
+            
+            $monthExpense = Revenue::where('status', 'confirmed')
+                ->whereMonth('revenue_date', $date->month)
+                ->whereYear('revenue_date', $date->year)
+                ->sum('cost') ?? 0;
+            
+            $monthProfit = $monthRevenue - $monthExpense;
 
-            $expenses[] = round($monthRevenue * 0.27, 2);
+            $revenue[] = round($monthRevenue, 2);
+            $expenses[] = round($monthExpense, 2);
+            $profit[] = round($monthProfit, 2);
         }
 
         return [
             'labels' => $months,
             'revenue' => $revenue,
             'expenses' => $expenses,
+            'profit' => $profit,
         ];
     }
 

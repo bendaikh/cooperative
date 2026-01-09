@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\FilledCapsule;
 use App\Models\StockMovement;
+use App\Models\Revenue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -47,18 +48,24 @@ class CommandeController extends Controller
             ->with('stock.movements')
             ->get();
         
-        // Get Joint de sécurité stock with movements
+        // Get Joint de sécurité stock with movements and pricing
         $jointSecurite = Product::where('name', 'Joint de sécurité')
             ->with('stock.movements')
             ->first();
+        $jointSecuritePrice = $jointSecurite && $jointSecurite->stock->first() 
+            ? $jointSecurite->stock->first()->purchase_price ?? 0 
+            : 0;
         
         // Get Ticket products with their stock and movements
         $tickets = Product::where('name', 'Ticket')
             ->with('stock.movements')
             ->get();
+        $ticketPrice = $tickets && $tickets->first() && $tickets->first()->stock->first()
+            ? $tickets->first()->stock->first()->purchase_price ?? 0
+            : 0;
         
         // Get filled capsules for selection
-        $filledCapsules = FilledCapsule::with(['herb', 'capsule'])->get();
+        $filledCapsules = FilledCapsule::with(['herb', 'capsule.cartonType'])->get();
         
         // Capsules per unit options
         $capsulesPerUnitOptions = [30, 60, 90, 120];
@@ -67,12 +74,100 @@ class CommandeController extends Controller
             'clients',
             'emballages',
             'jointSecurite',
+            'jointSecuritePrice',
             'tickets',
+            'ticketPrice',
             'filledCapsules',
             'capsulesPerUnitOptions'
         ));
     }
 
+    /**
+     * Preview commande with cost and revenue calculation
+     */
+    public function preview(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'quantity' => 'required|numeric|min:0.001',
+            'capsules_per_unit' => 'required|integer|in:30,60,90,120',
+            'emballage_product_stock_id' => 'required|exists:product_stock,id',
+            'filled_capsule_id' => 'required|exists:filled_capsules,id',
+            'avec_joint_securite' => 'nullable|boolean',
+            'avec_ticket' => 'nullable|boolean',
+            'ticket_quantity' => 'nullable|numeric|min:0.001',
+            'nom_marque' => 'nullable|string|max:255',
+            'numero_autorisation' => 'nullable|string|max:255',
+            'ticket_product_stock_id' => 'nullable|exists:product_stock,id',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Get related data
+        $client = Client::find($validated['client_id']);
+        $emballageStock = ProductStock::with('product')->find($validated['emballage_product_stock_id']);
+        $filledCapsule = FilledCapsule::with(['herb', 'capsule.cartonType'])->find($validated['filled_capsule_id']);
+        
+        // Calculate costs
+        $quantity = (float) $validated['quantity'];
+        $emballageCost = ($emballageStock->purchase_price ?? 0) * $quantity;
+        
+        // Herb cost (from filled capsule)
+        $herbStock = FilledCapsule::find($validated['filled_capsule_id'])->herb;
+        $totalCapsules = $quantity * $validated['capsules_per_unit'];
+        $herbCostPerUnit = $herbStock->purchase_price ?? 0;
+        $herbTotalCost = $herbCostPerUnit * $totalCapsules;
+        
+        // Joint de sécurité cost
+        $jointCost = 0;
+        $avec_joint_securite = $validated['avec_joint_securite'] ?? false;
+        if ($avec_joint_securite) {
+            $jointProduct = Product::where('name', 'Joint de sécurité')->first();
+            if ($jointProduct && $jointProduct->stock->first()) {
+                $jointCost = ($jointProduct->stock->first()->purchase_price ?? 0) * $quantity;
+            }
+        }
+        
+        // Ticket cost
+        $ticketCost = 0;
+        $avec_ticket = $validated['avec_ticket'] ?? false;
+        $ticket_quantity = $validated['ticket_quantity'] ?? 0;
+        $ticket_product_stock_id = $validated['ticket_product_stock_id'] ?? null;
+        
+        if ($avec_ticket && $ticket_product_stock_id) {
+            $ticketStock = ProductStock::find($ticket_product_stock_id);
+            if ($ticketStock) {
+                $ticketCost = ($ticketStock->purchase_price ?? 0) * $ticket_quantity;
+            }
+        }
+        
+        // Total cost
+        $totalCost = $emballageCost + $herbTotalCost + $jointCost + $ticketCost;
+        
+        return view('commandes.preview', [
+            'client' => $client,
+            'emballageStock' => $emballageStock,
+            'filledCapsule' => $filledCapsule,
+            'quantity' => $quantity,
+            'capsules_per_unit' => $validated['capsules_per_unit'],
+            'totalCapsules' => $totalCapsules,
+            'emballageCost' => $emballageCost,
+            'herbCost' => $herbTotalCost,
+            'jointCost' => $jointCost,
+            'ticketCost' => $ticketCost,
+            'totalCost' => $totalCost,
+            'avec_joint_securite' => $avec_joint_securite,
+            'avec_ticket' => $avec_ticket,
+            'ticket_quantity' => $ticket_quantity,
+            'ticket_product_stock_id' => $ticket_product_stock_id,
+            'nom_marque' => $validated['nom_marque'] ?? '',
+            'numero_autorisation' => $validated['numero_autorisation'] ?? '',
+            'formData' => $validated,
+        ]);
+    }
+
+    /**
+     * Show confirmation page before creating commande
+     */
     /**
      * Store a newly created resource in storage.
      * UNIFIED EMBALLAGE - No pilulier/bouchon separation
@@ -94,6 +189,7 @@ class CommandeController extends Controller
             'nom_marque' => 'nullable|string|max:255',
             'numero_autorisation' => 'nullable|string|max:255',
             'ticket_product_stock_id' => 'nullable|exists:product_stock,id',
+            'selling_price' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
         
@@ -259,6 +355,39 @@ class CommandeController extends Controller
                 \Log::info('COMMANDE STORE: Ticket record created');
             }
 
+            // Calculate total cost from emballages
+            $totalCost = 0;
+            foreach ($commande->emballages as $emballage) {
+                $itemCost = ($emballage->productStock->purchase_price ?? 0) * $emballage->quantity;
+                $totalCost += $itemCost;
+            }
+            
+            // Add herb cost (from filled capsules)
+            foreach ($commande->filledCapsules as $fcRecord) {
+                $filledCapsule = $fcRecord->filledCapsule;
+                $herbCost = ($filledCapsule->herb->purchase_price ?? 0) * $fcRecord->quantity;
+                $totalCost += $herbCost;
+            }
+
+            // Create revenue record with selling price
+            $revenue = Revenue::create([
+                'commande_id' => $commande->id,
+                'cost' => $totalCost,
+                'selling_price' => $validated['selling_price'],
+                'status' => 'draft',
+                'revenue_date' => now()->toDateString(),
+            ]);
+            
+            // Calculate margin
+            $revenue->calculateMargin();
+            $revenue->save();
+            
+            \Log::info('COMMANDE STORE: Revenue record created', [
+                'commande_id' => $commande->id,
+                'cost' => $totalCost,
+                'selling_price' => $validated['selling_price'],
+            ]);
+
             DB::commit();
             \Log::info('COMMANDE STORE: Transaction committed successfully', ['commande_id' => $commande->id]);
 
@@ -285,7 +414,8 @@ class CommandeController extends Controller
             'client',
             'emballages.productStock.product',
             'filledCapsules.filledCapsule.herb',
-            'ticketStock.product'
+            'ticketStock.product',
+            'revenue'
         ]);
         return view('commandes.show', compact('commande'));
     }
@@ -299,7 +429,8 @@ class CommandeController extends Controller
         $commande->load([
             'client',
             'emballages.productStock.product',
-            'filledCapsules.filledCapsule'
+            'filledCapsules.filledCapsule',
+            'revenue'
         ]);
         
         $clients = Client::orderBy('name')->get();
@@ -321,7 +452,7 @@ class CommandeController extends Controller
             ->get();
         
         // Get filled capsules for selection
-        $filledCapsules = FilledCapsule::with(['herb', 'capsule'])->get();
+        $filledCapsules = FilledCapsule::with(['herb', 'capsule.cartonType'])->get();
         
         // Capsules per unit options
         $capsulesPerUnitOptions = [30, 60, 90, 120];
@@ -360,6 +491,7 @@ class CommandeController extends Controller
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
             'avec_joint_securite' => 'nullable|boolean',
             'avec_ticket' => 'nullable|boolean',
+            'selling_price' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ];
 
@@ -511,6 +643,16 @@ class CommandeController extends Controller
                     'numero_autorisation' => $request->numero_autorisation,
                 ]);
             }
+
+            // Update revenue with selling price and recalculate margins
+            $revenue = $commande->revenue;
+            if (!$revenue) {
+                $revenue = new Revenue(['commande_id' => $commande->id]);
+            }
+            
+            $revenue->selling_price = $request->selling_price;
+            $revenue->calculateMargin();
+            $revenue->save();
 
             DB::commit();
 
@@ -782,6 +924,15 @@ class CommandeController extends Controller
 
                     // ✅ APPLY STOCK DEDUCTIONS AND EXPENSE TRACKING
                     $commande->applyStockDeductions();
+
+                    // ✅ Update commande status
+                    $commande->update(['status' => $newStatus]);
+
+                    // ✅ Update revenue status to 'confirmed' and set revenue_date
+                    $commande->revenue()->update([
+                        'status' => 'confirmed',
+                        'revenue_date' => now()->toDateString(),
+                    ]);
 
                     // ✅ SET GUARD FLAG to prevent re-execution (already done in applyStockDeductions)
                     // $commande is already updated with stock_applied = true

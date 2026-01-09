@@ -86,9 +86,12 @@ class StockCapsuleController extends Controller
      */
     public function show(string $id)
     {
-        $capsule = Capsule::with('cartonType', ['movements' => function($query) {
-            $query->with(['herb', 'fornisseur'])->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
-        }])->findOrFail($id);
+        $capsule = Capsule::with([
+            'cartonType',
+            'movements' => function($query) {
+                $query->with(['herb', 'fornisseur'])->orderBy('movement_date', 'desc')->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($id);
         return view('stock-capsules.show', compact('capsule'));
     }
 

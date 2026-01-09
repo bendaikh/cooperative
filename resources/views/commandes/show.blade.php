@@ -187,6 +187,43 @@
             @endif
         </div>
 
+        <!-- Pricing & Revenue Section -->
+        @if($commande->revenue)
+        <div style="background: white; border-radius: 0.75rem; padding: 1.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #f3f4f6;">
+                <span style="font-size: 1.5rem;">💰</span>
+                <h2 style="margin: 0; font-size: 1.125rem; font-weight: 700; color: #1f2937;">Tarification & Rentabilité</h2>
+            </div>
+
+            <!-- Cost, Price & Profit Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <!-- Total Cost -->
+                <div style="background: #eff6ff; padding: 1.25rem; border-radius: 0.625rem; border: 2px solid #bfdbfe;">
+                    <div style="font-size: 0.75rem; color: #1e40af; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.5rem;">Coût Total de Production</div>
+                    <div style="font-size: 1.75rem; font-weight: 700; color: #1e40af;">{{ number_format($commande->revenue->cost ?? 0, 2) }} <span style="font-size: 0.75rem; color: #1e40af;">DH</span></div>
+                </div>
+
+                <!-- Selling Price -->
+                <div style="background: #fef2f2; padding: 1.25rem; border-radius: 0.625rem; border: 2px solid #fecaca;">
+                    <div style="font-size: 0.75rem; color: #7f1d1d; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.5rem;">Prix de Vente</div>
+                    <div style="font-size: 1.75rem; font-weight: 700; color: #991b1b;">{{ number_format($commande->revenue->selling_price ?? 0, 2) }} <span style="font-size: 0.75rem; color: #dc2626;">DH</span></div>
+                </div>
+
+                <!-- Profit -->
+                <div style="background: #ecfdf5; padding: 1.25rem; border-radius: 0.625rem; border: 2px solid #86efac;">
+                    <div style="font-size: 0.75rem; color: #065f46; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.5rem;">Profit</div>
+                    <div style="font-size: 1.75rem; font-weight: 700; color: #059669;">{{ number_format(($commande->revenue->selling_price ?? 0) - ($commande->revenue->cost ?? 0), 2) }} <span style="font-size: 0.75rem; color: #10b981;">DH</span></div>
+                </div>
+
+                <!-- Profit Margin -->
+                <div style="background: #fbbf24; padding: 1.25rem; border-radius: 0.625rem; border: 2px solid #fcd34d;">
+                    <div style="font-size: 0.75rem; color: #78350f; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.5rem;">Marge</div>
+                    <div style="font-size: 1.75rem; font-weight: 700; color: #92400e;">{{ number_format($commande->revenue->margin_percentage ?? 0, 1) }} <span style="font-size: 0.75rem; color: #b45309;">%</span></div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Notes Section -->
         @if($commande->notes)
         <div style="background: white; border-radius: 0.75rem; padding: 1.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 2rem;">

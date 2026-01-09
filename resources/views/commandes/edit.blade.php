@@ -85,7 +85,7 @@
                         <option value="">Sélectionner un emballage</option>
                         @foreach($emballages as $emballage)
                             @foreach($emballage->stock as $stock)
-                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" {{ $currentEmballage && $currentEmballage->product_stock_id == $stock->id ? 'selected' : '' }}>
+                                <option value="{{ $stock->id }}" data-stock="{{ $stock->global_quantity }}" data-price="{{ $stock->purchase_price ?? 0 }}" {{ $currentEmballage && $currentEmballage->product_stock_id == $stock->id ? 'selected' : '' }}>
                                     {{ $emballage->name }} - Stock: {{ $stock->global_quantity }}
                                 </option>
                             @endforeach
@@ -192,7 +192,13 @@
                     <select name="filled_capsule_id" id="filled_capsule_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
                         <option value="">Sélectionner des capsules remplies</option>
                         @foreach($filledCapsules as $capsule)
-                            <option value="{{ $capsule->id }}" data-quantity="{{ $capsule->quantity }}" {{ $commande->filledCapsules()->first()?->filled_capsule_id == $capsule->id ? 'selected' : '' }}>
+                            <option value="{{ $capsule->id }}" 
+                                data-quantity="{{ $capsule->quantity }}" 
+                                data-herb-quantity="{{ $capsule->herb_quantity ?? 0 }}" 
+                                data-herb-price="{{ $capsule->herb->purchase_price ?? 0 }}" 
+                                data-carton-price="{{ ($capsule->capsule->cartonType->purchase_price ?? 0) != 0 ? $capsule->capsule->cartonType->purchase_price : ($capsule->capsule->carton_price ?? 0) }}" 
+                                data-carton-capacity="{{ $capsule->capsule->cartonType->capacity ?? 0 }}" 
+                                {{ $commande->filledCapsules()->first()?->filled_capsule_id == $capsule->id ? 'selected' : '' }}>
                                 {{ $capsule->herb->name ?? 'Herbe inconnue' }} - Stock: {{ round($capsule->quantity, 2) }} rangées
                             </option>
                         @endforeach
@@ -248,6 +254,71 @@
                     </div>
                 </div>
 
+                <!-- Cost Breakdown -->
+                <div style="padding: 1.5rem; background: #f3f4f6; border-radius: 0.75rem; border: 1px solid #e5e7eb; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">💰 Calcul du Coût</h3>
+                    <div style="display: grid; gap: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: #6b7280;">Coût Emballage</span>
+                            <span id="cost-emballage" style="font-weight: 500; color: #1f2937;">0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: #6b7280;">Coût Capsules (vides)</span>
+                            <span id="cost-capsules" style="font-weight: 500; color: #1f2937;">0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: #6b7280;">Coût Matière Herbale</span>
+                            <span id="cost-herb-material" style="font-weight: 500; color: #1f2937;">0.00</span>
+                        </div>
+                        <div id="cost-joint-row" style="display: none; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: #6b7280;">Coût Joint de Sécurité</span>
+                            <span id="cost-joint" style="font-weight: 500; color: #1f2937;">0.00</span>
+                        </div>
+                        <div id="cost-ticket-row" style="display: none; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: #6b7280;">Coût Ticket</span>
+                            <span id="cost-ticket" style="font-weight: 500; color: #1f2937;">0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 1rem 0; font-weight: 600; font-size: 1.125rem; color: #2d7a52;">
+                            <span>Coût Total</span>
+                            <span id="total-cost">0.00 DH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selling Price & Profit -->
+                <div style="padding: 1.5rem; background: #fef3c7; border: 2px solid #fbbf24; border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                    <h3 style="margin-top: 0; color: #92400e; font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">💵 Prix de Vente & Profit</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="selling_price" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.75rem;">Prix de Vente (DH) <span style="color: #dc2626;">*</span></label>
+                        <input 
+                            type="number" 
+                            id="selling_price" 
+                            name="selling_price" 
+                            required 
+                            min="0" 
+                            step="0.01"
+                            placeholder="0.00"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid #fbbf24; border-radius: 0.5rem; outline: none; font-size: 1rem; font-weight: 500;"
+                            oninput="calculateProfit()"
+                            value="{{ $commande->revenue ? $commande->revenue->selling_price : '' }}"
+                        >
+                    </div>
+
+                    <div style="background: white; border-radius: 0.5rem; padding: 1rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin: 0 0 0.25rem 0;">Profit</p>
+                                <p id="profit-display" style="color: #2d7a52; font-size: 1.25rem; font-weight: 600; margin: 0;">0.00 DH</p>
+                            </div>
+                            <div>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin: 0 0 0.25rem 0;">Marge (%)</p>
+                                <p id="margin-display" style="color: #2d7a52; font-size: 1.125rem; font-weight: 600; margin: 0;">0.00%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Notes -->
                 <div style="margin-bottom: 1.5rem;">
                     <label for="notes" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Notes (optionnel)</label>
@@ -279,6 +350,10 @@
 
 @push('scripts')
 <script>
+// Define prices from controller
+const JOINT_SECURITE_PRICE = {{ $jointSecuritePrice ?? 0 }}; // DH per unit
+const TICKET_PRICE = {{ $ticketPrice ?? 0 }}; // DH per unit
+
 let currentStep = 1;
 const totalSteps = 5;
 
@@ -291,7 +366,7 @@ const clientSelect = document.getElementById('client_id');
 const quantityInput = document.getElementById('quantity');
 const emballageSelect = document.getElementById('emballage_product_stock_id');
 const filledCapsuleSelect = document.getElementById('filled_capsule_id');
-const capsulesPerUnitInputs = document.querySelectorAll('input[name="capsules_per_unit"]');
+const capsulesPerUnitInputs = document.querySelectorAll('input[name="capsules_per_unit"]');;
 
 function showStep(step) {
     document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
@@ -299,6 +374,11 @@ function showStep(step) {
     const currentStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
     if (currentStepEl) {
         currentStepEl.style.display = 'block';
+    }
+
+    // Calculate costs when entering Step 5
+    if (step === 5) {
+        calculateCosts();
     }
     
     prevBtn.style.display = step > 1 ? 'block' : 'none';
@@ -399,6 +479,110 @@ emballageSelect.addEventListener('change', () => {
 });
 
 showStep(currentStep);
+
+// Format number as currency (2 decimal places)
+function formatCurrency(value) {
+    const num = parseFloat(value) || 0;
+    return num.toFixed(2);
+}
+
+// Calculate and display costs when entering Step 5
+function calculateCosts() {
+    // Get form values
+    const quantity = parseFloat(quantityInput.value) || 0;
+    const capsulesPerUnit = parseFloat(document.querySelector('input[name="capsules_per_unit"]:checked')?.value) || 0;
+    const hasJointSecurite = document.getElementById('avec_joint_securite')?.checked || false;
+    const hasTicket = document.getElementById('avec_ticket')?.checked || false;
+
+    // Get emballage price from data attribute
+    const emballageOption = emballageSelect.options[emballageSelect.selectedIndex];
+    const emballagePrice = parseFloat(emballageOption.dataset?.price) || 0;
+
+    // Get filled capsule carton price, herb price, and quantity from data attribute
+    const filledCapsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
+    const cartonPrice = parseFloat(filledCapsuleOption.dataset?.cartonPrice) || 0;
+    const cartonCapacity = parseFloat(filledCapsuleOption.dataset?.cartonCapacity) || 0;
+    const herbPrice = parseFloat(filledCapsuleOption.dataset?.herbPrice) || 0;
+    const herbQuantity = parseFloat(filledCapsuleOption.dataset?.herbQuantity) || 0;
+
+    // Calculate total capsules
+    const totalCapsules = quantity * capsulesPerUnit;
+
+    // Calculate emballage cost
+    const costEmballage = emballagePrice * quantity;
+    document.getElementById('cost-emballage').textContent = formatCurrency(costEmballage);
+
+    // Calculate filled capsule cost (capsule + herb material) - SEPARATE
+    // CAPSULES: Price per Capsule = cartonPrice / cartonCapacity (fixed unit cost based on carton structure)
+    // HERB: Price per Rangée = herbPrice (DH/kg) × herbQuantity (kg per rangée)
+    //       Price per Capsule = herbPricePerRangée / 420
+    
+    let costCapsulePerUnit = 0;
+    let costHerbPerUnit = 0;
+    
+    // Capsule cost uses carton capacity (total structure)
+    if (cartonCapacity > 0) {
+        costCapsulePerUnit = cartonPrice / cartonCapacity; // cost per empty capsule (true unit cost)
+    }
+    
+    // Herb cost uses filled capsule quantity (what's actually used)
+    if (filledCapsuleQuantity > 0) {
+        const pricePerRangeeForHerb = herbPrice * herbQuantity; // price per rangée
+        costHerbPerUnit = pricePerRangeeForHerb / 420; // cost of herb per capsule
+    }
+    
+    const costCapsules = costCapsulePerUnit * totalCapsules;
+    const costHerbMaterial = costHerbPerUnit * totalCapsules;
+    
+    document.getElementById('cost-capsules').textContent = formatCurrency(costCapsules);
+    document.getElementById('cost-herb-material').textContent = formatCurrency(costHerbMaterial);
+
+    // Handle conditional costs
+    let costJoint = 0;
+    let costTicket = 0;
+
+    if (hasJointSecurite) {
+        document.getElementById('cost-joint-row').style.display = 'flex';
+        costJoint = JOINT_SECURITE_PRICE * quantity;
+        document.getElementById('cost-joint').textContent = formatCurrency(costJoint);
+    } else {
+        document.getElementById('cost-joint-row').style.display = 'none';
+    }
+
+    if (hasTicket) {
+        document.getElementById('cost-ticket-row').style.display = 'flex';
+        const ticketQuantity = parseFloat(document.getElementById('ticket_quantity')?.value) || 0;
+        costTicket = TICKET_PRICE * ticketQuantity;
+        document.getElementById('cost-ticket').textContent = formatCurrency(costTicket);
+    } else {
+        document.getElementById('cost-ticket-row').style.display = 'none';
+    }
+
+    // Calculate and store total cost
+    const totalCost = costEmballage + costCapsules + costHerbMaterial + costJoint + costTicket;
+    document.getElementById('total-cost').textContent = formatCurrency(totalCost) + ' DH';
+}
+
+// Calculate and display profit and margin
+function calculateProfit() {
+    const totalCostText = document.getElementById('total-cost').textContent;
+    const totalCost = parseFloat(totalCostText.replace(' DH', '')) || 0;
+    const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
+    
+    const profit = sellingPrice - totalCost;
+    const margin = totalCost > 0 ? ((profit / totalCost) * 100) : 0;
+    
+    document.getElementById('profit-display').textContent = formatCurrency(profit) + ' DH';
+    document.getElementById('margin-display').textContent = formatCurrency(margin) + '%';
+}
+
+// Call calculateCosts when form loads (for edit view to show current costs)
+document.addEventListener('DOMContentLoaded', () => {
+    if (currentStep === 5) {
+        calculateCosts();
+        calculateProfit();
+    }
+});
 </script>
 @endpush
 
