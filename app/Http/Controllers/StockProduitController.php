@@ -64,6 +64,7 @@ class StockProduitController extends Controller
             'quantity' => 'required|numeric|min:0',
             'purchase_price' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
         ]);
 
         // Verify that the selected attributes belong to the product
@@ -92,7 +93,7 @@ class StockProduitController extends Controller
             return back()->withErrors(['product_id' => 'Ce produit existe déjà dans le stock avec ces attributs. Veuillez utiliser l\'option "Réapprovisionner" pour ajouter du stock.'])->withInput();
         }
 
-        $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes']));
+        $stock = ProductStock::create($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes', 'fornisseur_id']));
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit créé avec succès.');
     }
@@ -115,7 +116,8 @@ class StockProduitController extends Controller
     {
         $stock = ProductStock::with(['product', 'category', 'color', 'size'])->findOrFail($id);
         $products = Product::all();
-        return view('stock-produit.edit', compact('stock', 'products'));
+        $fornisseurs = Fornisseur::all();
+        return view('stock-produit.edit', compact('stock', 'products', 'fornisseurs'));
     }
 
     /**
@@ -133,6 +135,7 @@ class StockProduitController extends Controller
             'quantity' => 'required|numeric|min:0',
             'purchase_price' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
         ]);
 
         // Verify that the selected attributes belong to the product
@@ -150,7 +153,7 @@ class StockProduitController extends Controller
             return back()->withErrors(['size_id' => 'La taille sélectionnée n\'appartient pas à ce produit.'])->withInput();
         }
 
-        $stock->update($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes']));
+        $stock->update($request->only(['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes', 'fornisseur_id']));
 
         return redirect()->route('stock-produit.index')->with('success', 'Stock produit mis à jour avec succès.');
     }

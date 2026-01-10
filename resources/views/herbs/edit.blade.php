@@ -36,6 +36,21 @@
                 @enderror
             </div>
 
+            <div style="margin-bottom: 1.5rem;">
+                <label for="fornisseur_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Fournisseur (optionnel)</label>
+                <select name="fornisseur_id" id="fornisseur_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                    <option value="">Sélectionner un fournisseur</option>
+                    @foreach($fornisseurs as $fornisseur)
+                        <option value="{{ $fornisseur->id }}" {{ old('fornisseur_id', $herb->fornisseur_id) == $fornisseur->id ? 'selected' : '' }}>
+                            {{ $fornisseur->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('fornisseur_id')
+                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div style="display: flex; gap: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
                 <button type="submit" style="background: #2d7a52; color: white; padding: 0.75rem 2rem; border-radius: 0.5rem; border: none; font-weight: 500; cursor: pointer; transition: background 0.2s;">
                     Enregistrer

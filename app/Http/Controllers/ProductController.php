@@ -17,7 +17,8 @@ class ProductController extends Controller
         $categories = \App\Models\Category::all();
         $colors = \App\Models\Color::all();
         $sizes = \App\Models\Size::all();
-        return view('products.create', compact('categories', 'colors', 'sizes'));
+        $fornisseurs = \App\Models\Fornisseur::all();
+        return view('products.create', compact('categories', 'colors', 'sizes', 'fornisseurs'));
     }
 
     public function store(Request $request)
@@ -25,6 +26,8 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type_emballage' => 'nullable|in:PILULIER,BOUCHON',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
+            'purchase_price' => 'nullable|numeric|min:0',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'colors' => 'required|array',
@@ -33,7 +36,7 @@ class ProductController extends Controller
             'sizes.*' => 'exists:sizes,id',
         ]);
 
-        $product = \App\Models\Product::create($request->only('name', 'type_emballage'));
+        $product = \App\Models\Product::create($request->only('name', 'type_emballage', 'fornisseur_id', 'purchase_price'));
         $product->categories()->sync($request->categories);
         $product->colors()->sync($request->colors);
         $product->sizes()->sync($request->sizes);
@@ -47,7 +50,8 @@ class ProductController extends Controller
         $categories = \App\Models\Category::all();
         $colors = \App\Models\Color::all();
         $sizes = \App\Models\Size::all();
-        return view('products.edit', compact('product', 'categories', 'colors', 'sizes'));
+        $fornisseurs = \App\Models\Fornisseur::all();
+        return view('products.edit', compact('product', 'categories', 'colors', 'sizes', 'fornisseurs'));
     }
 
     public function update(Request $request, $id)
@@ -56,6 +60,8 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type_emballage' => 'nullable|in:PILULIER,BOUCHON',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
+            'purchase_price' => 'nullable|numeric|min:0',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'colors' => 'required|array',
@@ -64,7 +70,7 @@ class ProductController extends Controller
             'sizes.*' => 'exists:sizes,id',
         ]);
 
-        $product->update($request->only('name', 'type_emballage'));
+        $product->update($request->only('name', 'type_emballage', 'fornisseur_id', 'purchase_price'));
         $product->categories()->sync($request->categories);
         $product->colors()->sync($request->colors);
         $product->sizes()->sync($request->sizes);

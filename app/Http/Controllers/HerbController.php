@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Herb;
+use App\Models\Fornisseur;
 use Illuminate\Http\Request;
 
 class HerbController extends Controller
@@ -21,7 +22,8 @@ class HerbController extends Controller
      */
     public function create()
     {
-        return view('herbs.create');
+        $fornisseurs = Fornisseur::all();
+        return view('herbs.create', compact('fornisseurs'));
     }
 
     /**
@@ -33,9 +35,10 @@ class HerbController extends Controller
             'name' => 'required|string|max:255',
             'source' => 'required|string|max:255',
             'purchase_price' => 'nullable|numeric|min:0',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
         ]);
 
-        Herb::create($request->only(['name', 'source', 'purchase_price']));
+        Herb::create($request->only(['name', 'source', 'purchase_price', 'fornisseur_id']));
 
         return redirect()->route('herbs.index')->with('success', 'Herb créé avec succès.');
     }
@@ -54,7 +57,8 @@ class HerbController extends Controller
     public function edit(string $id)
     {
         $herb = Herb::findOrFail($id);
-        return view('herbs.edit', compact('herb'));
+        $fornisseurs = Fornisseur::all();
+        return view('herbs.edit', compact('herb', 'fornisseurs'));
     }
 
     /**
@@ -68,9 +72,10 @@ class HerbController extends Controller
             'name' => 'required|string|max:255',
             'source' => 'required|string|max:255',
             'purchase_price' => 'nullable|numeric|min:0',
+            'fornisseur_id' => 'nullable|exists:fornisseurs,id',
         ]);
 
-        $herb->update($request->only(['name', 'source', 'purchase_price']));
+        $herb->update($request->only(['name', 'source', 'purchase_price', 'fornisseur_id']));
 
         return redirect()->route('herbs.index')->with('success', 'Herb mis à jour avec succès.');
     }

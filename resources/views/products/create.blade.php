@@ -79,6 +79,32 @@
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <!-- Fournisseur et Prix -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="fornisseur_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Fournisseur (optionnel)</label>
+                        <select name="fornisseur_id" id="fornisseur_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                            <option value="">Sélectionner un fournisseur</option>
+                            @foreach($fornisseurs as $fornisseur)
+                                <option value="{{ $fornisseur->id }}" {{ old('fornisseur_id') == $fornisseur->id ? 'selected' : '' }}>
+                                    {{ $fornisseur->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('fornisseur_id')
+                            <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="purchase_price" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Prix d'achat (DH) (optionnel)</label>
+                        <input type="number" name="purchase_price" id="purchase_price" step="0.01" min="0" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" placeholder="0.00" value="{{ old('purchase_price') }}">
+                        @error('purchase_price')
+                            <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
             </div>
 
             <div style="display: flex; gap: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">

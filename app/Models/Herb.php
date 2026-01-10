@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Herb extends Model
 {
-    protected $fillable = ['name', 'source', 'purchase_price'];
+    protected $fillable = ['name', 'source', 'purchase_price', 'fornisseur_id'];
 
     protected $casts = [
         'purchase_price' => 'decimal:2',
     ];
+
+    public function fornisseur()
+    {
+        return $this->belongsTo(Fornisseur::class);
+    }
 
     public function movements()
     {

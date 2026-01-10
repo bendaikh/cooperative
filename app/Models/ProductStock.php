@@ -8,7 +8,7 @@ class ProductStock extends Model
 {
     protected $table = 'product_stock';
     
-    protected $fillable = ['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes'];
+    protected $fillable = ['product_id', 'category_id', 'color_id', 'size_id', 'quantity', 'purchase_price', 'notes', 'fornisseur_id'];
 
     protected $casts = [
         'purchase_price' => 'decimal:2',
@@ -32,6 +32,11 @@ class ProductStock extends Model
     public function size()
     {
         return $this->belongsTo(Size::class);
+    }
+
+    public function fornisseur()
+    {
+        return $this->belongsTo(Fornisseur::class);
     }
 
     public function movements()

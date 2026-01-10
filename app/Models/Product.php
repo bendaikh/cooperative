@@ -6,11 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'type_emballage'];
+    protected $fillable = ['name', 'type_emballage', 'fornisseur_id', 'purchase_price'];
 
     protected $casts = [
         'type_emballage' => 'string',
+        'purchase_price' => 'decimal:2',
     ];
+
+    public function fornisseur()
+    {
+        return $this->belongsTo(Fornisseur::class);
+    }
 
     public function categories()
     {

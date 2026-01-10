@@ -31,11 +31,10 @@ class StockCapsuleController extends Controller
      */
     public function create()
     {
-        $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
-            $query->where('specialite', 'capsule');
-        })->get();
+        $fornisseurs = Fornisseur::all();
+        $herbs = Herb::all();
         $cartonTypes = \App\Models\CartonType::active();
-        return view('stock-capsules.create', compact('fornisseurs', 'cartonTypes'));
+        return view('stock-capsules.create', compact('fornisseurs', 'herbs', 'cartonTypes'));
     }
 
     /**
