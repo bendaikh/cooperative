@@ -30,7 +30,7 @@
             <div style="margin-bottom: 1.5rem;">
                 <label for="carton_type_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Type de carton <span style="color: #dc2626;">*</span></label>
                 <div style="display: flex; gap: 1rem; align-items: center;">
-                    <select name="carton_type_id" id="carton_type_id" required style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                    <select name="carton_type_id" id="carton_type_id" required style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" data-carton-prices="{{ json_encode($cartonTypes->pluck('purchase_price', 'id')) }}">
                         <option value="">Sélectionner un type</option>
                         @foreach($cartonTypes as $type)
                             <option value="{{ $type->id }}" {{ old('carton_type_id') == $type->id ? 'selected' : '' }}>
@@ -89,5 +89,28 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartonTypeSelect = document.getElementById('carton_type_id');
+        const cartonPriceInput = document.getElementById('carton_price');
+        const cartonPrices = JSON.parse(cartonTypeSelect.getAttribute('data-carton-prices'));
+
+        // Auto-fill price when carton type is selected
+        cartonTypeSelect.addEventListener('change', function() {
+            const selectedId = this.value;
+            if (selectedId && cartonPrices[selectedId]) {
+                cartonPriceInput.value = cartonPrices[selectedId];
+            } else {
+                cartonPriceInput.value = '';
+            }
+        });
+
+        // Trigger change event on page load if a type was previously selected
+        if (cartonTypeSelect.value) {
+            cartonTypeSelect.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
 @endsection
 

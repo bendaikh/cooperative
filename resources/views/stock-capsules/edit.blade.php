@@ -22,16 +22,31 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                 <div>
-                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Type de carton</label>
-                    <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 0.5rem; color: #1f2937; font-weight: 500;">
-                        {{ $capsule->cartonType->name ?? 'Type A' }} ({{ number_format($capsule->getCapsulesPerCarton(), 0, ',', ' ') }} capsules)
+                    <label for="carton_type_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Type de carton</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select name="carton_type_id" id="carton_type_id" style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                            <option value="">-- Sélectionner un type de carton --</option>
+                            @foreach($cartonTypes as $type)
+                                <option value="{{ $type->id }}" {{ $capsule->carton_type_id == $type->id ? 'selected' : '' }}>
+                                    {{ $type->name }} ({{ number_format($type->capacity, 0, ',', ' ') }} capsules)
+                                </option>
+                            @endforeach
+                        </select>
+                        <a href="{{ route('carton-types.create', ['from' => 'stock-capsules', 'edit_id' => $capsule->id]) }}" 
+                           style="background: #f0f9ff; color: #0369a1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid #0369a1; text-decoration: none; font-weight: 500; white-space: nowrap; text-align: center;">
+                            + Ajouter
+                        </a>
                     </div>
+                    @error('carton_type_id')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Prix d'achat par carton</label>
-                    <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 0.5rem; color: #1f2937; font-weight: 500;">
-                        {{ number_format($capsule->carton_price ?? 0, 2) }} DH
-                    </div>
+                    <label for="carton_price" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem;">Prix d'achat par carton</label>
+                    <input type="number" name="carton_price" id="carton_price" step="0.01" min="0" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;" value="{{ old('carton_price', $capsule->carton_price ?? 0) }}">
+                    @error('carton_price')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 

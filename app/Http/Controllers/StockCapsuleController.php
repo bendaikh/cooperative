@@ -56,6 +56,11 @@ class StockCapsuleController extends Controller
         $cartonType = \App\Models\CartonType::findOrFail($request->carton_type_id);
         $nombreCapsules = $request->quantity * $cartonType->capacity;
 
+        // Update the carton type's purchase price
+        $cartonType->update([
+            'purchase_price' => $request->carton_price,
+        ]);
+
         // Create capsule with quantity, carton type, and price
         $capsule = Capsule::create([
             'carton' => $request->carton,
@@ -101,7 +106,8 @@ class StockCapsuleController extends Controller
     public function edit(string $id)
     {
         $capsule = Capsule::with('cartonType')->findOrFail($id);
-        return view('stock-capsules.edit', compact('capsule'));
+        $cartonTypes = \App\Models\CartonType::active();
+        return view('stock-capsules.edit', compact('capsule', 'cartonTypes'));
     }
 
     /**
@@ -113,11 +119,27 @@ class StockCapsuleController extends Controller
         
         $request->validate([
             'carton' => 'required|string|max:255',
+            'carton_type_id' => 'required|exists:carton_types,id',
+            'carton_price' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
-        // Only update carton and notes, carton_type and carton_price are set at creation
-        $capsule->update($request->only(['carton', 'notes']));
+        // Update carton, carton type, price and notes
+        $cartonType = \App\Models\CartonType::findOrFail($request->carton_type_id);
+        $nombreCapsules = $capsule->quantity * $cartonType->capacity;
+
+        // Update the carton type's purchase price
+        $cartonType->update([
+            'purchase_price' => $request->carton_price,
+        ]);
+
+        $capsule->update([
+            'carton' => $request->carton,
+            'carton_type_id' => $request->carton_type_id,
+            'carton_price' => $request->carton_price,
+            'nombre_capsules' => $nombreCapsules,
+            'notes' => $request->notes,
+        ]);
 
         return redirect()->route('stock-capsules.index')->with('success', 'Stock capsule mis à jour avec succès.');
     }
