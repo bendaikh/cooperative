@@ -473,7 +473,7 @@
             <div class="form-group">
                 <label class="form-label" for="usage_herb_quantity">Quantité d'herbe utilisée <span style="color: #ef4444;">*</span></label>
                 <input type="number" id="usage_herb_quantity" name="herb_quantity" class="form-input" step="0.001" min="0.001" required>
-                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Quantité d'herbe utilisée pour remplir les capsules</small>
+                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">Quantité d'herbe utilisée pour remplir les capsules (total pour toutes les rangées)</small>
                 @error('herb_quantity')
                     <div class="error-message">{{ $message }}</div>
                 @enderror

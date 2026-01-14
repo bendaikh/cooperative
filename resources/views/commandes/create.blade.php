@@ -419,26 +419,23 @@ function calculateCosts() {
 
     // Calculate filled capsule cost (capsule + herb material) - SEPARATE
     // CAPSULES: Price per Capsule = cartonPrice / cartonCapacity (fixed unit cost based on carton structure)
-    // HERB: Price per Rangée = herbPrice (DH/kg) × herbQuantity (kg per rangée)
-    //       Price per Capsule = herbPricePerRangée / 420
+    // HERB: Total Herb Cost = herbPrice (DH/kg) × herbQuantity (total kg in selected FilledCapsule)
     
     let costCapsulePerUnit = 0;
-    let costHerbPerUnit = 0;
+    let costHerbMaterial = 0;
     
     // Capsule cost uses carton capacity (total structure)
     if (cartonCapacity > 0) {
         costCapsulePerUnit = cartonPrice / cartonCapacity; // cost per empty capsule (true unit cost)
     }
     
-    // Herb cost uses filled capsule quantity (what's actually used)
-    if (filledCapsuleQuantity > 0) {
-        const pricePerRangeeForHerb = herbPrice * herbQuantity; // price per rangée
-        costHerbPerUnit = pricePerRangeeForHerb / 420; // cost of herb per capsule
+    // Herb cost: total kg used × price per kg (herbQuantity is already the total for selected rangées)
+    if (herbQuantity > 0) {
+        costHerbMaterial = herbPrice * herbQuantity; // total herb material cost
     }
     
     // Calculate totals for all capsules used
     const costCapsules = costCapsulePerUnit * totalCapsules; // total capsule cost
-    const costHerbMaterial = costHerbPerUnit * totalCapsules; // total herb material cost
     
     // Display separately
     document.getElementById('cost-capsules').textContent = formatCurrency(costCapsules);
