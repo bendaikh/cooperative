@@ -57,9 +57,21 @@ class CommandeController extends Controller
             : 0;
         
         // Get Ticket products with their stock and movements
-        $tickets = Product::where('name', 'Ticket')
+        $tickets = Product::where('name', 'LIKE', '%Ticket%')
             ->with('stock.movements')
             ->get();
+        
+        // Build ticket prices array by type
+        $ticketPrices = [];
+        foreach ($tickets as $ticket) {
+            if ($ticket->stock->first()) {
+                // Extract type from product name (e.g., "Ticket PAPIER" -> "PAPIER")
+                preg_match('/Ticket\s+(\w+)/', $ticket->name, $matches);
+                if (isset($matches[1])) {
+                    $ticketPrices[$matches[1]] = $ticket->stock->first()->purchase_price ?? 0;
+                }
+            }
+        }
         $ticketPrice = $tickets && $tickets->first() && $tickets->first()->stock->first()
             ? $tickets->first()->stock->first()->purchase_price ?? 0
             : 0;
@@ -77,6 +89,7 @@ class CommandeController extends Controller
             'jointSecuritePrice',
             'tickets',
             'ticketPrice',
+            'ticketPrices',
             'filledCapsules',
             'capsulesPerUnitOptions'
         ));
@@ -447,9 +460,20 @@ class CommandeController extends Controller
             ->first();
         
         // Get Tickets
-        $tickets = Product::where('name', 'Ticket')
+        $tickets = Product::where('name', 'LIKE', '%Ticket%')
             ->with('stock')
             ->get();
+        
+        // Build ticket prices array by type
+        $ticketPrices = [];
+        foreach ($tickets as $ticket) {
+            if ($ticket->stock->first()) {
+                preg_match('/Ticket\s+(\w+)/', $ticket->name, $matches);
+                if (isset($matches[1])) {
+                    $ticketPrices[$matches[1]] = $ticket->stock->first()->purchase_price ?? 0;
+                }
+            }
+        }
         
         // Get filled capsules for selection
         $filledCapsules = FilledCapsule::with(['herb', 'capsule.cartonType'])->get();
@@ -471,6 +495,7 @@ class CommandeController extends Controller
             'emballages',
             'jointSecurite',
             'tickets',
+            'ticketPrices',
             'filledCapsules',
             'capsulesPerUnitOptions',
             'currentEmballage'
@@ -871,21 +896,9 @@ class CommandeController extends Controller
                             continue;
                         }
                         
-                        \Log::info('COMMANDE UPDATE STATUS: Decrementing emballage', [
-                            'commande_id' => $commande->id,
-                            'product_name' => $emballage->productStock->product->name,
-                            'emballage_quantity' => $emballage->quantity,
-                            'product_stock_current_qty' => $emballage->productStock->quantity,
-                        ]);
-                        
                         $emballage->productStock->decrement('quantity', $emballage->quantity);
-                        $decrementedProducts[$emballage->product_stock_id] = true;
                         
-                        \Log::info('COMMANDE UPDATE STATUS: Stock movement created', [
-                            'product_stock_id' => $emballage->product_stock_id,
-                            'type' => 'usage',
-                            'quantity' => $emballage->quantity,
-                        ]);
+                        $decrementedProducts[$emballage->product_stock_id] = true;
                         
                         StockMovement::create([
                             'product_stock_id' => $emballage->product_stock_id,

@@ -18,7 +18,7 @@ class StockProduitController extends Controller
      */
     public function index()
     {
-        $stocks = ProductStock::with(['product', 'category', 'color', 'size', 'movements'])->get();
+        $stocks = ProductStock::with(['product.categories', 'product.colors', 'product.sizes', 'category', 'color', 'size', 'movements'])->get();
         $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
             $query->where('specialite', 'embalage');
         })->get();
@@ -30,7 +30,7 @@ class StockProduitController extends Controller
      */
     public function create()
     {
-        $products = Product::all();
+        $products = Product::with(['categories', 'colors', 'sizes'])->get();
         $fornisseurs = Fornisseur::whereHas('specialites', function ($query) {
             $query->where('specialite', 'embalage');
         })->get();
@@ -48,6 +48,7 @@ class StockProduitController extends Controller
             'categories' => $product->categories,
             'colors' => $product->colors,
             'sizes' => $product->sizes,
+            'purchase_price' => $product->purchase_price,
         ]);
     }
 
@@ -115,7 +116,7 @@ class StockProduitController extends Controller
     public function edit(string $id)
     {
         $stock = ProductStock::with(['product', 'category', 'color', 'size'])->findOrFail($id);
-        $products = Product::all();
+        $products = Product::with(['categories', 'colors', 'sizes'])->get();
         $fornisseurs = Fornisseur::all();
         return view('stock-produit.edit', compact('stock', 'products', 'fornisseurs'));
     }
@@ -178,10 +179,20 @@ class StockProduitController extends Controller
         
         $request->validate([
             'quantity' => 'required|numeric|min:0.001',
+            'purchase_price' => 'nullable|numeric|min:0',
             'fornisseur_id' => 'nullable|exists:fornisseurs,id',
             'movement_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
+
+        // Update purchase price if provided
+        if ($request->purchase_price !== null && $request->purchase_price !== '') {
+            $stock->purchase_price = $request->purchase_price;
+            $stock->save();
+        }
+
+        // Increment the base quantity
+        $stock->increment('quantity', $request->quantity);
 
         StockMovement::create([
             'product_stock_id' => $stock->id,
@@ -209,10 +220,12 @@ class StockProduitController extends Controller
         ]);
 
         // Check if there's enough stock
-        $globalQuantity = $stock->global_quantity;
-        if ($request->quantity > $globalQuantity) {
-            return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Stock disponible: ' . $globalQuantity])->withInput();
+        if ($request->quantity > $stock->quantity) {
+            return back()->withErrors(['quantity' => 'Quantité insuffisante en stock. Stock disponible: ' . $stock->quantity])->withInput();
         }
+
+        // Decrement the base quantity
+        $stock->decrement('quantity', $request->quantity);
 
         StockMovement::create([
             'product_stock_id' => $stock->id,

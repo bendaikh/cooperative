@@ -16,7 +16,34 @@
                 <select name="product_id" id="product_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
                     <option value="">Sélectionner un produit</option>
                     @foreach($products as $product)
-                        <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>{{ $product->name }}</option>
+                        @php
+                            // Build a descriptive label
+                            $label = $product->name;
+                            $attributes = [];
+                            
+                            // Add type_emballage if it exists
+                            if ($product->type_emballage) {
+                                $attributes[] = $product->type_emballage;
+                            }
+                            
+                            // For Ticket product, show categories (PAPIER, VINELLE)
+                            if ($product->name === 'Ticket' && $product->categories->count() > 0) {
+                                $categoryNames = $product->categories->pluck('name')->join(', ');
+                                $attributes[] = $categoryNames;
+                            }
+                            
+                            // For Ticket product, also show colors if available
+                            if ($product->name === 'Ticket' && $product->colors->count() > 0) {
+                                $colorNames = $product->colors->pluck('name')->join(', ');
+                                $attributes[] = $colorNames;
+                            }
+                            
+                            // Add attributes to label if any exist
+                            if (!empty($attributes)) {
+                                $label .= ' (' . implode(' | ', $attributes) . ')';
+                            }
+                        @endphp
+                        <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
                 @error('product_id')
@@ -112,11 +139,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category_id');
     const colorSelect = document.getElementById('color_id');
     const sizeSelect = document.getElementById('size_id');
+    const purchasePriceInput = document.getElementById('purchase_price');
 
     // Store old values for restoration after product change
     const oldCategoryId = @json(old('category_id'));
     const oldColorId = @json(old('color_id'));
     const oldSizeId = @json(old('size_id'));
+    const oldPurchasePrice = @json(old('purchase_price'));
 
     function clearSelect(select) {
         select.innerHTML = '<option value="">Sélectionner ' + (select.id === 'category_id' ? 'une catégorie' : select.id === 'color_id' ? 'une couleur' : 'une taille') + '</option>';
@@ -133,41 +162,68 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/stock-produit/product/${productId}/attributes`)
             .then(response => response.json())
             .then(data => {
-                // Populate categories
+                // Populate categories and auto-select the first one if only one exists
                 clearSelect(categorySelect);
-                data.categories.forEach(category => {
+                let categoryAutoSelected = false;
+                data.categories.forEach((category, index) => {
                     const option = document.createElement('option');
                     option.value = category.id;
                     option.textContent = category.name;
-                    if (oldCategoryId && category.id == oldCategoryId) {
+                    
+                    // Auto-select if this is the only category or the first one
+                    if ((data.categories.length === 1 && !oldCategoryId) || (index === 0 && !oldCategoryId && !categoryAutoSelected)) {
+                        option.selected = true;
+                        categoryAutoSelected = true;
+                    } else if (oldCategoryId && category.id == oldCategoryId) {
                         option.selected = true;
                     }
                     categorySelect.appendChild(option);
                 });
 
-                // Populate colors
+                // Populate colors and auto-select the first one if only one exists
                 clearSelect(colorSelect);
-                data.colors.forEach(color => {
+                let colorAutoSelected = false;
+                data.colors.forEach((color, index) => {
                     const option = document.createElement('option');
                     option.value = color.id;
                     option.textContent = color.name;
-                    if (oldColorId && color.id == oldColorId) {
+                    
+                    // Auto-select if this is the only color or the first one
+                    if ((data.colors.length === 1 && !oldColorId) || (index === 0 && !oldColorId && !colorAutoSelected)) {
+                        option.selected = true;
+                        colorAutoSelected = true;
+                    } else if (oldColorId && color.id == oldColorId) {
                         option.selected = true;
                     }
                     colorSelect.appendChild(option);
                 });
 
-                // Populate sizes
+                // Populate sizes and auto-select the first one if only one exists
                 clearSelect(sizeSelect);
-                data.sizes.forEach(size => {
+                let sizeAutoSelected = false;
+                data.sizes.forEach((size, index) => {
                     const option = document.createElement('option');
                     option.value = size.id;
                     option.textContent = size.name;
-                    if (oldSizeId && size.id == oldSizeId) {
+                    
+                    // Auto-select if this is the only size or the first one
+                    if ((data.sizes.length === 1 && !oldSizeId) || (index === 0 && !oldSizeId && !sizeAutoSelected)) {
+                        option.selected = true;
+                        sizeAutoSelected = true;
+                    } else if (oldSizeId && size.id == oldSizeId) {
                         option.selected = true;
                     }
                     sizeSelect.appendChild(option);
                 });
+
+                // Auto-fill purchase price
+                if (data.purchase_price && !oldPurchasePrice) {
+                    purchasePriceInput.value = data.purchase_price;
+                } else if (oldPurchasePrice) {
+                    purchasePriceInput.value = oldPurchasePrice;
+                } else {
+                    purchasePriceInput.value = '';
+                }
             })
             .catch(error => {
                 console.error('Error loading product attributes:', error);

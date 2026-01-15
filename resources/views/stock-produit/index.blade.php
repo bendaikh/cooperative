@@ -299,16 +299,44 @@
                 @endphp
                 <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 1rem; color: #1f2937; font-weight: 500;">{{ $stock->product->name }}</td>
-                    <td style="padding: 1rem; color: #4b5563;">{{ $stock->category->name ?? '-' }}</td>
-                    <td style="padding: 1rem; color: #4b5563;">{{ $stock->color->name ?? '-' }}</td>
-                    <td style="padding: 1rem; color: #4b5563;">{{ $stock->size->name ?? '-' }}</td>
+                    <td style="padding: 1rem; color: #4b5563;">
+                        @if($stock->product->categories->count() > 0)
+                            @foreach($stock->product->categories as $category)
+                                <span style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $category->name }}</span>
+                            @endforeach
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="padding: 1rem; color: #4b5563;">
+                        @if($stock->product->colors->count() > 0)
+                            @foreach($stock->product->colors as $color)
+                                <span style="background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $color->name }}</span>
+                            @endforeach
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="padding: 1rem; color: #4b5563;">
+                        @if($stock->product->sizes->count() > 0)
+                            @foreach($stock->product->sizes as $size)
+                                <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; margin-right: 0.25rem;">{{ $size->name }}</span>
+                            @endforeach
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td style="padding: 1rem; color: #4b5563;">
                         <span style="background: {{ $globalQuantity > 0 ? '#ecfdf5' : '#fee2e2' }}; color: {{ $globalQuantity > 0 ? '#065f46' : '#991b1b' }}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">
                             {{ intval($globalQuantity) }} unités
                         </span>
                     </td>
                     <td style="padding: 1rem; color: #4b5563; font-weight: 500;">
-                        {{ $stock->purchase_price ? number_format($stock->purchase_price, 2) : '-' }}
+                        @if($stock->product->purchase_price)
+                            <span style="background: #e0e7ff; color: #3730a3; padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-weight: 600;">{{ number_format($stock->product->purchase_price, 2) }}</span>
+                        @else
+                            <span style="color: #9ca3af;">-</span>
+                        @endif
                     </td>
                     <td style="padding: 1rem; color: #6b7280;">
                         @if($latestRestock && $latestRestock->fornisseur)
@@ -329,7 +357,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                             </a>
-                            <button onclick="openRestockModal({{ $stock->id }})" class="btn-icon btn-icon-restock tooltip" data-tooltip="Réapprovisionner">
+                            <button onclick="openRestockModal({{ $stock->id }}, {{ $stock->product->purchase_price ?? 0 }})" class="btn-icon btn-icon-restock tooltip" data-tooltip="Réapprovisionner">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
@@ -379,6 +407,14 @@
                 <label class="form-label" for="restock_quantity">Quantité</label>
                 <input type="number" id="restock_quantity" name="quantity" class="form-input" min="1" step="1" required>
                 @error('quantity')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="restock_purchase_price">Prix d'achat (DH) (optionnel)</label>
+                <input type="number" id="restock_purchase_price" name="purchase_price" class="form-input" min="0" step="0.01" placeholder="0.00">
+                <small style="color: #6b7280; font-size: 0.75rem; display: block; margin-top: 0.25rem;">📦 Le prix du produit s'affiche automatiquement - Modifiez si nécessaire</small>
+                @error('purchase_price')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
@@ -452,10 +488,19 @@
 
 @push('scripts')
 <script>
-    function openRestockModal(stockId) {
+    function openRestockModal(stockId, productPrice) {
         const modal = document.getElementById('restockModal');
         const form = document.getElementById('restockForm');
+        const priceInput = document.getElementById('restock_purchase_price');
         form.action = '{{ route("stock-produit.restock", ":id") }}'.replace(':id', stockId);
+        
+        // Pré-remplir le prix avec le prix du produit
+        if (productPrice && productPrice > 0) {
+            priceInput.value = productPrice;
+        } else {
+            priceInput.value = '';
+        }
+        
         modal.classList.add('active');
     }
 

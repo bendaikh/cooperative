@@ -114,14 +114,13 @@
 
                 <!-- Ticket Checkbox -->
                 <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%); border-radius: 0.75rem; border: 2px solid #d8b4fe;">
-                    @if($tickets && $tickets->count() > 0)
-                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 0.75rem;">
-                            <input type="checkbox" name="avec_ticket" id="avec_ticket" value="1" {{ old('avec_ticket') ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem; accent-color: #a855f7;">
-                            <span style="font-size: 0.95rem; font-weight: 600; color: #1f2937;">🎫 Avec Ticket</span>
-                        </label>
-                        <p style="color: #6b21a8; font-size: 0.75rem; margin-left: 2rem; margin-top: 0.25rem;">
-                            Si coché, spécifiez le produit ticket, le nom de la marque et le numéro d'autorisation.
-                        </p>
+                    <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 0.75rem;">
+                        <input type="checkbox" name="avec_ticket" id="avec_ticket" value="1" {{ old('avec_ticket') ? 'checked' : '' }} style="width: 1.25rem; height: 1.25rem; cursor: pointer; margin-right: 0.75rem; accent-color: #a855f7;">
+                        <span style="font-size: 0.95rem; font-weight: 600; color: #1f2937;">🎫 Avec Ticket</span>
+                    </label>
+                    <p style="color: #6b21a8; font-size: 0.75rem; margin-left: 2rem; margin-top: 0.25rem;">
+                        Si coché, spécifiez le type de ticket (PAPIER ou VINELLE), la quantité, le nom de la marque et le numéro d'autorisation.
+                    </p>
                         
                         <!-- Hidden ticket fields that show when checkbox is checked -->
                         <div id="ticket-fields" style="display: {{ old('avec_ticket') ? 'block' : 'none' }}; margin-top: 1.25rem; padding: 1.25rem; background: white; border: 2px solid #d8b4fe; border-radius: 0.5rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
@@ -129,37 +128,54 @@
                                 <div>
                                     <label for="ticket_product_stock_id" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Produit Ticket <span style="color: #dc2626;">*</span></label>
                                     <select name="ticket_product_stock_id" id="ticket_product_stock_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
-                                        <option value="">Sélectionner un ticket</option>
+                                        <option value="">Sélectionner un produit ticket</option>
                                         @foreach($tickets as $ticket)
-                                            @foreach($ticket->stock as $stock)
-                                                <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}" {{ old('ticket_product_stock_id') == $stock->id ? 'selected' : '' }}>
-                                                    {{ $ticket->name }} (Stock: {{ $stock->quantity }})
+                                            @foreach($ticket->stock as $ticketStock)
+                                                <option value="{{ $ticketStock->id }}" {{ old('ticket_product_stock_id') == $ticketStock->id ? 'selected' : '' }}>
+                                                    {{ $ticket->name }} - Stock: {{ $ticketStock->global_quantity }} unités
                                                 </option>
                                             @endforeach
                                         @endforeach
+                                    </select>
+                                    @error('ticket_product_stock_id')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="ticket_type" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Type de Ticket <span style="color: #dc2626;">*</span></label>
+                                    <select name="ticket_type" id="ticket_type" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                        <option value="">Sélectionner un type</option>
+                                        <option value="PAPIER" {{ old('ticket_type') == 'PAPIER' ? 'selected' : '' }}>Ticket PAPIER</option>
+                                        <option value="VINELLE" {{ old('ticket_type') == 'VINELLE' ? 'selected' : '' }}>Ticket VINELLE</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label for="ticket_quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité de Tickets <span style="color: #dc2626;">*</span></label>
                                     <input type="number" name="ticket_quantity" id="ticket_quantity" min="0.001" step="0.001" value="{{ old('ticket_quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    @error('ticket_quantity')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <div>
                                     <label for="nom_marque" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Nom de la marque <span style="color: #dc2626;">*</span></label>
                                     <input type="text" name="nom_marque" id="nom_marque" value="{{ old('nom_marque') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    @error('nom_marque')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <div>
                                     <label for="numero_autorisation" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Numéro d'autorisation <span style="color: #dc2626;">*</span></label>
                                     <input type="text" name="numero_autorisation" id="numero_autorisation" value="{{ old('numero_autorisation') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    @error('numero_autorisation')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
-                    @else
-                        <p style="color: #7e22ce; font-size: 0.875rem; font-weight: 600;">🎫 Ticket</p>
-                        <p style="color: #a855f7; font-size: 0.75rem; margin-top: 0.5rem;">Non disponible - Créez d'abord un produit "Ticket" et son stock.</p>
-                    @endif
                     @error('avec_ticket')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; margin-left: 2rem;">{{ $message }}</p>
                     @enderror
@@ -356,7 +372,10 @@
 <script>
 // Define prices from controller
 const JOINT_SECURITE_PRICE = {{ $jointSecuritePrice ?? 0 }}; // DH per unit
-const TICKET_PRICE = {{ $ticketPrice ?? 0 }}; // DH per unit
+const TICKET_PRICES = {
+    'PAPIER': {{ $ticketPrices['PAPIER'] ?? 0 }},
+    'VINELLE': {{ $ticketPrices['VINELLE'] ?? 0 }}
+}; // DH per unit per type
 
 let currentStep = 1;
 const totalSteps = 5;
@@ -419,23 +438,28 @@ function calculateCosts() {
 
     // Calculate filled capsule cost (capsule + herb material) - SEPARATE
     // CAPSULES: Price per Capsule = cartonPrice / cartonCapacity (fixed unit cost based on carton structure)
-    // HERB: Total Herb Cost = herbPrice (DH/kg) × herbQuantity (total kg in selected FilledCapsule)
+    // HERB: Price per Rangée = herbPrice (DH/kg) × herbQuantity (kg per rangée)
+    //       Price per Capsule = herbPricePerRangée / 420
     
     let costCapsulePerUnit = 0;
-    let costHerbMaterial = 0;
+    let costHerbPerUnit = 0;
     
     // Capsule cost uses carton capacity (total structure)
     if (cartonCapacity > 0) {
         costCapsulePerUnit = cartonPrice / cartonCapacity; // cost per empty capsule (true unit cost)
     }
     
-    // Herb cost: total kg used × price per kg (herbQuantity is already the total for selected rangées)
-    if (herbQuantity > 0) {
-        costHerbMaterial = herbPrice * herbQuantity; // total herb material cost
+    // Herb cost: PROPORTIONAL to capsules ordered
+    if (filledCapsuleQuantity > 0) {
+        // herbQuantity = kg per rangée, filledCapsuleQuantity = total rangées
+        const herbQuantityPerRangee = herbQuantity / filledCapsuleQuantity; // kg per single rangée
+        const pricePerRangee = herbPrice * herbQuantityPerRangee; // price per rangée
+        costHerbPerUnit = pricePerRangee / 420; // cost per capsule
     }
     
     // Calculate totals for all capsules used
     const costCapsules = costCapsulePerUnit * totalCapsules; // total capsule cost
+    const costHerbMaterial = costHerbPerUnit * totalCapsules; // total herb material cost
     
     // Display separately
     document.getElementById('cost-capsules').textContent = formatCurrency(costCapsules);
@@ -456,9 +480,11 @@ function calculateCosts() {
 
     if (hasTicket) {
         document.getElementById('cost-ticket-row').style.display = 'flex';
-        // Use actual price from database
+        // Use actual price from database based on ticket type
         const ticketQuantity = parseFloat(document.getElementById('ticket_quantity')?.value) || 0;
-        costTicket = TICKET_PRICE * ticketQuantity;
+        const ticketType = document.getElementById('ticket_type')?.value || 'PAPIER';
+        const ticketPrice = TICKET_PRICES[ticketType] || 0;
+        costTicket = ticketPrice * ticketQuantity;
         document.getElementById('cost-ticket').textContent = formatCurrency(costTicket);
     } else {
         document.getElementById('cost-ticket-row').style.display = 'none';
@@ -582,6 +608,12 @@ ticketCheckbox.addEventListener('change', () => {
     el.addEventListener('change', updateSummary);
     el.addEventListener('input', updateSummary);
 });
+
+// Update summary when ticket type or quantity changes
+const ticketTypeSelect = document.getElementById('ticket_type');
+const ticketQuantityInput = document.getElementById('ticket_quantity');
+if (ticketTypeSelect) ticketTypeSelect.addEventListener('change', updateSummary);
+if (ticketQuantityInput) ticketQuantityInput.addEventListener('input', updateSummary);
 
 showStep(currentStep);
 </script>

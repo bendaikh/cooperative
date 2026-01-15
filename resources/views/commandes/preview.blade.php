@@ -96,11 +96,11 @@
             <input type="hidden" name="avec_joint_securite" value="{{ $avec_joint_securite ? '1' : '0' }}">
             <input type="hidden" name="avec_ticket" value="{{ $avec_ticket ? '1' : '0' }}">
             @if($avec_ticket)
-                <input type="hidden" name="ticket_quantity" value="{{ $ticket_quantity }}">
-                <input type="hidden" name="ticket_product_stock_id" value="{{ $ticket_product_stock_id }}">
+                <input type="hidden" name="ticket_type" value="{{ $formData['ticket_type'] ?? '' }}">
+                <input type="hidden" name="ticket_quantity" value="{{ $formData['ticket_quantity'] ?? '' }}">
+                <input type="hidden" name="nom_marque" value="{{ $formData['nom_marque'] ?? '' }}">
+                <input type="hidden" name="numero_autorisation" value="{{ $formData['numero_autorisation'] ?? '' }}">
             @endif
-            <input type="hidden" name="nom_marque" value="{{ $formData['nom_marque'] ?? '' }}">
-            <input type="hidden" name="numero_autorisation" value="{{ $formData['numero_autorisation'] ?? '' }}">
 
             <div style="background: #fef3c7; border: 2px solid #fbbf24; border-radius: 0.75rem; padding: 1.5rem;">
                 <h3 style="margin-top: 0; color: #92400e; font-size: 1rem; font-weight: 600;">💰 Prix de Vente & Profit</h3>

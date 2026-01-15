@@ -81,6 +81,7 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::post('/expenses', [ExpenseCreateController::class, 'store'])->name('expenses.store');
     
     // Expense Categories
+    Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->name('expense-categories.index');
     Route::get('/expense-categories/create', [ExpenseCategoryController::class, 'create'])->name('expense-categories.create');
     Route::post('/expense-categories', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
 

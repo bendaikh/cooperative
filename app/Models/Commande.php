@@ -85,24 +85,9 @@ class Commande extends Model
             return false;
         }
 
-        // Deduct packaging (emballage)
-        foreach ($this->emballages as $emballage) {
-            $emballage->productStock->quantity -= $emballage->quantity;
-            $emballage->productStock->save();
-
-            // Record expense
-            Expense::recordExpense(
-                'packaging',
-                $emballage->quantity,
-                $emballage->productStock->purchase_price ?? 0,
-                $this,
-                null,
-                $emballage->productStock,
-                null,
-                'From commande #' . $this->id
-            );
-        }
-
+        // The actual stock deductions are now handled in updateStatus() controller
+        // This method just sets the flag to prevent double-deduction
+        
         // Mark as applied
         $this->stock_applied = true;
         $this->save();

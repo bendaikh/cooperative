@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 
 class ExpenseCategoryController extends Controller
 {
+    public function index()
+    {
+        $categories = ExpenseCategory::withCount('expenses')
+            ->withSum('expenses', 'total_cost')
+            ->orderBy('expenses_sum_total_cost', 'desc')
+            ->get();
+        
+        return view('expense-categories.index', compact('categories'));
+    }
+    
     public function create()
     {
         $categories = ExpenseCategory::withCount('expenses')
@@ -22,7 +32,7 @@ class ExpenseCategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|unique:expense_categories',
             'description' => 'nullable|string',
-            'color' => 'nullable|regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/',
+            'color' => 'nullable|string|size:7',
         ]);
         
         ExpenseCategory::create($validated);

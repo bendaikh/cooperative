@@ -156,30 +156,36 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <!-- Ticket Type -->
+                    <div style="background: #fce7f3; padding: 1rem; border-radius: 0.625rem; border: 1px solid #fbcfe8;">
+                        <div style="font-size: 0.625rem; color: #be123c; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">Type de Ticket</div>
+                        <div style="font-size: 1.125rem; font-weight: 700; color: #be123c;">{{ $commande->tickets()->first()?->ticket_type ?? 'PAPIER' }}</div>
+                    </div>
+
                     <!-- Ticket Quantity -->
                     <div style="background: #faf5ff; padding: 1rem; border-radius: 0.625rem; border: 1px solid #e9d5ff;">
                         <div style="font-size: 0.625rem; color: #6b21a8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">Quantité</div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: #6b21a8;">{{ $commande->ticket_quantity ?? 0 }}</div>
+                        <div style="font-size: 1.75rem; font-weight: 700; color: #6b21a8;">{{ $commande->tickets()->first()?->quantity ?? 0 }}</div>
                     </div>
 
                     <!-- Brand Name -->
                     <div style="background: #f9fafb; padding: 1rem; border-radius: 0.625rem; border: 1px solid #e5e7eb;">
                         <div style="font-size: 0.625rem; color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">Marque</div>
-                        <div style="font-size: 1rem; font-weight: 700; color: #1f2937; word-break: break-word;">{{ $commande->nom_marque ?? '-' }}</div>
+                        <div style="font-size: 1rem; font-weight: 700; color: #1f2937; word-break: break-word;">{{ $commande->tickets()->first()?->nom_marque ?? '-' }}</div>
                     </div>
 
                     <!-- Authorization Number -->
                     <div style="background: #fffbeb; padding: 1rem; border-radius: 0.625rem; border: 1px solid #fde68a;">
                         <div style="font-size: 0.625rem; color: #92400e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">N° Autorisation</div>
-                        <div style="font-size: 0.9375rem; font-weight: 700; color: #78350f; font-family: monospace; word-break: break-all;">{{ $commande->numero_autorisation ?? '-' }}</div>
+                        <div style="font-size: 0.9375rem; font-weight: 700; color: #78350f; font-family: monospace; word-break: break-all;">{{ $commande->tickets()->first()?->numero_autorisation ?? '-' }}</div>
                     </div>
 
                     <!-- Product Info -->
-                    @if($commande->ticketStock)
+                    @if($commande->tickets->isNotEmpty())
                     <div style="background: #eff6ff; padding: 1rem; border-radius: 0.625rem; border: 1px solid #bfdbfe;">
                         <div style="font-size: 0.625rem; color: #1e40af; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">📦 Produit</div>
-                        <div style="font-size: 0.9375rem; font-weight: 700; color: #1e40af;">{{ $commande->ticketStock->product->name }}</div>
-                        <div style="font-size: 0.8125rem; color: #1e40af; margin-top: 0.375rem;">Stock: <span style="font-weight: 700;">{{ $commande->ticketStock->quantity }}</span></div>
+                        <div style="font-size: 0.9375rem; font-weight: 700; color: #1e40af;">{{ $commande->tickets->first()->productStock->product->name }}</div>
+                        <div style="font-size: 0.8125rem; color: #1e40af; margin-top: 0.375rem;">Stock: <span style="font-weight: 700;">{{ $commande->tickets->first()->productStock->quantity }}</span></div>
                     </div>
                     @endif
                 </div>
@@ -197,12 +203,6 @@
 
             <!-- Cost, Price & Profit Grid -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                <!-- Total Cost -->
-                <div style="background: #eff6ff; padding: 1.25rem; border-radius: 0.625rem; border: 2px solid #bfdbfe;">
-                    <div style="font-size: 0.75rem; color: #1e40af; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.5rem;">Coût Total de Production</div>
-                    <div style="font-size: 1.75rem; font-weight: 700; color: #1e40af;">{{ number_format($commande->revenue->cost ?? 0, 2) }} <span style="font-size: 0.75rem; color: #1e40af;">DH</span></div>
-                </div>
-
                 <!-- Selling Price -->
                 <div style="background: #fef2f2; padding: 1.25rem; border-radius: 0.625rem; border: 2px solid #fecaca;">
                     <div style="font-size: 0.75rem; color: #7f1d1d; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.5rem;">Prix de Vente</div>

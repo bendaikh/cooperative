@@ -10,7 +10,11 @@ class CommandeTicket extends Model
     use HasFactory;
 
     protected $table = 'commande_tickets';
-    protected $fillable = ['commande_id', 'product_stock_id', 'quantity', 'nom_marque', 'numero_autorisation'];
+    protected $fillable = ['commande_id', 'product_stock_id', 'quantity', 'ticket_type', 'nom_marque', 'numero_autorisation'];
+
+    protected $casts = [
+        'ticket_type' => 'string',
+    ];
 
     public function commande()
     {

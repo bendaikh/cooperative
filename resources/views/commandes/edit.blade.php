@@ -132,30 +132,51 @@
                                 <div>
                                     <label for="ticket_product_stock_id" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Produit Ticket <span style="color: #dc2626;">*</span></label>
                                     <select name="ticket_product_stock_id" id="ticket_product_stock_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
-                                        <option value="">Sélectionner un ticket</option>
+                                        <option value="">Sélectionner un produit ticket</option>
                                         @foreach($tickets as $ticket)
-                                            @foreach($ticket->stock as $stock)
-                                                <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}" {{ $commande->tickets()->first()?->product_stock_id == $stock->id ? 'selected' : '' }}>
-                                                    {{ $ticket->name }} (Stock: {{ $stock->quantity }})
+                                            @foreach($ticket->stock as $ticketStock)
+                                                <option value="{{ $ticketStock->id }}" {{ $commande->ticket_product_stock_id == $ticketStock->id ? 'selected' : '' }}>
+                                                    {{ $ticket->name }} - Stock: {{ $ticketStock->global_quantity }} unités
                                                 </option>
                                             @endforeach
                                         @endforeach
+                                    </select>
+                                    @error('ticket_product_stock_id')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="ticket_type" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Type de Ticket <span style="color: #dc2626;">*</span></label>
+                                    <select name="ticket_type" id="ticket_type" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                        <option value="">Sélectionner un type</option>
+                                        <option value="PAPIER" {{ $commande->tickets()->first()?->ticket_type == 'PAPIER' ? 'selected' : '' }}>Ticket PAPIER</option>
+                                        <option value="VINELLE" {{ $commande->tickets()->first()?->ticket_type == 'VINELLE' ? 'selected' : '' }}>Ticket VINELLE</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label for="ticket_quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité de Tickets <span style="color: #dc2626;">*</span></label>
                                     <input type="number" name="ticket_quantity" id="ticket_quantity" min="0.001" step="0.001" value="{{ $commande->tickets()->first()?->quantity ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    @error('ticket_quantity')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <div>
                                     <label for="nom_marque" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Nom de la marque <span style="color: #dc2626;">*</span></label>
                                     <input type="text" name="nom_marque" id="nom_marque" value="{{ $commande->tickets()->first()?->nom_marque ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    @error('nom_marque')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <div>
                                     <label for="numero_autorisation" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Numéro d'autorisation <span style="color: #dc2626;">*</span></label>
                                     <input type="text" name="numero_autorisation" id="numero_autorisation" value="{{ $commande->tickets()->first()?->numero_autorisation ?? '' }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 0.875rem;">
+                                    @error('numero_autorisation')
+                                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -278,6 +299,17 @@
                             <span style="color: #6b7280;">Coût Ticket</span>
                             <span id="cost-ticket" style="font-weight: 500; color: #1f2937;">0.00</span>
                         </div>
+                        
+                        <!-- Initialize current costs from PHP -->
+                        <script>
+                            const CURRENT_COSTS = {
+                                emballage: {{ $currentCosts['emballage'] ?? 0 }},
+                                capsules: {{ $currentCosts['capsules'] ?? 0 }},
+                                herb: {{ $currentCosts['herb'] ?? 0 }},
+                                joint: {{ $currentCosts['joint'] ?? 0 }},
+                                ticket: {{ $currentCosts['ticket'] ?? 0 }},
+                            };
+                        </script>
                         <div style="display: flex; justify-content: space-between; padding: 1rem 0; font-weight: 600; font-size: 1.125rem; color: #2d7a52;">
                             <span>Coût Total</span>
                             <span id="total-cost">0.00 DH</span>
@@ -352,7 +384,10 @@
 <script>
 // Define prices from controller
 const JOINT_SECURITE_PRICE = {{ $jointSecuritePrice ?? 0 }}; // DH per unit
-const TICKET_PRICE = {{ $ticketPrice ?? 0 }}; // DH per unit
+const TICKET_PRICES = {
+    'PAPIER': {{ $ticketPrices['PAPIER'] ?? 0 }},
+    'VINELLE': {{ $ticketPrices['VINELLE'] ?? 0 }}
+}; // DH per unit per type
 
 let currentStep = 1;
 const totalSteps = 5;
@@ -451,9 +486,26 @@ prevBtn.addEventListener('click', () => {
 });
 
 [clientSelect, emballageSelect, quantityInput, filledCapsuleSelect, ...capsulesPerUnitInputs].forEach(el => {
-    el.addEventListener('change', updateSummary);
-    el.addEventListener('input', updateSummary);
+    el.addEventListener('change', () => {
+        updateSummary();
+        calculateCosts();
+        calculateProfit();
+    });
+    el.addEventListener('input', () => {
+        updateSummary();
+        calculateCosts();
+        calculateProfit();
+    });
 });
+
+// Handle joint securite checkbox
+const avecJointCheckbox = document.getElementById('avec_joint_securite');
+if (avecJointCheckbox) {
+    avecJointCheckbox.addEventListener('change', () => {
+        calculateCosts();
+        calculateProfit();
+    });
+}
 
 // Handle ticket checkbox visibility
 const avecTicketCheckbox = document.getElementById('avec_ticket');
@@ -463,6 +515,26 @@ if (avecTicketCheckbox) {
         if (ticketFields) {
             ticketFields.style.display = avecTicketCheckbox.checked ? 'block' : 'none';
         }
+        calculateCosts();
+        calculateProfit();
+    });
+}
+
+// Handle ticket type and quantity changes
+const ticketTypeSelect = document.getElementById('ticket_type');
+const ticketQuantityInput = document.getElementById('ticket_quantity');
+
+if (ticketTypeSelect) {
+    ticketTypeSelect.addEventListener('change', () => {
+        calculateCosts();
+        calculateProfit();
+    });
+}
+
+if (ticketQuantityInput) {
+    ticketQuantityInput.addEventListener('input', () => {
+        calculateCosts();
+        calculateProfit();
     });
 }
 
@@ -503,7 +575,8 @@ function calculateCosts() {
     const cartonPrice = parseFloat(filledCapsuleOption.dataset?.cartonPrice) || 0;
     const cartonCapacity = parseFloat(filledCapsuleOption.dataset?.cartonCapacity) || 0;
     const herbPrice = parseFloat(filledCapsuleOption.dataset?.herbPrice) || 0;
-    const herbQuantity = parseFloat(filledCapsuleOption.dataset?.herbQuantity) || 0;
+    const herbQuantity = parseFloat(filledCapsuleOption.dataset?.herbQuantity) || 0; // Total herb for all rangées
+    const filledCapsuleQuantityRangees = parseFloat(filledCapsuleOption.dataset?.quantity) || 0; // Number of rangées
 
     // Calculate total capsules
     const totalCapsules = quantity * capsulesPerUnit;
@@ -514,22 +587,26 @@ function calculateCosts() {
 
     // Calculate filled capsule cost (capsule + herb material) - SEPARATE
     // CAPSULES: Price per Capsule = cartonPrice / cartonCapacity (fixed unit cost based on carton structure)
-    // HERB: Total Herb Cost = herbPrice (DH/kg) × herbQuantity (total kg in selected FilledCapsule)
+    // HERB: Price per Rangée = herbPrice (DH/kg) × (herbQuantity / quantity of rangées in FilledCapsule)
+    //       Price per Capsule = herbPricePerRangée / 420
     
     let costCapsulePerUnit = 0;
-    let costHerbMaterial = 0;
+    let costHerbPerUnit = 0;
     
     // Capsule cost uses carton capacity (total structure)
     if (cartonCapacity > 0) {
         costCapsulePerUnit = cartonPrice / cartonCapacity; // cost per empty capsule (true unit cost)
     }
     
-    // Herb cost: total kg used × price per kg (herbQuantity is already the total for selected rangées)
-    if (herbQuantity > 0) {
-        costHerbMaterial = herbPrice * herbQuantity; // total herb material cost
+    // Herb cost: calculate herb quantity per rangée, then per capsule
+    if (herbQuantity > 0 && filledCapsuleQuantityRangees > 0) {
+        const herbQuantityPerRangee = herbQuantity / filledCapsuleQuantityRangees; // kg per rangée
+        const pricePerRangeeForHerb = herbPrice * herbQuantityPerRangee; // price per rangée
+        costHerbPerUnit = pricePerRangeeForHerb / 420; // cost of herb per capsule
     }
     
     const costCapsules = costCapsulePerUnit * totalCapsules;
+    const costHerbMaterial = costHerbPerUnit * totalCapsules; // total herb material cost
     
     document.getElementById('cost-capsules').textContent = formatCurrency(costCapsules);
     document.getElementById('cost-herb-material').textContent = formatCurrency(costHerbMaterial);
@@ -575,10 +652,35 @@ function calculateProfit() {
 
 // Call calculateCosts when form loads (for edit view to show current costs)
 document.addEventListener('DOMContentLoaded', () => {
-    if (currentStep === 5) {
-        calculateCosts();
-        calculateProfit();
-    }
+    // Give a small delay to ensure all DOM elements are fully rendered
+    setTimeout(() => {
+        // Display current costs from PHP
+        if (typeof CURRENT_COSTS !== 'undefined') {
+            document.getElementById('cost-emballage').textContent = formatCurrency(CURRENT_COSTS.emballage);
+            document.getElementById('cost-capsules').textContent = formatCurrency(CURRENT_COSTS.capsules);
+            document.getElementById('cost-herb-material').textContent = formatCurrency(CURRENT_COSTS.herb);
+            
+            // Show joint and ticket rows if they have costs
+            if (CURRENT_COSTS.joint > 0) {
+                document.getElementById('cost-joint-row').style.display = 'flex';
+                document.getElementById('cost-joint').textContent = formatCurrency(CURRENT_COSTS.joint);
+            }
+            if (CURRENT_COSTS.ticket > 0) {
+                document.getElementById('cost-ticket-row').style.display = 'flex';
+                document.getElementById('cost-ticket').textContent = formatCurrency(CURRENT_COSTS.ticket);
+            }
+            
+            // Display total cost
+            const totalCost = CURRENT_COSTS.emballage + CURRENT_COSTS.capsules + CURRENT_COSTS.herb + CURRENT_COSTS.joint + CURRENT_COSTS.ticket;
+            document.getElementById('total-cost').textContent = formatCurrency(totalCost) + ' DH';
+            
+            // Calculate profit if we have a selling price
+            calculateProfit();
+        }
+        
+        // Update summary with current values
+        updateSummary();
+    }, 100);
 });
 </script>
 @endpush

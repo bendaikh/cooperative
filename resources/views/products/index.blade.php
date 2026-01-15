@@ -54,10 +54,11 @@
                         @endforeach
                     </td>
                     <td style="padding: 1rem; color: #4b5563; font-weight: 500;">
-                        @php
-                            $avgPrice = $product->stock->whereNotNull('purchase_price')->avg('purchase_price');
-                        @endphp
-                        {{ $avgPrice ? number_format($avgPrice, 2) : '-' }}
+                        @if($product->purchase_price)
+                            <span style="background: #e0e7ff; color: #3730a3; padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-weight: 600;">{{ number_format($product->purchase_price, 2) }}</span>
+                        @else
+                            <span style="color: #9ca3af;">-</span>
+                        @endif
                     </td>
                     <td style="padding: 1rem; color: #4b5563;">
                         {{ $product->fornisseur ? $product->fornisseur->name : '-' }}
