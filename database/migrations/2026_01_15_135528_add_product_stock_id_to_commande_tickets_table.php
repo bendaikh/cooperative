@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('commande_tickets', function (Blueprint $table) {
-            $table->unsignedBigInteger('product_stock_id')->nullable()->after('commande_id');
+            if (Schema::hasColumn('commande_tickets', 'product_stock_id')) {
+                // Drop existing foreign key if it exists
+                try {
+                    $table->dropForeign(['product_stock_id']);
+                } catch (\Exception $e) {
+                }
+                $table->unsignedBigInteger('product_stock_id')->nullable()->change();
+            } else {
+                $table->unsignedBigInteger('product_stock_id')->nullable()->after('commande_id');
+            }
             $table->foreign('product_stock_id')->references('id')->on('product_stock')->onDelete('set null');
         });
     }
@@ -24,7 +33,8 @@ return new class extends Migration
     {
         Schema::table('commande_tickets', function (Blueprint $table) {
             $table->dropForeign(['product_stock_id']);
-            $table->dropColumn('product_stock_id');
+            $table->unsignedBigInteger('product_stock_id')->nullable(false)->change();
+            $table->foreign('product_stock_id')->references('id')->on('product_stock');
         });
     }
 };
