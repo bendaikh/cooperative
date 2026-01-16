@@ -188,8 +188,14 @@ class StockProduitController extends Controller
         // Update purchase price if provided
         if ($request->purchase_price !== null && $request->purchase_price !== '') {
             $stock->purchase_price = $request->purchase_price;
-            $stock->save();
         }
+
+        // Update supplier if provided
+        if ($request->fornisseur_id) {
+            $stock->fornisseur_id = $request->fornisseur_id;
+        }
+
+        $stock->save();
 
         // Increment the base quantity
         $stock->increment('quantity', $request->quantity);

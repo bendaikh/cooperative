@@ -339,10 +339,10 @@
                         @endif
                     </td>
                     <td style="padding: 1rem; color: #6b7280;">
-                        @if($latestRestock && $latestRestock->fornisseur)
-                            <span style="font-weight: 500; color: #1f2937;">{{ $latestRestock->fornisseur->name }}</span>
-                            @if($latestRestock->fornisseur->ville)
-                                <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $latestRestock->fornisseur->ville }}</span>
+                        @if($stock->fornisseur)
+                            <span style="font-weight: 500; color: #1f2937;">{{ $stock->fornisseur->name }}</span>
+                            @if($stock->fornisseur->ville)
+                                <span style="color: #6b7280; font-size: 0.875rem;"> - {{ $stock->fornisseur->ville }}</span>
                             @endif
                         @else
                             <span style="color: #9ca3af;">-</span>

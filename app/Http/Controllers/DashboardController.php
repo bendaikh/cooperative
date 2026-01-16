@@ -66,8 +66,8 @@ class DashboardController extends Controller
 
     private function getTotalExpenses()
     {
-        // Total expenses = production costs from confirmed revenues (cost of goods sold)
-        return Revenue::where('status', 'confirmed')->sum('cost') ?? 0;
+        // Total expenses from the expenses table
+        return Expense::sum('total_cost') ?? 0;
     }
 
     private function getStockChange()
@@ -113,17 +113,15 @@ class DashboardController extends Controller
     {
         $now = now();
         
-        // Get expenses from confirmed revenues (COGS) this month
-        $thisMonth = Revenue::where('status', 'confirmed')
-            ->whereMonth('revenue_date', $now->month)
-            ->whereYear('revenue_date', $now->year)
-            ->sum('cost') ?? 0;
+        // Get expenses this month from the expenses table
+        $thisMonth = Expense::whereMonth('expense_date', $now->month)
+            ->whereYear('expense_date', $now->year)
+            ->sum('total_cost') ?? 0;
         
         // Get expenses from last month
-        $lastMonth = Revenue::where('status', 'confirmed')
-            ->whereMonth('revenue_date', $now->subMonth()->month)
-            ->whereYear('revenue_date', $now->subMonth()->year)
-            ->sum('cost') ?? 0;
+        $lastMonth = Expense::whereMonth('expense_date', $now->subMonth()->month)
+            ->whereYear('expense_date', $now->subMonth()->year)
+            ->sum('total_cost') ?? 0;
 
         return $lastMonth > 0 ? (($thisMonth - $lastMonth) / $lastMonth) * 100 : 0;
     }
@@ -145,10 +143,10 @@ class DashboardController extends Controller
                 ->whereYear('revenue_date', $date->year)
                 ->sum('selling_price') ?? 0;
             
-            $monthExpense = Revenue::where('status', 'confirmed')
-                ->whereMonth('revenue_date', $date->month)
-                ->whereYear('revenue_date', $date->year)
-                ->sum('cost') ?? 0;
+            // Get actual expenses from the expenses table
+            $monthExpense = Expense::whereMonth('expense_date', $date->month)
+                ->whereYear('expense_date', $date->year)
+                ->sum('total_cost') ?? 0;
             
             $monthProfit = $monthRevenue - $monthExpense;
 

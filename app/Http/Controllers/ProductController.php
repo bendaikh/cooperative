@@ -8,7 +8,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = \App\Models\Product::with(['categories', 'colors', 'sizes'])->get();
+        $products = \App\Models\Product::with(['categories', 'colors', 'sizes', 'fornisseur'])->get();
         return view('products.index', compact('products'));
     }
 
