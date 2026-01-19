@@ -189,12 +189,14 @@ class CommandeController extends Controller
     {
         \Log::info('COMMANDE STORE: Request received', $request->all());
         
-        // Validation - Single emballage field
+        // Validation - Make emballage optional based on commande_type
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
-            'quantity' => 'required|numeric|min:0.001',
-            'capsules_per_unit' => 'required|integer|in:30,60,90,120',
-            'emballage_product_stock_id' => 'required|exists:product_stock,id',
+            'commande_type' => 'required|in:with_packaging,without_packaging',
+            'quantity' => 'required_if:commande_type,with_packaging|nullable|numeric|min:0',
+            'capsules_per_unit' => 'required_if:commande_type,with_packaging|nullable|integer|in:30,60,90,120',
+            'capsules_quantity_input' => 'required_if:commande_type,without_packaging|nullable|numeric|min:1',
+            'emballage_product_stock_id' => 'required_if:commande_type,with_packaging|nullable|exists:product_stock,id',
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
             'avec_joint_securite' => 'nullable|boolean',
             'avec_ticket' => 'nullable|boolean',
@@ -212,25 +214,47 @@ class CommandeController extends Controller
             DB::beginTransaction();
             \Log::info('COMMANDE STORE: Transaction started');
 
-            $quantity = (float) $request->quantity;
-            $capsulesPerUnit = $request->capsules_per_unit;
-            $totalCapsulesNeeded = $quantity * $capsulesPerUnit;
+            $commandeType = $request->commande_type;
+            
+            // For with_packaging: quantity = packages, capsulesPerUnit = capsules per package
+            // For without_packaging: quantity = 0 (no packages), capsulesPerUnit = user-entered total capsules
+            $quantity = ($commandeType === 'with_packaging') ? (float) $request->quantity : 0;
+            
+            if ($commandeType === 'with_packaging') {
+                $capsulesPerUnit = (int) $request->capsules_per_unit;
+            } else {
+                // For without_packaging, use the user-entered quantity as capsulesPerUnit
+                $capsulesPerUnit = (int) $request->capsules_quantity_input;
+            }
+            
+            // Calculate total capsules needed
+            if ($commandeType === 'with_packaging') {
+                $totalCapsulesNeeded = $quantity * $capsulesPerUnit;
+            } else {
+                // Without packaging: capsules_per_unit IS the total capsule quantity
+                $totalCapsulesNeeded = $capsulesPerUnit;
+            }
             
             \Log::info('COMMANDE STORE: Variables set', [
+                'commande_type' => $commandeType,
                 'quantity' => $quantity,
                 'capsules_per_unit' => $capsulesPerUnit,
                 'total_capsules_needed' => $totalCapsulesNeeded
             ]);
 
-            // Get emballage stock
-            $emballageStock = ProductStock::findOrFail($request->emballage_product_stock_id);
+            // Get emballage stock only if with_packaging
+            $emballageStock = null;
+            if ($commandeType === 'with_packaging' && $request->emballage_product_stock_id) {
+                $emballageStock = ProductStock::findOrFail($request->emballage_product_stock_id);
+            }
+            
             $filledCapsule = FilledCapsule::findOrFail($request->filled_capsule_id);
             \Log::info('COMMANDE STORE: Stock records found');
 
             // Check stock availability
             $validator = Validator::make([], []);
             
-            if ($quantity > $emballageStock->quantity) {
+            if ($commandeType === 'with_packaging' && $emballageStock && $quantity > $emballageStock->quantity) {
                 \Log::warning('COMMANDE STORE: Emballage stock insufficient');
                 $validator->errors()->add('emballage_product_stock_id', 'Stock emballage insuffisant. Disponible: ' . $emballageStock->quantity);
             }
@@ -243,9 +267,9 @@ class CommandeController extends Controller
                 $validator->errors()->add('filled_capsule_id', 'Quantité de capsules insuffisante. Disponible: ' . $capsuleAvailable . ' capsules');
             }
             
-            // Check Joint de sécurité stock if requested
+            // Check Joint de sécurité stock if requested (only valid with_packaging)
             $jointSecuriteStock = null;
-            if ($request->avec_joint_securite) {
+            if ($commandeType === 'with_packaging' && $request->avec_joint_securite) {
                 $jointSecuriteProduct = Product::where('name', 'Joint de sécurité')->first();
                 if (!$jointSecuriteProduct) {
                     $validator->errors()->add('avec_joint_securite', 'Le produit "Joint de sécurité" n\'existe pas dans la base de données.');
@@ -260,7 +284,7 @@ class CommandeController extends Controller
                 }
             }
             
-            // Check ticket stock if requested
+            // Check ticket stock if requested (can be with or without packaging)
             $ticketStock = null;
             if ($request->avec_ticket) {
                 if (!$request->ticket_quantity || $request->ticket_quantity < 1) {
@@ -305,7 +329,8 @@ class CommandeController extends Controller
             
             $commande = Commande::create([
                 'client_id' => $request->client_id,
-                'product_stock_id' => $request->emballage_product_stock_id,
+                'emballage_product_stock_id' => $request->emballage_product_stock_id,
+                'filled_capsule_id' => $request->filled_capsule_id,
                 'quantity' => $quantity,
                 'capsules_per_unit' => $capsulesPerUnit,
                 'status' => 'Confirmé',
@@ -315,25 +340,14 @@ class CommandeController extends Controller
                 'numero_autorisation' => $request->numero_autorisation,
                 'ticket_product_stock_id' => $request->ticket_product_stock_id,
                 'ticket_quantity' => $request->ticket_quantity,
+                'commande_type' => $commandeType,
+                'selling_price' => $request->selling_price,
                 'notes' => $request->notes,
             ]);
             
-            \Log::info('COMMANDE STORE: Commande created', ['id' => $commande->id, 'client_id' => $commande->client_id]);
+            \Log::info('COMMANDE STORE: Commande created', ['id' => $commande->id, 'commande_type' => $commandeType]);
 
-            // Create unified emballage record
-            \Log::info('COMMANDE STORE: Creating emballage', [
-                'quantity' => $quantity,
-            ]);
-            
-            CommandeEmballage::create([
-                'commande_id' => $commande->id,
-                'product_stock_id' => $request->emballage_product_stock_id,
-                'quantity' => $quantity,
-            ]);
-            
-            \Log::info('COMMANDE STORE: Emballage created');
-
-            // Create filled capsules record
+            // Create filled capsules record (for both types)
             $filledCapsuleRecord = CommandeFilledCapsule::create([
                 'commande_id' => $commande->id,
                 'filled_capsule_id' => $request->filled_capsule_id,
@@ -342,30 +356,57 @@ class CommandeController extends Controller
             
             \Log::info('COMMANDE STORE: Filled capsule record created', ['capsules' => $totalCapsulesNeeded]);
 
-            // Add Joint de sécurité if checked
-            if ($request->avec_joint_securite) {
-                $jointSecuriteProduct = Product::where('name', 'Joint de sécurité')->first();
-                if ($jointSecuriteProduct) {
-                    $jointSecuriteStock = $jointSecuriteProduct->stock()->first();
-                    if ($jointSecuriteStock) {
-                        CommandeEmballage::create([
-                            'commande_id' => $commande->id,
-                            'product_stock_id' => $jointSecuriteStock->id,
-                            'quantity' => $quantity,
-                        ]);
-                        \Log::info('COMMANDE STORE: Joint de sécurité emballage created');
+            // Create unified emballage record (only if with_packaging)
+            if ($commandeType === 'with_packaging' && $request->emballage_product_stock_id && $quantity > 0) {
+                \Log::info('COMMANDE STORE: Creating emballage', [
+                    'quantity' => $quantity,
+                ]);
+                
+                CommandeEmballage::create([
+                    'commande_id' => $commande->id,
+                    'product_stock_id' => $request->emballage_product_stock_id,
+                    'quantity' => $quantity,
+                ]);
+                
+                \Log::info('COMMANDE STORE: Emballage created');
+
+                // Add Joint de sécurité if checked
+                if ($request->avec_joint_securite) {
+                    $jointSecuriteProduct = Product::where('name', 'Joint de sécurité')->first();
+                    if ($jointSecuriteProduct) {
+                        $jointSecuriteStock = $jointSecuriteProduct->stock()->first();
+                        if ($jointSecuriteStock) {
+                            CommandeEmballage::create([
+                                'commande_id' => $commande->id,
+                                'product_stock_id' => $jointSecuriteStock->id,
+                                'quantity' => $quantity,
+                            ]);
+                            \Log::info('COMMANDE STORE: Joint de sécurité emballage created');
+                        }
                     }
+                }
+
+                // Add Ticket record if checked
+                if ($request->avec_ticket && $request->ticket_product_stock_id && $request->ticket_quantity) {
+                    CommandeTicket::create([
+                        'commande_id' => $commande->id,
+                        'product_stock_id' => $request->ticket_product_stock_id,
+                        'quantity' => $request->ticket_quantity,
+                    ]);
+                    \Log::info('COMMANDE STORE: Ticket record created');
                 }
             }
 
-            // Add Ticket record if checked
-            if ($request->avec_ticket && $request->ticket_product_stock_id && $request->ticket_quantity) {
-                CommandeTicket::create([
-                    'commande_id' => $commande->id,
-                    'product_stock_id' => $request->ticket_product_stock_id,
-                    'quantity' => $request->ticket_quantity,
-                ]);
-                \Log::info('COMMANDE STORE: Ticket record created');
+            // Add Ticket record if checked (for without_packaging)
+            if ($commandeType === 'without_packaging') {
+                if ($request->avec_ticket && $request->ticket_product_stock_id && $request->ticket_quantity) {
+                    CommandeTicket::create([
+                        'commande_id' => $commande->id,
+                        'product_stock_id' => $request->ticket_product_stock_id,
+                        'quantity' => $request->ticket_quantity,
+                    ]);
+                    \Log::info('COMMANDE STORE: Ticket record created for without_packaging');
+                }
             }
 
             // Calculate total cost from emballages
@@ -375,11 +416,27 @@ class CommandeController extends Controller
                 $totalCost += $itemCost;
             }
             
-            // Add herb cost (from filled capsules)
+            // Add herb cost and empty capsule cost (from filled capsules)
             foreach ($commande->filledCapsules as $fcRecord) {
                 $filledCapsule = $fcRecord->filledCapsule;
-                $herbCost = ($filledCapsule->herb->purchase_price ?? 0) * $fcRecord->quantity;
-                $totalCost += $herbCost;
+                
+                // Herb cost calculation:
+                // $filledCapsule->herb_quantity = total kg in this batch
+                // $filledCapsule->quantity = rangées (1 rangée = 420 capsules)
+                // $fcRecord->quantity = total capsules ordered for this commande
+                $totalCapsulesInBatch = $filledCapsule->quantity * 420; // Convert rangées to capsules
+                $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / $totalCapsulesInBatch;
+                $herbTotalCost = $herbCostPerCapsule * $fcRecord->quantity;
+                $totalCost += $herbTotalCost;
+                
+                // Empty capsule cost: (carton_price / carton_capacity) * number of capsules
+                if ($filledCapsule->capsule && $filledCapsule->capsule->cartonType) {
+                    $cartonPrice = ($filledCapsule->capsule->cartonType->purchase_price ?? 0);
+                    $cartonCapacity = ($filledCapsule->capsule->cartonType->capacity ?? 1);
+                    $capsuleCostPerUnit = $cartonPrice / $cartonCapacity;
+                    $capsuleTotalCost = $capsuleCostPerUnit * $fcRecord->quantity;
+                    $totalCost += $capsuleTotalCost;
+                }
             }
 
             // Create revenue record with selling price
@@ -443,6 +500,7 @@ class CommandeController extends Controller
             'client',
             'emballages.productStock.product',
             'filledCapsules.filledCapsule',
+            'tickets',
             'revenue'
         ]);
         
@@ -454,10 +512,13 @@ class CommandeController extends Controller
             ->with('stock.movements')
             ->get();
         
-        // Get Joint de sécurité stock with movements
+        // Get Joint de sécurité stock with movements and pricing
         $jointSecurite = Product::where('name', 'Joint de sécurité')
             ->with('stock.movements')
             ->first();
+        $jointSecuritePrice = $jointSecurite && $jointSecurite->stock->first() 
+            ? $jointSecurite->stock->first()->purchase_price ?? 0 
+            : 0;
         
         // Get Tickets
         $tickets = Product::where('name', 'LIKE', '%Ticket%')
@@ -489,16 +550,90 @@ class CommandeController extends Controller
             })
             ->first();
         
+        // Calculate current costs for display based on commande data
+        $currentCosts = [
+            'emballage' => 0,
+            'capsules' => 0,
+            'herb' => 0,
+            'joint' => 0,
+            'ticket' => 0,
+        ];
+        
+        // Calculate emballage cost (only for with_packaging)
+        if ($commande->commande_type === 'with_packaging') {
+            $emballageRecord = $commande->emballages()
+                ->with('productStock.product')
+                ->whereHas('productStock.product', function($query) {
+                    $query->where('name', '!=', 'Joint de sécurité');
+                })
+                ->first();
+            
+            if ($emballageRecord && $emballageRecord->productStock) {
+                $currentCosts['emballage'] = ($emballageRecord->productStock->purchase_price ?? 0) * $commande->quantity;
+            }
+        }
+        
+        // Calculate capsule and herb costs
+        $filledCapsuleRecord = $commande->filledCapsules()->first();
+        if ($filledCapsuleRecord && $filledCapsuleRecord->filledCapsule) {
+            $filledCapsule = $filledCapsuleRecord->filledCapsule;
+            $totalCapsules = $filledCapsuleRecord->quantity;
+            
+            // Capsule cost per unit = carton_price / carton_capacity
+            $cartonPrice = $filledCapsule->capsule->cartonType->purchase_price ?? 0;
+            $cartonCapacity = $filledCapsule->capsule->cartonType->capacity ?? 0;
+            if ($cartonCapacity > 0) {
+                $costPerCapsule = $cartonPrice / $cartonCapacity;
+                $currentCosts['capsules'] = $costPerCapsule * $totalCapsules;
+            }
+            
+            // Herb cost
+            if ($filledCapsule->herb) {
+                $herbQuantity = $filledCapsule->herb_quantity ?? 0;
+                $herbPrice = $filledCapsule->herb->purchase_price ?? 0;
+                $filledCapsuleQuantityRangees = $filledCapsule->quantity ?? 0;
+                
+                if ($herbQuantity > 0 && $filledCapsuleQuantityRangees > 0) {
+                    $herbQuantityPerRangee = $herbQuantity / $filledCapsuleQuantityRangees;
+                    $pricePerRangeeForHerb = $herbPrice * $herbQuantityPerRangee;
+                    $costPerCapsule = $pricePerRangeeForHerb / 420;
+                    $currentCosts['herb'] = $costPerCapsule * $totalCapsules;
+                }
+            }
+        }
+        
+        // Calculate joint de sécurité cost
+        $jointEmballage = $commande->emballages()
+            ->with('productStock.product')
+            ->whereHas('productStock.product', function($query) {
+                $query->where('name', 'Joint de sécurité');
+            })
+            ->first();
+        
+        if ($jointEmballage) {
+            $currentCosts['joint'] = ($jointSecuritePrice ?? 0) * $jointEmballage->quantity;
+        }
+        
+        // Calculate ticket cost
+        $firstTicket = $commande->tickets()->first();
+        if ($firstTicket) {
+            $ticketType = $firstTicket->ticket_type ?? 'PAPIER';
+            $ticketPrice = $ticketPrices[$ticketType] ?? 0;
+            $currentCosts['ticket'] = $ticketPrice * ($firstTicket->quantity ?? 0);
+        }
+        
         return view('commandes.edit', compact(
             'commande',
             'clients',
             'emballages',
             'jointSecurite',
+            'jointSecuritePrice',
             'tickets',
             'ticketPrices',
             'filledCapsules',
             'capsulesPerUnitOptions',
-            'currentEmballage'
+            'currentEmballage',
+            'currentCosts'
         ));
     }
 
@@ -510,15 +645,22 @@ class CommandeController extends Controller
     {
         $rules = [
             'client_id' => 'required|exists:clients,id',
-            'quantity' => 'required|numeric|min:0.001',
-            'capsules_per_unit' => 'required|integer|in:30,60,90,120',
-            'emballage_product_stock_id' => 'required|exists:product_stock,id',
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
             'avec_joint_securite' => 'nullable|boolean',
             'avec_ticket' => 'nullable|boolean',
             'selling_price' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ];
+
+        // Conditional validation based on commande type
+        if ($commande->commande_type === 'with_packaging') {
+            $rules['quantity'] = 'required|numeric|min:0.001';
+            $rules['capsules_per_unit'] = 'required|integer|in:30,60,90,120';
+            $rules['emballage_product_stock_id'] = 'required|exists:product_stock,id';
+        } else {
+            // without_packaging
+            $rules['capsules_quantity_input'] = 'required|integer|min:1';
+        }
 
         // Add ticket validation if avec_ticket is checked
         if ($request->avec_ticket) {
@@ -533,129 +675,185 @@ class CommandeController extends Controller
         try {
             DB::beginTransaction();
 
-            $oldQuantity = $commande->quantity;
-            $oldCapsulesPerUnit = $commande->capsules_per_unit;
-            $oldTotalCapsules = $oldQuantity * $oldCapsulesPerUnit;
-
-            $newQuantity = $request->quantity;
-            $newCapsulesPerUnit = $request->capsules_per_unit;
-            $newTotalCapsules = $newQuantity * $newCapsulesPerUnit;
-
-            // Get new stock for validation
-            $newEmballageStock = ProductStock::findOrFail($request->emballage_product_stock_id);
             $newFilledCapsule = FilledCapsule::findOrFail($request->filled_capsule_id);
 
-            // Only restore/deduct stock if status is "En cours d'emballage" or "Sortie"
-            $hasStockBeenDeducted = in_array($commande->status, ['En cours d\'emballage', 'Sortie']);
+            if ($commande->commande_type === 'with_packaging') {
+                // WITH_PACKAGING logic
+                $oldQuantity = $commande->quantity;
+                $oldCapsulesPerUnit = $commande->capsules_per_unit;
+                $oldTotalCapsules = $oldQuantity * $oldCapsulesPerUnit;
 
-            if ($hasStockBeenDeducted) {
-                // Get old emballage (main one, not joint or tickets)
-                $oldEmballage = $commande->emballages()
-                    ->with('productStock')
-                    ->whereHas('productStock.product', function($query) {
-                        $query->where('name', '!=', 'Joint de sécurité');
-                    })
-                    ->first();
-                $oldEmballageStock = $oldEmballage ? $oldEmballage->productStock : null;
+                $newQuantity = $request->quantity;
+                $newCapsulesPerUnit = $request->capsules_per_unit;
+                $newTotalCapsules = $newQuantity * $newCapsulesPerUnit;
 
-                // Get old filled capsule
-                $oldFilledCapsuleRecord = $commande->filledCapsules()->first();
-                $oldFilledCapsule = $oldFilledCapsuleRecord ? $oldFilledCapsuleRecord->filledCapsule : null;
+                // Get new stock for validation
+                $newEmballageStock = ProductStock::findOrFail($request->emballage_product_stock_id);
 
-                // Restore old emballage stock
-                if ($oldEmballageStock) {
-                    $oldEmballageStock->increment('quantity', $oldQuantity);
-                    StockMovement::create([
-                        'product_stock_id' => $oldEmballageStock->id,
-                        'type' => 'restock',
-                        'quantity' => $oldQuantity,
-                        'movement_date' => now(),
-                        'notes' => 'Commande #' . $commande->id . ' mise à jour - Emballage',
-                    ]);
-                }
+                // Only restore/deduct stock if status is "En cours d'emballage" or "Sortie"
+                $hasStockBeenDeducted = in_array($commande->status, ['En cours d\'emballage', 'Sortie']);
 
-                if ($oldFilledCapsule) {
-                    $oldFilledCapsule->increment('quantity', $oldTotalCapsules / 420); // Convert back to rangées
-                }
+                if ($hasStockBeenDeducted) {
+                    // Get old emballage (main one, not joint or tickets)
+                    $oldEmballage = $commande->emballages()
+                        ->with('productStock')
+                        ->whereHas('productStock.product', function($query) {
+                            $query->where('name', '!=', 'Joint de sécurité');
+                        })
+                        ->first();
+                    $oldEmballageStock = $oldEmballage ? $oldEmballage->productStock : null;
 
-                // Check new stock availability
-                $availableEmballageStock = $newEmballageStock->quantity;
-                $availableCapsules = $newFilledCapsule->quantity * 420;
+                    // Get old filled capsule
+                    $oldFilledCapsuleRecord = $commande->filledCapsules()->first();
+                    $oldFilledCapsule = $oldFilledCapsuleRecord ? $oldFilledCapsuleRecord->filledCapsule : null;
 
-                if ($newQuantity > $availableEmballageStock) {
-                    throw new \Exception('Stock emballage insuffisant. Disponible: ' . $availableEmballageStock . ', Demandé: ' . $newQuantity);
-                }
-                if ($newTotalCapsules > $availableCapsules) {
-                    throw new \Exception('Quantité de capsules insuffisante. Disponible: ' . $availableCapsules . ' capsules, Demandé: ' . $newTotalCapsules);
-                }
-
-                // Decrement new emballage stock
-                $newEmballageStock->decrement('quantity', $newQuantity);
-                StockMovement::create([
-                    'product_stock_id' => $request->emballage_product_stock_id,
-                    'type' => 'usage',
-                    'quantity' => $newQuantity,
-                    'movement_date' => now(),
-                    'notes' => 'Commande #' . $commande->id . ' - Emballage - ' . ($request->notes ?? ''),
-                ]);
-
-                $newFilledCapsule->decrement('quantity', $newTotalCapsules / 420); // Convert to rangées
-            } else {
-                // Status is "Confirmé" - validate stock availability but don't deduct yet
-                $availableEmballageStock = $newEmballageStock->quantity;
-                $availableCapsules = $newFilledCapsule->quantity * 420;
-
-                if ($newQuantity > $availableEmballageStock) {
-                    throw new \Exception('Stock emballage insuffisant. Disponible: ' . $availableEmballageStock . ', Demandé: ' . $newQuantity);
-                }
-                if ($newTotalCapsules > $availableCapsules) {
-                    throw new \Exception('Quantité de capsules insuffisante. Disponible: ' . $availableCapsules . ' capsules, Demandé: ' . $newTotalCapsules);
-                }
-            }
-
-            // Update commande
-            $commande->update([
-                'client_id' => $request->client_id,
-                'product_stock_id' => $request->emballage_product_stock_id,
-                'quantity' => $newQuantity,
-                'capsules_per_unit' => $newCapsulesPerUnit,
-                'avec_joint_securite' => $request->avec_joint_securite ?? false,
-                'notes' => $request->notes,
-            ]);
-
-            // Update emballages - DELETE ALL FIRST then recreate
-            // This ensures only ONE main emballage + optionally joint
-            $commande->emballages()->delete();
-
-            // Create ONLY ONE main emballage
-            CommandeEmballage::create([
-                'commande_id' => $commande->id,
-                'product_stock_id' => $request->emballage_product_stock_id,
-                'quantity' => $newQuantity,
-            ]);
-            
-            // Add Joint de sécurité if checked
-            if ($request->avec_joint_securite) {
-                $jointSecuriteProduct = Product::where('name', 'Joint de sécurité')->first();
-                if ($jointSecuriteProduct) {
-                    $jointSecuriteStock = $jointSecuriteProduct->stock()->first();
-                    if ($jointSecuriteStock) {
-                        CommandeEmballage::create([
-                            'commande_id' => $commande->id,
-                            'product_stock_id' => $jointSecuriteStock->id,
-                            'quantity' => $newQuantity,
+                    // Restore old emballage stock
+                    if ($oldEmballageStock) {
+                        $oldEmballageStock->increment('quantity', $oldQuantity);
+                        StockMovement::create([
+                            'product_stock_id' => $oldEmballageStock->id,
+                            'type' => 'restock',
+                            'quantity' => $oldQuantity,
+                            'movement_date' => now(),
+                            'notes' => 'Commande #' . $commande->id . ' mise à jour - Emballage',
                         ]);
                     }
-                }
-            }
 
-            // Update filled capsules
-            $commande->filledCapsules()->delete();
-            CommandeFilledCapsule::create([
-                'commande_id' => $commande->id,
-                'filled_capsule_id' => $request->filled_capsule_id,
-                'quantity' => $newTotalCapsules,
-            ]);
+                    if ($oldFilledCapsule) {
+                        $oldFilledCapsule->increment('quantity', $oldTotalCapsules / 420); // Convert back to rangées
+                    }
+
+                    // Check new stock availability
+                    $availableEmballageStock = $newEmballageStock->quantity;
+                    $availableCapsules = $newFilledCapsule->quantity * 420;
+
+                    if ($newQuantity > $availableEmballageStock) {
+                        throw new \Exception('Stock emballage insuffisant. Disponible: ' . $availableEmballageStock . ', Demandé: ' . $newQuantity);
+                    }
+                    if ($newTotalCapsules > $availableCapsules) {
+                        throw new \Exception('Quantité de capsules insuffisante. Disponible: ' . $availableCapsules . ' capsules, Demandé: ' . $newTotalCapsules);
+                    }
+
+                    // Decrement new emballage stock
+                    $newEmballageStock->decrement('quantity', $newQuantity);
+                    StockMovement::create([
+                        'product_stock_id' => $request->emballage_product_stock_id,
+                        'type' => 'usage',
+                        'quantity' => $newQuantity,
+                        'movement_date' => now(),
+                        'notes' => 'Commande #' . $commande->id . ' - Emballage - ' . ($request->notes ?? ''),
+                    ]);
+
+                    $newFilledCapsule->decrement('quantity', $newTotalCapsules / 420); // Convert to rangées
+                } else {
+                    // Status is "Confirmé" - validate stock availability but don't deduct yet
+                    $availableEmballageStock = $newEmballageStock->quantity;
+                    $availableCapsules = $newFilledCapsule->quantity * 420;
+
+                    if ($newQuantity > $availableEmballageStock) {
+                        throw new \Exception('Stock emballage insuffisant. Disponible: ' . $availableEmballageStock . ', Demandé: ' . $newQuantity);
+                    }
+                    if ($newTotalCapsules > $availableCapsules) {
+                        throw new \Exception('Quantité de capsules insuffisante. Disponible: ' . $availableCapsules . ' capsules, Demandé: ' . $newTotalCapsules);
+                    }
+                }
+
+                // Update commande
+                $commande->update([
+                    'client_id' => $request->client_id,
+                    'product_stock_id' => $request->emballage_product_stock_id,
+                    'quantity' => $newQuantity,
+                    'capsules_per_unit' => $newCapsulesPerUnit,
+                    'avec_joint_securite' => $request->avec_joint_securite ?? false,
+                    'notes' => $request->notes,
+                ]);
+
+                // Update emballages - DELETE ALL FIRST then recreate
+                // This ensures only ONE main emballage + optionally joint
+                $commande->emballages()->delete();
+
+                // Create ONLY ONE main emballage
+                CommandeEmballage::create([
+                    'commande_id' => $commande->id,
+                    'product_stock_id' => $request->emballage_product_stock_id,
+                    'quantity' => $newQuantity,
+                ]);
+                
+                // Add Joint de sécurité if checked
+                if ($request->avec_joint_securite) {
+                    $jointSecuriteProduct = Product::where('name', 'Joint de sécurité')->first();
+                    if ($jointSecuriteProduct) {
+                        $jointSecuriteStock = $jointSecuriteProduct->stock()->first();
+                        if ($jointSecuriteStock) {
+                            CommandeEmballage::create([
+                                'commande_id' => $commande->id,
+                                'product_stock_id' => $jointSecuriteStock->id,
+                                'quantity' => $newQuantity,
+                            ]);
+                        }
+                    }
+                }
+
+                // Update filled capsules
+                $commande->filledCapsules()->delete();
+                CommandeFilledCapsule::create([
+                    'commande_id' => $commande->id,
+                    'filled_capsule_id' => $request->filled_capsule_id,
+                    'quantity' => $newTotalCapsules,
+                ]);
+
+            } else {
+                // WITHOUT_PACKAGING logic
+                $newCapsulesQuantity = (int) $request->capsules_quantity_input;
+
+                // Get old capsule quantity
+                $oldFilledCapsuleRecord = $commande->filledCapsules()->first();
+                $oldTotalCapsules = $oldFilledCapsuleRecord ? $oldFilledCapsuleRecord->quantity : 0;
+
+                // Only restore/deduct stock if status is "En cours d'emballage" or "Sortie"
+                $hasStockBeenDeducted = in_array($commande->status, ['En cours d\'emballage', 'Sortie']);
+
+                if ($hasStockBeenDeducted) {
+                    // Get old filled capsule
+                    $oldFilledCapsule = $oldFilledCapsuleRecord ? $oldFilledCapsuleRecord->filledCapsule : null;
+
+                    if ($oldFilledCapsule) {
+                        $oldFilledCapsule->increment('quantity', $oldTotalCapsules / 420); // Convert back to rangées
+                    }
+
+                    // Check new stock availability
+                    $availableCapsules = $newFilledCapsule->quantity * 420;
+
+                    if ($newCapsulesQuantity > $availableCapsules) {
+                        throw new \Exception('Quantité de capsules insuffisante. Disponible: ' . $availableCapsules . ' capsules, Demandé: ' . $newCapsulesQuantity);
+                    }
+
+                    $newFilledCapsule->decrement('quantity', $newCapsulesQuantity / 420); // Convert to rangées
+                } else {
+                    // Status is "Confirmé" - validate stock availability but don't deduct yet
+                    $availableCapsules = $newFilledCapsule->quantity * 420;
+
+                    if ($newCapsulesQuantity > $availableCapsules) {
+                        throw new \Exception('Quantité de capsules insuffisante. Disponible: ' . $availableCapsules . ' capsules, Demandé: ' . $newCapsulesQuantity);
+                    }
+                }
+
+                // Update commande for without_packaging
+                $commande->update([
+                    'client_id' => $request->client_id,
+                    'quantity' => 0, // Always 0 for without_packaging
+                    'capsules_per_unit' => $newCapsulesQuantity, // Store the quantity here
+                    'notes' => $request->notes,
+                ]);
+
+                // Update filled capsules
+                $commande->filledCapsules()->delete();
+                CommandeFilledCapsule::create([
+                    'commande_id' => $commande->id,
+                    'filled_capsule_id' => $request->filled_capsule_id,
+                    'quantity' => $newCapsulesQuantity,
+                ]);
+            }
 
             // Handle tickets if provided
             $commande->tickets()->delete();
@@ -840,8 +1038,8 @@ class CommandeController extends Controller
                 try {
                     $commande->load('emballages.productStock', 'filledCapsules.filledCapsule');
                     
-                    // Validate we have emballages to process
-                    if ($commande->emballages->isEmpty()) {
+                    // Validate we have either emballages (with_packaging) or filledCapsules (both types)
+                    if ($commande->commande_type === 'with_packaging' && $commande->emballages->isEmpty()) {
                         DB::rollBack();
                         return response()->json([
                             'success' => false,
@@ -849,14 +1047,24 @@ class CommandeController extends Controller
                         ], 400);
                     }
                     
-                    // Check stock availability for emballages
-                    foreach ($commande->emballages as $emballage) {
-                        if ($emballage->quantity > $emballage->productStock->quantity) {
-                            DB::rollBack();
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Stock insuffisant pour ' . $emballage->productStock->product->name
-                            ], 400);
+                    if ($commande->filledCapsules->isEmpty()) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Aucune capsule remplie trouvée pour cette commande'
+                        ], 400);
+                    }
+                    
+                    // Check stock availability for emballages (only if with_packaging)
+                    if ($commande->commande_type === 'with_packaging') {
+                        foreach ($commande->emballages as $emballage) {
+                            if ($emballage->quantity > $emballage->productStock->quantity) {
+                                DB::rollBack();
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Stock insuffisant pour ' . $emballage->productStock->product->name
+                                ], 400);
+                            }
                         }
                     }
 
@@ -884,29 +1092,31 @@ class CommandeController extends Controller
                     // Track decremented products to prevent duplicates
                     $decrementedProducts = [];
                     
-                    // Apply stock deductions for emballages (PILULIER, BOUCHON, and optionally Joint de sécurité)
-                    foreach ($commande->emballages as $emballage) {
-                        // Prevent duplicate decrements for the same product stock
-                        if (isset($decrementedProducts[$emballage->product_stock_id])) {
-                            \Log::warning('COMMANDE UPDATE STATUS: Skipping duplicate decrement', [
-                                'commande_id' => $commande->id,
+                    // Apply stock deductions for emballages (only for with_packaging commandes)
+                    if ($commande->commande_type === 'with_packaging') {
+                        foreach ($commande->emballages as $emballage) {
+                            // Prevent duplicate decrements for the same product stock
+                            if (isset($decrementedProducts[$emballage->product_stock_id])) {
+                                \Log::warning('COMMANDE UPDATE STATUS: Skipping duplicate decrement', [
+                                    'commande_id' => $commande->id,
+                                    'product_stock_id' => $emballage->product_stock_id,
+                                    'product_name' => $emballage->productStock->product->name,
+                                ]);
+                                continue;
+                            }
+                            
+                            $emballage->productStock->decrement('quantity', $emballage->quantity);
+                            
+                            $decrementedProducts[$emballage->product_stock_id] = true;
+                            
+                            StockMovement::create([
                                 'product_stock_id' => $emballage->product_stock_id,
-                                'product_name' => $emballage->productStock->product->name,
+                                'type' => 'usage',
+                                'quantity' => $emballage->quantity,
+                                'movement_date' => now(),
+                                'notes' => 'Commande #' . $commande->id . ' - ' . $emballage->productStock->product->name,
                             ]);
-                            continue;
                         }
-                        
-                        $emballage->productStock->decrement('quantity', $emballage->quantity);
-                        
-                        $decrementedProducts[$emballage->product_stock_id] = true;
-                        
-                        StockMovement::create([
-                            'product_stock_id' => $emballage->product_stock_id,
-                            'type' => 'usage',
-                            'quantity' => $emballage->quantity,
-                            'movement_date' => now(),
-                            'notes' => 'Commande #' . $commande->id . ' - ' . $emballage->productStock->product->name,
-                        ]);
                     }
 
                     // Decrement filled capsules stock

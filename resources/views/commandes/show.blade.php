@@ -38,6 +38,18 @@
                 <div style="display: inline-block; padding: 0.5rem 1rem; background: #e0f2fe; color: #0369a1; border-radius: 0.5rem; font-weight: 700; font-size: 1rem;">{{ $commande->status }}</div>
             </div>
 
+            <!-- Commande Type Card -->
+            <div style="background: white; border-radius: 0.75rem; padding: 1.5rem; border-left: 4px solid #7c3aed; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 0.75rem;">🛍️ Type</div>
+                <div style="display: inline-block; padding: 0.5rem 1rem; background: {{ $commande->commande_type === 'with_packaging' ? '#f0fdf4' : '#fef3c7' }}; color: {{ $commande->commande_type === 'with_packaging' ? '#166534' : '#92400e' }}; border-radius: 0.5rem; font-weight: 700; font-size: 1rem;">
+                    @if($commande->commande_type === 'with_packaging')
+                        📦 Capsules + Emballage
+                    @else
+                        💊 Capsules seules
+                    @endif
+                </div>
+            </div>
+
             <!-- Date Card -->
             <div style="background: white; border-radius: 0.75rem; padding: 1.5rem; border-left: 4px solid #2563eb; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 0.75rem;">📅 Date</div>
@@ -49,7 +61,8 @@
         <!-- Main Content Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
 
-            <!-- Emballages Card (UNIFIED) -->
+            <!-- Emballages Card (UNIFIED) - Only show for with_packaging -->
+            @if($commande->commande_type === 'with_packaging')
             <div style="background: white; border-radius: 0.75rem; padding: 1.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #f3f4f6;">
                     <span style="font-size: 1.5rem;">📦</span>
@@ -97,6 +110,7 @@
                 </div>
                 @endif
             </div>
+            @endif
 
             <!-- Quantity & Capsules Card -->
             <div style="background: white; border-radius: 0.75rem; padding: 1.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
@@ -105,6 +119,7 @@
                     <h2 style="margin: 0; font-size: 1.125rem; font-weight: 700; color: #1f2937;">Quantité</h2>
                 </div>
 
+                @if($commande->commande_type === 'with_packaging')
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
                     <!-- Total Quantity -->
                     <div style="background: #eff6ff; padding: 1rem; border-radius: 0.625rem; border: 1px solid #bfdbfe;">
@@ -124,6 +139,13 @@
                     <div style="font-size: 0.625rem; color: #92400e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">Total Capsules</div>
                     <div style="font-size: 2rem; font-weight: 700; color: #92400e;">{{ $commande->quantity * $commande->capsules_per_unit }}</div>
                 </div>
+                @else
+                <!-- Total Capsules (without packaging) -->
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 0.625rem; border: 1px solid #fbbf24; text-align: center;">
+                    <div style="font-size: 0.625rem; color: #92400e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.375rem;">Total Capsules</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #92400e;">{{ $commande->capsules_per_unit }}</div>
+                </div>
+                @endif
 
                 <!-- Capsules Content -->
                 @if($commande->filledCapsules->isNotEmpty())

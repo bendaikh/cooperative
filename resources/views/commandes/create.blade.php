@@ -20,27 +20,31 @@
         @endif
         
         <!-- Progress Steps -->
-        <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; position: relative;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; position: relative; overflow-x: auto;">
             <div style="position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: #e5e7eb; z-index: 0;"></div>
             
-            <div style="flex: 1; text-align: center; position: relative; z-index: 1;">
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1; min-width: 80px;">
                 <div class="step-circle" data-step="1" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #2d7a52; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">1</div>
                 <p style="font-size: 0.75rem; color: #4b5563; font-weight: 500;">Client</p>
             </div>
-            <div style="flex: 1; text-align: center; position: relative; z-index: 1;">
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1; min-width: 80px;">
                 <div class="step-circle" data-step="2" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">2</div>
+                <p style="font-size: 0.75rem; color: #4b5563; font-weight: 500;">Type</p>
+            </div>
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1; min-width: 80px;">
+                <div class="step-circle" data-step="3" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">3</div>
                 <p style="font-size: 0.75rem; color: #4b5563; font-weight: 500;">Emballage</p>
             </div>
-            <div style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                <div class="step-circle" data-step="3" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">3</div>
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1; min-width: 80px;">
+                <div class="step-circle" data-step="4" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">4</div>
                 <p style="font-size: 0.75rem; color: #4b5563; font-weight: 500;">Quantité</p>
             </div>
-            <div style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                <div class="step-circle" data-step="4" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">4</div>
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1; min-width: 80px;">
+                <div class="step-circle" data-step="5" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">5</div>
                 <p style="font-size: 0.75rem; color: #4b5563; font-weight: 500;">Capsules</p>
             </div>
-            <div style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                <div class="step-circle" data-step="5" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">5</div>
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1; min-width: 80px;">
+                <div class="step-circle" data-step="6" style="width: 40px; height: 40px; margin: 0 auto 0.5rem; border-radius: 50%; background: #e5e7eb; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">6</div>
                 <p style="font-size: 0.75rem; color: #4b5563; font-weight: 500;">Résumé</p>
             </div>
         </div>
@@ -68,15 +72,45 @@
                 </div>
             </div>
 
-            <!-- Step 2: Emballage Selection (UNIFIED) -->
+            <!-- Step 2: Type Selection (With or Without Packaging) -->
             <div class="form-step" data-step="2" style="display: none;">
-                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 2: Sélectionner l'emballage</h2>
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 2: Type de commande</h2>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">Que souhaitez-vous commander ? <span style="color: #dc2626;">*</span></label>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <!-- Option 1: With Packaging -->
+                        <label style="display: flex; flex-direction: column; align-items: center; padding: 2rem; border: 3px solid #e5e7eb; border-radius: 0.75rem; cursor: pointer; transition: all 0.3s; background: white;">
+                            <input type="radio" name="commande_type" id="type_with_packaging" value="with_packaging" required style="width: 1.5rem; height: 1.5rem; cursor: pointer; margin-bottom: 0.75rem;" {{ old('commande_type') == 'with_packaging' || !old('commande_type') ? 'checked' : '' }}>
+                            <span style="font-size: 1.5rem; margin-bottom: 0.5rem;">📦</span>
+                            <span style="font-weight: 600; color: #1f2937; text-align: center;">Capsules + Emballage</span>
+                            <span style="font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 0.5rem;">Capsules remplies avec emballage complet</span>
+                        </label>
+
+                        <!-- Option 2: Without Packaging -->
+                        <label style="display: flex; flex-direction: column; align-items: center; padding: 2rem; border: 3px solid #e5e7eb; border-radius: 0.75rem; cursor: pointer; transition: all 0.3s; background: white;">
+                            <input type="radio" name="commande_type" id="type_without_packaging" value="without_packaging" required style="width: 1.5rem; height: 1.5rem; cursor: pointer; margin-bottom: 0.75rem;" {{ old('commande_type') == 'without_packaging' ? 'checked' : '' }}>
+                            <span style="font-size: 1.5rem; margin-bottom: 0.5rem;">💊</span>
+                            <span style="font-weight: 600; color: #1f2937; text-align: center;">Capsules seules</span>
+                            <span style="font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 0.5rem;">Uniquement capsules remplies sans emballage</span>
+                        </label>
+                    </div>
+                    @error('commande_type')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Step 3: Emballage Selection (UNIFIED) - Only show if with_packaging -->
+            <div class="form-step" data-step="3" style="display: none;" id="step-packaging">
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 3: Sélectionner l'emballage</h2>
                 
                 <!-- Single Emballage Selection -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.75rem; border: 2px solid #e5e7eb;">
                     <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">📦 Emballage <span style="color: #dc2626;">*</span></label>
                     
-                    <select name="emballage_product_stock_id" id="emballage_product_stock_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; margin-bottom: 0.5rem;">
+                    <select name="emballage_product_stock_id" id="emballage_product_stock_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; margin-bottom: 0.5rem;">
                         <option value="">Sélectionner un emballage</option>
                         @foreach($emballages as $emballage)
                             @foreach($emballage->stock as $stock)
@@ -182,13 +216,13 @@
                 </div>
             </div>
 
-            <!-- Step 3: Quantity Input -->
-            <div class="form-step" data-step="3" style="display: none;">
-                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 3: Quantité</h2>
+            <!-- Step 4: Quantity Input -->
+            <div class="form-step" data-step="4" style="display: none;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 4: Quantité</h2>
                 
                 <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #f0fdf4; border-radius: 0.75rem; border: 2px solid #86efac;">
                     <label for="quantity" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Quantité d'emballage <span style="color: #dc2626;">*</span></label>
-                    <input type="number" name="quantity" id="quantity" required min="0.001" step="0.001" value="{{ old('quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
+                    <input type="number" name="quantity" id="quantity" min="0.001" step="0.001" value="{{ old('quantity') }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; font-size: 1rem;">
                     <p id="quantity-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;"></p>
                     @error('quantity')
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -196,9 +230,9 @@
                 </div>
             </div>
 
-            <!-- Step 4: Filled Capsules Selection -->
-            <div class="form-step" data-step="4" style="display: none;">
-                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 4: Capsules remplies</h2>
+            <!-- Step 5: Filled Capsules Selection -->
+            <div class="form-step" data-step="5" style="display: none;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 5: Capsules remplies</h2>
                 
                 <div style="margin-bottom: 1.5rem;">
                     <label for="filled_capsule_id" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">Sélectionner les capsules remplies <span style="color: #dc2626;">*</span></label>
@@ -222,8 +256,8 @@
                     <p id="capsule-info" style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;"></p>
                 </div>
 
-                <!-- Capsules Per Unit Selection -->
-                <div style="margin-bottom: 1.5rem;">
+                <!-- Capsules Per Unit Selection (for with_packaging) or Quantity Input (for without_packaging) -->
+                <div id="capsules-per-unit-section" style="margin-bottom: 1.5rem;">
                     <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">Capsules par unité <span style="color: #dc2626;">*</span></label>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                         @foreach($capsulesPerUnitOptions as $option)
@@ -237,11 +271,18 @@
                         <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <!-- Capsules Quantity Input (for without_packaging) -->
+                <div id="capsules-quantity-section" style="margin-bottom: 1.5rem; display: none;">
+                    <label for="capsules_quantity_input" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;">Quantité de capsules <span style="color: #dc2626;">*</span></label>
+                    <input type="number" id="capsules_quantity_input" name="capsules_quantity_input" min="1" step="1" placeholder="Entrez la quantité de capsules" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none;">
+                    <p style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;">Entrez le nombre total de capsules que vous souhaitez commander.</p>
+                </div>
             </div>
 
-            <!-- Step 5: Summary -->
-            <div class="form-step" data-step="5" style="display: none;">
-                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 5: Résumé de la commande</h2>
+            <!-- Step 6: Summary -->
+            <div class="form-step" data-step="6" style="display: none;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Étape 6: Résumé de la commande</h2>
                 
                 <!-- Order Details Summary -->
                 <div style="padding: 1.5rem; background: #f9fafb; border-radius: 0.75rem; border: 1px solid #e5e7eb; margin-bottom: 1.5rem;">
@@ -378,7 +419,7 @@ const TICKET_PRICES = {
 }; // DH per unit per type
 
 let currentStep = 1;
-const totalSteps = 5;
+const totalSteps = 6;
 
 const form = document.getElementById('commandeForm');
 const prevBtn = document.getElementById('prevBtn');
@@ -386,6 +427,7 @@ const nextBtn = document.getElementById('nextBtn');
 const submitBtn = document.getElementById('submitBtn');
 
 const clientSelect = document.getElementById('client_id');
+const commandeTypeRadios = document.querySelectorAll('input[name="commande_type"]');
 const quantityInput = document.getElementById('quantity');
 const emballageSelect = document.getElementById('emballage_product_stock_id');
 const filledCapsuleSelect = document.getElementById('filled_capsule_id');
@@ -410,16 +452,33 @@ function formatCurrency(value) {
 // Calculate and display costs when entering Step 5
 function calculateCosts() {
     // Get form values
-    const emballageId = emballageSelect.value;
+    const commandeType = document.querySelector('input[name="commande_type"]:checked')?.value;
     const filledCapsuleId = filledCapsuleSelect.value;
-    const quantity = parseFloat(quantityInput.value) || 0;
     const capsulesPerUnit = parseFloat(document.querySelector('input[name="capsules_per_unit"]:checked')?.value) || 0;
-    const hasJointSecurite = document.getElementById('avec_joint_securite')?.checked || false;
-    const hasTicket = ticketCheckbox?.checked || false;
+    
+    let quantity = 0;
+    let totalCapsules = 0;
+    
+    if (commandeType === 'with_packaging') {
+        // With packaging: quantity is emballage packages, total capsules = quantity * capsules_per_unit
+        quantity = parseFloat(quantityInput.value) || 0;
+        totalCapsules = quantity * capsulesPerUnit;
+    } else {
+        // Without packaging: get quantity from the capsule quantity input field
+        quantity = 0; // No packaging
+        const capsuleQuantityInput = document.getElementById('capsules_quantity_input');
+        totalCapsules = parseFloat(capsuleQuantityInput.value) || 0; // The input value IS the total capsules wanted
+    }
+    
+    const hasJointSecurite = (commandeType === 'with_packaging') && (document.getElementById('avec_joint_securite')?.checked || false);
+    const hasTicket = document.getElementById('avec_ticket')?.checked || false;
 
-    // Get emballage price from data attribute (set in the option)
-    const emballageOption = emballageSelect.options[emballageSelect.selectedIndex];
-    const emballagePrice = parseFloat(emballageOption.dataset?.price) || 0;
+    // Get emballage price from data attribute (set in the option) - only if with_packaging
+    let emballagePrice = 0;
+    if (commandeType === 'with_packaging') {
+        const emballageOption = emballageSelect.options[emballageSelect.selectedIndex];
+        emballagePrice = parseFloat(emballageOption.dataset?.price) || 0;
+    }
 
     // Get filled capsule carton price, herb price, and quantity from data attribute
     const filledCapsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
@@ -429,11 +488,8 @@ function calculateCosts() {
     const herbQuantity = parseFloat(filledCapsuleOption.dataset?.herbQuantity) || 0; // quantity in kg per rangée
     const filledCapsuleQuantity = parseFloat(filledCapsuleOption.dataset?.quantity) || 0; // quantity in rangées (only for herb)
 
-    // Calculate total capsules
-    const totalCapsules = quantity * capsulesPerUnit;
-
-    // Calculate emballage cost
-    const costEmballage = emballagePrice * quantity;
+    // Calculate emballage cost (only if with_packaging)
+    const costEmballage = (commandeType === 'with_packaging') ? emballagePrice * quantity : 0;
     document.getElementById('cost-emballage').textContent = formatCurrency(costEmballage);
 
     // Calculate filled capsule cost (capsule + herb material) - SEPARATE
@@ -518,8 +574,15 @@ function showStep(step) {
         currentStepEl.style.display = 'block';
     }
 
-    // Calculate costs when entering Step 5
-    if (step === 5) {
+    // Hide packaging step if without_packaging is selected
+    const commandeType = document.querySelector('input[name="commande_type"]:checked')?.value;
+    const stepPackaging = document.getElementById('step-packaging');
+    if (stepPackaging && commandeType === 'without_packaging') {
+        stepPackaging.style.display = 'none';
+    }
+
+    // Calculate costs when entering Step 6
+    if (step === 6) {
         calculateCosts();
     }
     
@@ -543,34 +606,74 @@ function showStep(step) {
 }
 
 function updateSummary() {
+    const commandeType = document.querySelector('input[name="commande_type"]:checked')?.value;
+    
     const clientOption = clientSelect.options[clientSelect.selectedIndex];
     document.getElementById('summary-client').textContent = clientOption.text || '-';
     
-    document.getElementById('summary-quantity').textContent = quantityInput.value || '-';
-    
-    const emballageOption = emballageSelect.options[emballageSelect.selectedIndex];
-    document.getElementById('summary-emballage').textContent = emballageOption.text || '-';
+    // Different logic for with_packaging vs without_packaging
+    if (commandeType === 'with_packaging') {
+        document.getElementById('summary-quantity').textContent = quantityInput.value || '-';
+        const emballageOption = emballageSelect.options[emballageSelect.selectedIndex];
+        document.getElementById('summary-emballage').textContent = emballageOption.text || '-';
+        
+        const qty = parseFloat(quantityInput.value) || 0;
+        const cpuVal = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
+        const totalCapsules = qty * cpuVal;
+        document.getElementById('summary-capsules-per-unit').textContent = cpuVal > 0 ? cpuVal : '-';
+        document.getElementById('summary-total-capsules').textContent = totalCapsules > 0 ? totalCapsules : '-';
+    } else {
+        // Without packaging
+        document.getElementById('summary-quantity').textContent = 'N/A - Sans emballage';
+        document.getElementById('summary-emballage').textContent = 'N/A - Sans emballage';
+        
+        // For without_packaging: the capsules_per_unit selection IS the total number of capsules
+        const cpuVal = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
+        document.getElementById('summary-capsules-per-unit').textContent = cpuVal > 0 ? cpuVal + ' unités' : '-';
+        document.getElementById('summary-total-capsules').textContent = cpuVal > 0 ? cpuVal : '-';
+    }
     
     const capsuleOption = filledCapsuleSelect.options[filledCapsuleSelect.selectedIndex];
     document.getElementById('summary-capsules').textContent = capsuleOption.text || '-';
-    
-    const qty = parseFloat(quantityInput.value) || 0;
-    const cpuVal = document.querySelector('input[name="capsules_per_unit"]:checked')?.value || 0;
-    const totalCapsules = qty * cpuVal;
-    document.getElementById('summary-total-capsules').textContent = totalCapsules > 0 ? totalCapsules : '-';
 }
 
 function canAdvanceToNextStep() {
+    const commandeType = document.querySelector('input[name="commande_type"]:checked')?.value;
+    
     if (currentStep === 1) {
         return clientSelect.value !== '';
     } else if (currentStep === 2) {
-        return emballageSelect.value !== '';
+        return document.querySelector('input[name="commande_type"]:checked') !== null;
     } else if (currentStep === 3) {
-        return quantityInput.value && parseFloat(quantityInput.value) >= 0.001;
+        // Step 3 is emballage - only required if with_packaging
+        if (commandeType === 'without_packaging') {
+            return true; // Skip emballage step
+        }
+        return emballageSelect.value !== '';
     } else if (currentStep === 4) {
-        return filledCapsuleSelect.value !== '' && document.querySelector('input[name="capsules_per_unit"]:checked') !== null;
+        // Step 4 is quantity - only required if with_packaging
+        if (commandeType === 'without_packaging') {
+            return true; // Skip quantity step, it's set to 0
+        }
+        return quantityInput.value && parseFloat(quantityInput.value) >= 0.001;
     } else if (currentStep === 5) {
-        // Step 5 is the final step - validate selling_price is filled
+        // Step 5: Filled capsules selection
+        // Must have filled capsule selected
+        if (filledCapsuleSelect.value === '') {
+            return false;
+        }
+        
+        // Check capsule quantity based on commande type
+        if (commandeType === 'with_packaging') {
+            // Must have capsules_per_unit selected
+            return document.querySelector('input[name="capsules_per_unit"]:checked') !== null;
+        } else {
+            // Must have capsules_quantity_input filled
+            const capsulesQuantityInput = document.getElementById('capsules_quantity_input');
+            return capsulesQuantityInput && capsulesQuantityInput.value && parseFloat(capsulesQuantityInput.value) >= 1;
+        }
+    } else if (currentStep === 6) {
+        // Step 6 is the final step - validate selling_price is filled
         const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
         return sellingPrice > 0;
     }
@@ -579,7 +682,7 @@ function canAdvanceToNextStep() {
 
 nextBtn.addEventListener('click', () => {
     if (!canAdvanceToNextStep()) {
-        if (currentStep === 5) {
+        if (currentStep === 6) {
             alert('Veuillez entrer un prix de vente supérieur à 0.');
         } else {
             alert('Veuillez remplir tous les champs requis de cette étape.');
@@ -589,6 +692,18 @@ nextBtn.addEventListener('click', () => {
     
     if (currentStep < totalSteps) {
         currentStep++;
+        
+        // Skip step 3 (emballage) if without_packaging is selected
+        const commandeType = document.querySelector('input[name="commande_type"]:checked')?.value;
+        if (currentStep === 3 && commandeType === 'without_packaging') {
+            currentStep++; // Skip to step 4
+        }
+        
+        // Skip step 4 (quantity for emballage) if without_packaging is selected
+        if (currentStep === 4 && commandeType === 'without_packaging') {
+            currentStep++; // Skip to step 5
+        }
+        
         showStep(currentStep);
     }
 });
@@ -596,18 +711,93 @@ nextBtn.addEventListener('click', () => {
 prevBtn.addEventListener('click', () => {
     if (currentStep > 1) {
         currentStep--;
+        
+        // Skip steps when going backwards if without_packaging
+        const commandeType = document.querySelector('input[name="commande_type"]:checked')?.value;
+        if (currentStep === 4 && commandeType === 'without_packaging') {
+            currentStep--; // Skip step 4
+        }
+        if (currentStep === 3 && commandeType === 'without_packaging') {
+            currentStep--; // Skip step 3
+        }
+        
         showStep(currentStep);
     }
+});
+
+// Handle submit button click
+submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Check if selling price is filled
+    const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
+    if (sellingPrice <= 0) {
+        alert('Veuillez entrer un prix de vente supérieur à 0.');
+        return;
+    }
+    
+    // Submit the form
+    form.submit();
 });
 
 ticketCheckbox.addEventListener('change', () => {
     ticketFields.style.display = ticketCheckbox.checked ? 'block' : 'none';
 });
 
+// Handle commande type change
+commandeTypeRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        const commandeType = radio.value;
+        const stepPackaging = document.getElementById('step-packaging');
+        const capsulesPerUnitSection = document.getElementById('capsules-per-unit-section');
+        const capsulesQuantitySection = document.getElementById('capsules-quantity-section');
+        
+        if (commandeType === 'without_packaging') {
+            // Make emballage and quantity not required and set placeholder values
+            emballageSelect.removeAttribute('required');
+            quantityInput.removeAttribute('required');
+            emballageSelect.value = ''; // Clear emballage selection
+            quantityInput.value = '0'; // Set quantity to 0 (no packaging)
+            if (stepPackaging) stepPackaging.style.display = 'none';
+            
+            // Show capsule quantity input, hide radio buttons
+            if (capsulesPerUnitSection) capsulesPerUnitSection.style.display = 'none';
+            if (capsulesQuantitySection) capsulesQuantitySection.style.display = 'block';
+            
+            // Remove required from radio buttons, add to quantity input
+            capsulesPerUnitInputs.forEach(input => input.removeAttribute('required'));
+            document.getElementById('capsules_quantity_input').setAttribute('required', 'required');
+        } else {
+            // Make emballage and quantity required
+            emballageSelect.setAttribute('required', 'required');
+            quantityInput.setAttribute('required', 'required');
+            quantityInput.value = ''; // Clear quantity to force user input
+            if (stepPackaging) stepPackaging.style.display = 'block';
+            
+            // Show radio buttons, hide quantity input
+            if (capsulesPerUnitSection) capsulesPerUnitSection.style.display = 'block';
+            if (capsulesQuantitySection) capsulesQuantitySection.style.display = 'none';
+            
+            // Add required to radio buttons, remove from quantity input
+            capsulesPerUnitInputs.forEach(input => input.setAttribute('required', 'required'));
+            const quantityInput = document.getElementById('capsules_quantity_input');
+            if (quantityInput) quantityInput.removeAttribute('required');
+        }
+        updateSummary();
+    });
+});
+
 [clientSelect, emballageSelect, quantityInput, filledCapsuleSelect, ...capsulesPerUnitInputs].forEach(el => {
     el.addEventListener('change', updateSummary);
     el.addEventListener('input', updateSummary);
 });
+
+// Add event listener for capsule quantity input (without_packaging)
+const capsulesQuantityInput = document.getElementById('capsules_quantity_input');
+if (capsulesQuantityInput) {
+    capsulesQuantityInput.addEventListener('change', updateSummary);
+    capsulesQuantityInput.addEventListener('input', updateSummary);
+}
 
 // Update summary when ticket type or quantity changes
 const ticketTypeSelect = document.getElementById('ticket_type');

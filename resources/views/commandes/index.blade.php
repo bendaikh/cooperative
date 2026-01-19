@@ -63,7 +63,8 @@
             <div style="padding: 1.25rem 1.5rem;">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
                     
-                    <!-- Emballages Section -->
+                    <!-- Emballages Section - Only show for with_packaging -->
+                    @if($commande->commande_type === 'with_packaging')
                     <div>
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding-bottom: 0.375rem; border-bottom: 2px solid #e5e7eb;">
                             <span style="font-size: 1.125rem;">📦</span>
@@ -99,6 +100,7 @@
                             @endforeach
                         </div>
                     </div>
+                    @endif
 
                     <!-- Capsules Section -->
                     <div>
@@ -148,6 +150,7 @@
                             <h3 style="margin: 0; font-size: 0.9375rem; font-weight: 700; color: #1f2937;">Résumé</h3>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 0.625rem;">
+                            @if($commande->commande_type === 'with_packaging')
                             <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 0.75rem; border-radius: 0.5rem; border: 2px solid #60a5fa;">
                                 <div style="font-size: 0.625rem; color: #1e40af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.25rem;">Quantité Totale</div>
                                 <div style="font-size: 1.5rem; font-weight: 700; color: #1e40af;">{{ $commande->quantity }}</div>
@@ -158,6 +161,13 @@
                                 <div style="font-size: 1.5rem; font-weight: 700; color: #065f46;">{{ $commande->quantity * $commande->capsules_per_unit }}</div>
                                 <div style="font-size: 0.75rem; color: #065f46; font-weight: 500;">{{ $commande->quantity }} × {{ $commande->capsules_per_unit }}</div>
                             </div>
+                            @else
+                            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 0.75rem; border-radius: 0.5rem; border: 2px solid #fbbf24;">
+                                <div style="font-size: 0.625rem; color: #92400e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; margin-bottom: 0.25rem;">Quantité Totale</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #92400e;">{{ $commande->capsules_per_unit }}</div>
+                                <div style="font-size: 0.75rem; color: #92400e; font-weight: 500;">capsules</div>
+                            </div>
+                            @endif
                             @if($commande->notes)
                             <div style="padding: 0.75rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #fbbf24; border-radius: 0.5rem;">
                                 <div style="display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.375rem;">

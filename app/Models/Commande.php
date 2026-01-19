@@ -9,7 +9,7 @@ class Commande extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['client_id', 'product_stock_id', 'quantity', 'status', 'notes', 'capsules_per_unit', 'avec_joint_securite', 'stock_applied', 'avec_ticket', 'nom_marque', 'numero_autorisation', 'ticket_product_stock_id', 'ticket_quantity'];
+    protected $fillable = ['client_id', 'product_stock_id', 'quantity', 'status', 'notes', 'capsules_per_unit', 'avec_joint_securite', 'stock_applied', 'avec_ticket', 'nom_marque', 'numero_autorisation', 'ticket_product_stock_id', 'ticket_quantity', 'commande_type', 'emballage_product_stock_id', 'filled_capsule_id', 'selling_price'];
 
     protected $casts = [
         'quantity' => 'integer',
@@ -17,6 +17,7 @@ class Commande extends Model
         'avec_joint_securite' => 'boolean',
         'stock_applied' => 'boolean',
         'avec_ticket' => 'boolean',
+        'selling_price' => 'decimal:2',
     ];
 
     public function client()
