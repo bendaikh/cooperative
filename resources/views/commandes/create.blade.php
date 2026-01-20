@@ -485,8 +485,8 @@ function calculateCosts() {
     const cartonPrice = parseFloat(filledCapsuleOption.dataset?.cartonPrice) || 0; // price per carton
     const cartonCapacity = parseFloat(filledCapsuleOption.dataset?.cartonCapacity) || 0; // total capsules in carton
     const herbPrice = parseFloat(filledCapsuleOption.dataset?.herbPrice) || 0; // price per kg
-    const herbQuantity = parseFloat(filledCapsuleOption.dataset?.herbQuantity) || 0; // quantity in kg per rangée
-    const filledCapsuleQuantity = parseFloat(filledCapsuleOption.dataset?.quantity) || 0; // quantity in rangées (only for herb)
+    const herbQuantity = parseFloat(filledCapsuleOption.dataset?.herbQuantity) || 0; // TOTAL kg for entire batch (NOT per rangée)
+    const filledCapsuleQuantity = parseFloat(filledCapsuleOption.dataset?.quantity) || 0; // quantity in rangées in the batch
 
     // Calculate emballage cost (only if with_packaging)
     const costEmballage = (commandeType === 'with_packaging') ? emballagePrice * quantity : 0;
@@ -507,10 +507,12 @@ function calculateCosts() {
     
     // Herb cost: PROPORTIONAL to capsules ordered
     if (filledCapsuleQuantity > 0) {
-        // herbQuantity = kg per rangée, filledCapsuleQuantity = total rangées
-        const herbQuantityPerRangee = herbQuantity / filledCapsuleQuantity; // kg per single rangée
-        const pricePerRangee = herbPrice * herbQuantityPerRangee; // price per rangée
-        costHerbPerUnit = pricePerRangee / 420; // cost per capsule
+        // Calculate herb cost per capsule
+        // herbQuantity = total kg for entire batch
+        // filledCapsuleQuantity = total rangées in batch
+        const totalCapsulesInBatch = filledCapsuleQuantity * 420; // 1 rangée = 420 capsules
+        const herbCostPerCapsule = (herbQuantity * herbPrice) / totalCapsulesInBatch;
+        costHerbPerUnit = herbCostPerCapsule; // cost per capsule
     }
     
     // Calculate totals for all capsules used

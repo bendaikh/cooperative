@@ -124,11 +124,23 @@ class CommandeController extends Controller
         $quantity = (float) $validated['quantity'];
         $emballageCost = ($emballageStock->purchase_price ?? 0) * $quantity;
         
-        // Herb cost calculation (CORRECT FORMULA)
+        // Calculate total capsules
         $totalCapsules = $quantity * $validated['capsules_per_unit'];
-        $totalCapsulesInBatch = $filledCapsule->quantity * 420; // 1 rangée = 420 capsules
-        $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / max($totalCapsulesInBatch, 1);
-        $herbTotalCost = $herbCostPerCapsule * $totalCapsules;
+        
+        // Herb cost calculation
+        // filledCapsule->quantity = rangées in batch
+        // filledCapsule->herb_quantity = total kg for batch  
+        // totalCapsules = total capsules ordered
+        
+        $batchRangees = $filledCapsule->quantity ?? 0;
+        $batchHerbKg = $filledCapsule->herb_quantity ?? 0;
+        $herbPricePerKg = $filledCapsule->herb->purchase_price ?? 0;
+        
+        $herbTotalCost = 0;
+        if ($batchRangees > 0) {
+            $totalCapsulesInBatch = $batchRangees * 420; // 1 rangée = 420 capsules
+            $herbTotalCost = ($batchHerbKg * $herbPricePerKg / $totalCapsulesInBatch) * $totalCapsules;
+        }
         
         // Empty capsule cost calculation (FIXED: was missing from preview)
         $capsuleCost = 0;
@@ -436,11 +448,22 @@ class CommandeController extends Controller
                     continue; // Skip if data is missing
                 }
                 
-                // Herb cost calculation (CORRECT FORMULA)
-                $totalCapsulesInBatch = $filledCapsule->quantity * 420; // 1 rangée = 420 capsules
-                if ($totalCapsulesInBatch > 0) {
-                    $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / $totalCapsulesInBatch;
-                    $herbTotalCost = $herbCostPerCapsule * $fcRecord->quantity;
+                // Herb cost calculation
+                // filledCapsule->quantity = rangées in the batch
+                // filledCapsule->herb_quantity = total kg for entire batch
+                // fcRecord->quantity = total capsules ordered
+                
+                $batchRangees = $filledCapsule->quantity ?? 0;
+                $batchHerbKg = $filledCapsule->herb_quantity ?? 0;
+                $herbPricePerKg = $filledCapsule->herb->purchase_price ?? 0;
+                $capsulesOrdered = $fcRecord->quantity ?? 0;
+                
+                if ($batchRangees > 0 && $capsulesOrdered > 0) {
+                    // Calculate total capsules in batch
+                    $totalCapsulesInBatch = $batchRangees * 420;
+                    
+                    // Calculate herb cost: (total herb kg × price per kg) / (total capsules in batch) × capsules ordered
+                    $herbTotalCost = ($batchHerbKg * $herbPricePerKg / $totalCapsulesInBatch) * $capsulesOrdered;
                     $totalCost += $herbTotalCost;
                 }
                 
@@ -606,15 +629,13 @@ class CommandeController extends Controller
             
             // Herb cost
             if ($filledCapsule->herb) {
-                $herbQuantity = $filledCapsule->herb_quantity ?? 0;
-                $herbPrice = $filledCapsule->herb->purchase_price ?? 0;
-                $filledCapsuleQuantityRangees = $filledCapsule->quantity ?? 0;
+                $batchRangees = $filledCapsule->quantity ?? 0;
+                $batchHerbKg = $filledCapsule->herb_quantity ?? 0;
+                $herbPricePerKg = $filledCapsule->herb->purchase_price ?? 0;
                 
-                if ($herbQuantity > 0 && $filledCapsuleQuantityRangees > 0) {
-                    $herbQuantityPerRangee = $herbQuantity / $filledCapsuleQuantityRangees;
-                    $pricePerRangeeForHerb = $herbPrice * $herbQuantityPerRangee;
-                    $costPerCapsule = $pricePerRangeeForHerb / 420;
-                    $currentCosts['herb'] = $costPerCapsule * $totalCapsules;
+                if ($batchRangees > 0 && $totalCapsules > 0) {
+                    $totalCapsulesInBatch = $batchRangees * 420; // 1 rangée = 420 capsules
+                    $currentCosts['herb'] = ($batchHerbKg * $herbPricePerKg / $totalCapsulesInBatch) * $totalCapsules;
                 }
             }
         }
