@@ -124,7 +124,7 @@ class CommandeController extends Controller
         $quantity = (float) $validated['quantity'];
         $emballageCost = ($emballageStock->purchase_price ?? 0) * $quantity;
         
-        // Herb cost calculation (FIXED: use actual herb quantity per capsule)
+        // Herb cost calculation (CORRECT FORMULA)
         $totalCapsules = $quantity * $validated['capsules_per_unit'];
         $totalCapsulesInBatch = $filledCapsule->quantity * 420; // 1 rangée = 420 capsules
         $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / max($totalCapsulesInBatch, 1);
@@ -436,12 +436,8 @@ class CommandeController extends Controller
                     continue; // Skip if data is missing
                 }
                 
-                // Herb cost calculation (FIXED: use proper formula)
-                // $filledCapsule->herb_quantity = total kg in this batch
-                // $filledCapsule->quantity = rangées (1 rangée = 420 capsules)
-                // $fcRecord->quantity = total capsules ordered for this commande
-                $totalCapsulesInBatch = $filledCapsule->quantity * 420; // Convert rangées to capsules
-                
+                // Herb cost calculation (CORRECT FORMULA)
+                $totalCapsulesInBatch = $filledCapsule->quantity * 420; // 1 rangée = 420 capsules
                 if ($totalCapsulesInBatch > 0) {
                     $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / $totalCapsulesInBatch;
                     $herbTotalCost = $herbCostPerCapsule * $fcRecord->quantity;
