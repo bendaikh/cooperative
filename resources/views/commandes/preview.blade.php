@@ -62,6 +62,10 @@
                             <td style="padding: 0.75rem 0; color: #6b7280;">Coût Herb</td>
                             <td style="padding: 0.75rem 0; text-align: right; color: #1f2937; font-weight: 500;">{{ number_format($herbCost, 2) }}</td>
                         </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 0.75rem 0; color: #6b7280;">Coût Capsules Vides</td>
+                            <td style="padding: 0.75rem 0; text-align: right; color: #1f2937; font-weight: 500;">{{ number_format($capsuleCost, 2) }}</td>
+                        </tr>
                         @if($avec_joint_securite)
                         <tr style="border-bottom: 1px solid #e5e7eb;">
                             <td style="padding: 0.75rem 0; color: #6b7280;">Coût Joint de Sécurité</td>

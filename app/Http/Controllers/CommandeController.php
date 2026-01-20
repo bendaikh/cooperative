@@ -124,11 +124,22 @@ class CommandeController extends Controller
         $quantity = (float) $validated['quantity'];
         $emballageCost = ($emballageStock->purchase_price ?? 0) * $quantity;
         
-        // Herb cost (from filled capsule)
-        $herbStock = FilledCapsule::find($validated['filled_capsule_id'])->herb;
+        // Herb cost calculation (FIXED: use actual herb quantity per capsule)
         $totalCapsules = $quantity * $validated['capsules_per_unit'];
-        $herbCostPerUnit = $herbStock->purchase_price ?? 0;
-        $herbTotalCost = $herbCostPerUnit * $totalCapsules;
+        $totalCapsulesInBatch = $filledCapsule->quantity * 420; // 1 rangée = 420 capsules
+        $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / max($totalCapsulesInBatch, 1);
+        $herbTotalCost = $herbCostPerCapsule * $totalCapsules;
+        
+        // Empty capsule cost calculation (FIXED: was missing from preview)
+        $capsuleCost = 0;
+        if ($filledCapsule->capsule && $filledCapsule->capsule->cartonType) {
+            $cartonPrice = ($filledCapsule->capsule->cartonType->purchase_price ?? 0);
+            $cartonCapacity = ($filledCapsule->capsule->cartonType->capacity ?? 1);
+            if ($cartonCapacity > 0) {
+                $capsuleCostPerUnit = $cartonPrice / $cartonCapacity;
+                $capsuleCost = $capsuleCostPerUnit * $totalCapsules;
+            }
+        }
         
         // Joint de sécurité cost
         $jointCost = 0;
@@ -153,8 +164,8 @@ class CommandeController extends Controller
             }
         }
         
-        // Total cost
-        $totalCost = $emballageCost + $herbTotalCost + $jointCost + $ticketCost;
+        // Total cost (FIXED: added capsule cost)
+        $totalCost = $emballageCost + $herbTotalCost + $capsuleCost + $jointCost + $ticketCost;
         
         return view('commandes.preview', [
             'client' => $client,
@@ -165,6 +176,7 @@ class CommandeController extends Controller
             'totalCapsules' => $totalCapsules,
             'emballageCost' => $emballageCost,
             'herbCost' => $herbTotalCost,
+            'capsuleCost' => $capsuleCost,
             'jointCost' => $jointCost,
             'ticketCost' => $ticketCost,
             'totalCost' => $totalCost,
@@ -420,22 +432,31 @@ class CommandeController extends Controller
             foreach ($commande->filledCapsules as $fcRecord) {
                 $filledCapsule = $fcRecord->filledCapsule;
                 
-                // Herb cost calculation:
+                if (!$filledCapsule || !$filledCapsule->herb) {
+                    continue; // Skip if data is missing
+                }
+                
+                // Herb cost calculation (FIXED: use proper formula)
                 // $filledCapsule->herb_quantity = total kg in this batch
                 // $filledCapsule->quantity = rangées (1 rangée = 420 capsules)
                 // $fcRecord->quantity = total capsules ordered for this commande
                 $totalCapsulesInBatch = $filledCapsule->quantity * 420; // Convert rangées to capsules
-                $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / $totalCapsulesInBatch;
-                $herbTotalCost = $herbCostPerCapsule * $fcRecord->quantity;
-                $totalCost += $herbTotalCost;
                 
-                // Empty capsule cost: (carton_price / carton_capacity) * number of capsules
+                if ($totalCapsulesInBatch > 0) {
+                    $herbCostPerCapsule = ($filledCapsule->herb_quantity * ($filledCapsule->herb->purchase_price ?? 0)) / $totalCapsulesInBatch;
+                    $herbTotalCost = $herbCostPerCapsule * $fcRecord->quantity;
+                    $totalCost += $herbTotalCost;
+                }
+                
+                // Empty capsule cost (FIXED: added null checks and division by zero prevention)
                 if ($filledCapsule->capsule && $filledCapsule->capsule->cartonType) {
                     $cartonPrice = ($filledCapsule->capsule->cartonType->purchase_price ?? 0);
                     $cartonCapacity = ($filledCapsule->capsule->cartonType->capacity ?? 1);
-                    $capsuleCostPerUnit = $cartonPrice / $cartonCapacity;
-                    $capsuleTotalCost = $capsuleCostPerUnit * $fcRecord->quantity;
-                    $totalCost += $capsuleTotalCost;
+                    if ($cartonCapacity > 0) {
+                        $capsuleCostPerUnit = $cartonPrice / $cartonCapacity;
+                        $capsuleTotalCost = $capsuleCostPerUnit * $fcRecord->quantity;
+                        $totalCost += $capsuleTotalCost;
+                    }
                 }
             }
 
