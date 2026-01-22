@@ -328,7 +328,11 @@
                             <span id="cost-capsules" style="font-weight: 500; color: #1f2937;">0.00</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
-                            <span style="color: #6b7280;">Coût Matière Herbale</span>
+                            <span style="color: #6b7280;">Quantité Herbe Utilisée (g)</span>
+                            <span id="herb-quantity-grams" style="font-weight: 500; color: #1f2937;">0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: #6b7280;">Coût Matière Herbale (kg × Prix)</span>
                             <span id="cost-herb-material" style="font-weight: 500; color: #1f2937;">0.00</span>
                         </div>
                         <div id="cost-joint-row" style="display: none; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
@@ -519,8 +523,12 @@ function calculateCosts() {
     const costCapsules = costCapsulePerUnit * totalCapsules; // total capsule cost
     const costHerbMaterial = costHerbPerUnit * totalCapsules; // total herb material cost
     
+    // Calculate herb quantity in grams for display
+    const herbQuantityGrams = (costHerbMaterial / herbPrice) * 1000; // convert kg to grams
+    
     // Display separately
     document.getElementById('cost-capsules').textContent = formatCurrency(costCapsules);
+    document.getElementById('herb-quantity-grams').textContent = herbQuantityGrams.toFixed(2) + ' g';
     document.getElementById('cost-herb-material').textContent = formatCurrency(costHerbMaterial);
 
     // Handle conditional costs
