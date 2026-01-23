@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class ExpenseCreateController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
         $categories = ExpenseCategory::all();
         
@@ -59,10 +59,26 @@ class ExpenseCreateController extends Controller
             });
         
         // Get recent expenses with pagination (latest first)
-        $expenses = Expense::with('category')
-            ->whereNotNull('category_id')
-            ->orderByDesc('created_at')
-            ->paginate(10);
+        $expensesQuery = Expense::with('category')
+            ->whereNotNull('category_id');
+        
+        // Apply date filter if provided
+        if ($request->has('date_from') && $request->date_from) {
+            $expensesQuery->whereDate('expense_date', '>=', $request->date_from);
+        }
+        
+        if ($request->has('date_to') && $request->date_to) {
+            $expensesQuery->whereDate('expense_date', '<=', $request->date_to);
+        }
+        
+        // Apply category filter if provided
+        if ($request->has('category_id') && $request->category_id) {
+            $expensesQuery->where('category_id', $request->category_id);
+        }
+        
+        $expenses = $expensesQuery->orderByDesc('expense_date')
+            ->paginate(10)
+            ->withQueryString(); // Preserve query parameters in pagination links
         
         return view('expenses.create', compact(
             'categories',

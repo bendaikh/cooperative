@@ -163,6 +163,67 @@
 <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 2rem;">
     <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: bold; color: #111827;">📋 Dépenses Récentes</h2>
     
+    <!-- FILTER SECTION -->
+    <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #e5e7eb;">
+        <form method="GET" action="{{ route('expenses.create') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
+            <!-- Date From Filter -->
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; font-size: 0.875rem;">Date de début</label>
+                <input 
+                    type="date" 
+                    name="date_from"
+                    value="{{ request('date_from') }}"
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box;"
+                >
+            </div>
+            
+            <!-- Date To Filter -->
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; font-size: 0.875rem;">Date de fin</label>
+                <input 
+                    type="date" 
+                    name="date_to"
+                    value="{{ request('date_to') }}"
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box;"
+                >
+            </div>
+            
+            <!-- Category Filter -->
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; font-size: 0.875rem;">Catégorie</label>
+                <select 
+                    name="category_id"
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box;"
+                >
+                    <option value="">-- Toutes les catégories --</option>
+                    @foreach ($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            
+            <!-- Filter Buttons -->
+            <div style="display: flex; gap: 0.5rem;">
+                <button 
+                    type="submit"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.875rem; transition: transform 0.2s; flex: 1;"
+                    onmouseover="this.style.transform='translateY(-2px)';"
+                    onmouseout="this.style.transform='translateY(0)';"
+                >
+                    🔍 Filtrer
+                </button>
+                <a 
+                    href="{{ route('expenses.create') }}"
+                    style="background: #6b7280; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.875rem; text-decoration: none; display: inline-block; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.background='#4b5563';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.background='#6b7280';"
+                >
+                    🔄 Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+    
     @if ($expenses->count() > 0)
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
