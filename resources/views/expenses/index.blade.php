@@ -96,6 +96,7 @@
                         <th style="padding: 1rem; text-align: right; font-weight: 600; color: #374151; border: 1px solid #e5e7eb;">Montant</th>
                         <th style="padding: 1rem; text-align: center; font-weight: 600; color: #374151; border: 1px solid #e5e7eb;">Date</th>
                         <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; border: 1px solid #e5e7eb;">Notes</th>
+                        <th style="padding: 1rem; text-align: center; font-weight: 600; color: #374151; border: 1px solid #e5e7eb;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,6 +110,37 @@
                         <td style="padding: 1rem; text-align: right; border: 1px solid #e5e7eb; font-weight: 600; color: #ef4444;">{{ number_format($expense->total_cost, 2) }} DH</td>
                         <td style="padding: 1rem; text-align: center; border: 1px solid #e5e7eb; color: #6b7280;">{{ $expense->expense_date->format('d/m/Y') }}</td>
                         <td style="padding: 1rem; border: 1px solid #e5e7eb; color: #6b7280; font-size: 0.875rem;">{{ $expense->notes ?? '—' }}</td>
+                        <td style="padding: 1rem; text-align: center; border: 1px solid #e5e7eb;">
+                            <div style="display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+                                <a 
+                                    href="{{ route('expenses.edit', $expense->id) }}"
+                                    style="background: #3b82f6; color: white; padding: 0.5rem 0.75rem; border-radius: 6px; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.25rem;"
+                                    onmouseover="this.style.background='#2563eb';"
+                                    onmouseout="this.style.background='#3b82f6';"
+                                    title="Modifier"
+                                >
+                                    ✏️ Modifier
+                                </a>
+                                <form 
+                                    action="{{ route('expenses.destroy', $expense->id) }}" 
+                                    method="POST" 
+                                    style="display: inline;"
+                                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?');"
+                                >
+                                    @csrf
+                                    @method('DELETE')
+                                    <button 
+                                        type="submit"
+                                        style="background: #ef4444; color: white; padding: 0.5rem 0.75rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.25rem;"
+                                        onmouseover="this.style.background='#dc2626';"
+                                        onmouseout="this.style.background='#ef4444';"
+                                        title="Supprimer"
+                                    >
+                                        🗑️ Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

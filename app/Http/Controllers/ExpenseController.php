@@ -12,7 +12,7 @@ class ExpenseController extends Controller
     {
         // Get all expenses with relationships
         $expenses = Expense::with(['category', 'herb', 'productStock', 'capsule', 'commande'])
-            ->orderBy('expense_date', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
         
         // Get all categories
@@ -87,6 +87,43 @@ class ExpenseController extends Controller
         ]);
         
         return back()->with('success', 'Dépense enregistrée avec succès.');
+    }
+    
+    public function edit($id)
+    {
+        $expense = Expense::findOrFail($id);
+        $categories = ExpenseCategory::all();
+        
+        return view('expenses.edit', compact('expense', 'categories'));
+    }
+    
+    public function update(Request $request, $id)
+    {
+        $expense = Expense::findOrFail($id);
+        
+        $validated = $request->validate([
+            'category_id' => 'required|exists:expense_categories,id',
+            'amount' => 'required|numeric|min:0.01',
+            'expense_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+        
+        $expense->update([
+            'category_id' => $validated['category_id'],
+            'total_cost' => $validated['amount'],
+            'expense_date' => $validated['expense_date'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
+        
+        return redirect()->route('expenses.index')->with('success', 'Dépense mise à jour avec succès.');
+    }
+    
+    public function destroy($id)
+    {
+        $expense = Expense::findOrFail($id);
+        $expense->delete();
+        
+        return back()->with('success', 'Dépense supprimée avec succès.');
     }
 }
 

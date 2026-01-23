@@ -77,8 +77,12 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
     Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
 
     // Expenses
+    Route::get('/expenses', [App\Http\Controllers\ExpenseController::class, 'index'])->name('expenses.index');
     Route::get('/expenses/create', [ExpenseCreateController::class, 'create'])->name('expenses.create');
     Route::post('/expenses', [ExpenseCreateController::class, 'store'])->name('expenses.store');
+    Route::get('/expenses/{id}/edit', [App\Http\Controllers\ExpenseController::class, 'edit'])->name('expenses.edit');
+    Route::put('/expenses/{id}', [App\Http\Controllers\ExpenseController::class, 'update'])->name('expenses.update');
+    Route::delete('/expenses/{id}', [App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expenses.destroy');
     
     // Expense Categories
     Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->name('expense-categories.index');

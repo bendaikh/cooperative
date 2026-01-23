@@ -76,7 +76,7 @@ class ExpenseCreateController extends Controller
             $expensesQuery->where('category_id', $request->category_id);
         }
         
-        $expenses = $expensesQuery->orderByDesc('expense_date')
+        $expenses = $expensesQuery->orderByDesc('created_at')
             ->paginate(10)
             ->withQueryString(); // Preserve query parameters in pagination links
         
