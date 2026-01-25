@@ -70,6 +70,14 @@
             >
         </div>
 
+        <div>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input type="checkbox" name="is_salaire" value="1" {{ old('is_salaire') ? 'checked' : '' }} style="width: 1rem; height: 1rem; accent-color: #667eea;">
+                <span style="font-weight: 600; color: #374151; font-size: 0.875rem;">Catégorie Salaire</span>
+            </label>
+            <p style="margin: 0.25rem 0 0; color: #6b7280; font-size: 0.75rem;">Cochez pour une catégorie salaire (sélection employé dans les dépenses).</p>
+        </div>
+
         <button 
             type="submit"
             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.7rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: transform 0.2s, box-shadow 0.2s;"

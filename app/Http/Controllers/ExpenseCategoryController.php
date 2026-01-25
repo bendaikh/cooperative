@@ -33,7 +33,9 @@ class ExpenseCategoryController extends Controller
             'name' => 'required|string|unique:expense_categories',
             'description' => 'nullable|string',
             'color' => 'nullable|string|size:7',
+            'is_salaire' => 'nullable|boolean',
         ]);
+        $validated['is_salaire'] = $request->boolean('is_salaire');
         
         ExpenseCategory::create($validated);
         

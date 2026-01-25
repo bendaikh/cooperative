@@ -39,16 +39,35 @@
         <div>
             <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: #374151; font-size: 1rem;">Catégorie <span style="color: #ef4444;">*</span></label>
             <select 
+                id="expense-category-id"
                 name="category_id"
                 style="width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s;"
                 required
             >
                 <option value="">-- Sélectionnez une catégorie --</option>
                 @foreach ($categories as $category)
-                <option value="{{ $category->id }}" {{ old('category_id', $expense->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                <option value="{{ $category->id }}" data-is-salaire="{{ $category->is_salaire ? '1' : '0' }}" {{ old('category_id', $expense->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}{{ $category->is_salaire ? ' (Salaire)' : '' }}</option>
                 @endforeach
             </select>
             @error('category_id')
+                <span style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <!-- Employé (shown when category is Salaire) -->
+        <div id="employee-select-wrapper" style="display: none;">
+            <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; color: #374151; font-size: 1rem;">Employé <span style="color: #ef4444;">*</span></label>
+            <select 
+                id="expense-employee-id"
+                name="employee_id"
+                style="width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s;"
+            >
+                <option value="">-- Sélectionnez un employé --</option>
+                @foreach ($employes as $emp)
+                <option value="{{ $emp->id }}" {{ old('employee_id', $expense->employee_id) == $emp->id ? 'selected' : '' }}>{{ $emp->prenom }} {{ $emp->nom }}{{ $emp->poste ? ' — ' . $emp->poste : '' }}</option>
+                @endforeach
+            </select>
+            @error('employee_id')
                 <span style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>
             @enderror
         </div>
@@ -119,4 +138,23 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+(function() {
+    var sel = document.getElementById('expense-category-id');
+    var wrap = document.getElementById('employee-select-wrapper');
+    var empSel = document.getElementById('expense-employee-id');
+    function toggle() {
+        var opt = sel.options[sel.selectedIndex];
+        var isSalaire = opt && opt.getAttribute('data-is-salaire') === '1';
+        wrap.style.display = isSalaire ? 'block' : 'none';
+        empSel.required = isSalaire;
+        if (!isSalaire) empSel.value = '';
+    }
+    if (sel) sel.addEventListener('change', toggle);
+    toggle();
+})();
+</script>
+@endpush
 @endsection

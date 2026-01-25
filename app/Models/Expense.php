@@ -12,6 +12,7 @@ class Expense extends Model
         'product_stock_id',
         'capsule_id',
         'category_id',
+        'employee_id',
         'quantity',
         'unit_price',
         'total_cost',
@@ -50,6 +51,11 @@ class Expense extends Model
     public function commande()
     {
         return $this->belongsTo(Commande::class);
+    }
+
+    public function employe()
+    {
+        return $this->belongsTo(Employe::class, 'employee_id');
     }
 
     /**

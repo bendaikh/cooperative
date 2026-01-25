@@ -24,6 +24,7 @@ use App\Http\Controllers\FornisseurController;
 use App\Http\Controllers\FinancialController;
 use App\Http\Controllers\CartonTypeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -61,6 +62,9 @@ Route::middleware(['auth', 'verified', 'superadmin'])->group(function () {
 
     // Clients
     Route::resource('clients', ClientController::class);
+
+    // Gestion des Employés
+    Route::resource('employes', EmployeController::class)->except(['show']);
 
     // Commandes
     Route::post('/commandes/preview', [CommandeController::class, 'preview'])->name('commandes.preview');

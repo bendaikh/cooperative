@@ -113,6 +113,21 @@
                 </div>
             </div>
 
+            <!-- Salaire checkbox -->
+            <div>
+                <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                    <input 
+                        type="checkbox" 
+                        name="is_salaire"
+                        value="1"
+                        {{ old('is_salaire') ? 'checked' : '' }}
+                        style="width: 1.25rem; height: 1.25rem; accent-color: #667eea;"
+                    >
+                    <span style="font-weight: 600; color: #374151; font-size: 1rem;">Catégorie Salaire</span>
+                </label>
+                <p style="margin: 0.5rem 0 0; color: #6b7280; font-size: 0.875rem;">Cochez pour créer une catégorie dédiée aux salaires (permettra de sélectionner un employé lors de la création d’une dépense).</p>
+            </div>
+
             <!-- Submit Button -->
             <button 
                 type="submit"
