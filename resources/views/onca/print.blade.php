@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>{{ $document->title }}</title>
     <style>
-        @page { size: A4 portrait; margin: 10mm; }
+        @page { size: A4 portrait; margin: 8mm; }
         * { margin: 0; padding: 0; }
         body { 
             font-family: Arial, sans-serif; 
@@ -12,21 +12,27 @@
             print-color-adjust: exact;
             direction: rtl;
         }
-        
         .container { width: 100%; }
         table { width: 100%; border-collapse: collapse; }
-        td, th { border: 1px solid #000; padding: 3px; font-size: 10px; text-align: right; }
-        
-        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        td, th { border: 1px solid #000; padding: 2px; font-size: 9px; text-align: right; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
         .header-table td { border: 1px solid #000; vertical-align: middle; }
-        .right-box { width: 20%; text-align: center; padding: 8px; }
-        .right-box img { max-height: 70px; }
-        .center-box { width: 60%; text-align: center; padding: 8px; }
-        .center-box .title { font-size: 22px; font-weight: bold; }
-        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .right-box { width: 20%; text-align: center; padding: 6px; }
+        .right-box img { max-height: 60px; }
+        .center-box { width: 60%; text-align: center; padding: 6px; }
+        .center-box .title { font-size: 18px; font-weight: bold; }
+        .center-box .subtitle { font-size: 15px; margin-top: 3px; }
         .left-box { width: 20%; text-align: center; padding: 0; }
-        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+        .left-box .label { font-size: 12px; text-align: right; font-weight: normal; }
         .section-header { background: #e8e8e8; font-weight: bold; }
+        /* Cleaning print: force single page */
+        @media print {
+            .cleaning-section, .cleaning-section table, .cleaning-section tr, .cleaning-section td, .cleaning-section th {
+                page-break-inside: avoid !important;
+            }
+            .cleaning-section table { font-size: 8px !important; }
+            .cleaning-section th, .cleaning-section td { padding: 1.5px !important; }
+        }
     </style>
 </head>
 
@@ -65,7 +71,7 @@
         </table>
         <!-- Info Row: Only render ONCE at the top of the document -->
         <table style="margin-bottom: 3px; page-break-after: avoid;">
-            <tr>
+            <tr style="height: 22px;">
                 <td style="text-align: left; padding: 2px; width: 50%; border: 1px solid black;">ملف رقم: ................................</td>
                 <td style="text-align: center; padding: 2px; width: 50%; border: 1px solid black;">فتح بتاريخ: ................................</td>
             </tr>
@@ -74,37 +80,37 @@
         <!-- Main Content Table -->
         <table style="font-size: 9px; line-height: 1.2;">
             <!-- Section 1: مصدر الشكاية -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">1. مصدر الشكاية:</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td style="text-align: right;">- الاسم</td>
                 <td colspan="3">{{ $c['complaint_source']['name'] ?? '' }}</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td style="text-align: right;">- العنوان</td>
                 <td colspan="3">{{ $c['complaint_source']['address'] ?? '' }}</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td style="text-align: right;">- الهاتف</td>
                 <td colspan="3">{{ $c['complaint_source']['phone'] ?? '' }}</td>
             </tr>
 
             <!-- Section 2: المنتج المعني -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">2. المنتج المعني:</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td style="width: 15%; text-align: right;">- المنتج</td>
                 <td style="width: 28%;">{{ $c['product']['product_name'] ?? '' }}</td>
                 <td style="width: 15%; text-align: right;">- الماركة</td>
                 <td style="width: 42%;">{{ $c['product']['brand'] ?? '' }}</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="2" style="text-align: right;">- رقم الدفعة: {{ $c['product']['batch_number'] ?? '' }}</td>
                 <td colspan="2" style="text-align: right;">- نوع وشكل التعبئة: {{ $c['product']['packaging_type'] ?? '' }}</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="2" style="text-align: center; padding: 2px;">
                     <input type="checkbox" {{ ($c['product']['sample_provided'] ?? '') === 'نعم' ? 'checked' : '' }} disabled>
                     نعم
@@ -114,51 +120,51 @@
                     لا
                 </td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" style="text-align: right; font-size: 8px;">- هل قدمت عينة؟</td>
             </tr>
 
             <!-- Section 3: العيوب -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">3. العيوب المنسوبة للمنتج:</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" style="height: 35px; vertical-align: top;">{{ $c['product_defects']['description'] ?? '' }}</td>
             </tr>
 
             <!-- Section 4: أصل المنتج -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">4. أصل المنتج (الحاصل):</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td style="width: 15%; text-align: right;">- الاسم</td>
                 <td style="width: 28%;">{{ $c['product_origin']['name'] ?? '' }}</td>
                 <td style="width: 15%; text-align: right;">- العنوان</td>
                 <td style="width: 42%;">{{ $c['product_origin']['address'] ?? '' }}</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" style="text-align: right;">- تاريخ الشراء: {{ $c['product_origin']['purchase_date'] ?? '' }}</td>
             </tr>
 
             <!-- Section 5: التخزين والتعامل -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">5. كيف قام صاحب الشكوى بتخزين المنتج والتعامل معه بعد الشراء:</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" style="height: 35px; vertical-align: top;">{{ $c['storage_handling'] ?? '' }}</td>
             </tr>
 
             <!-- Section 6: المرض / الإصابة -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">6. حالة المرض / الإصابة:</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td style="width: 25%; text-align: right;">- عدد الأشخاص الذين استهلكوا المنتج:</td>
                 <td style="width: 25%; text-align: center;">{{ $c['illness']['total_consumers'] ?? '' }}</td>
                 <td style="width: 25%; text-align: right;">- عدد الأشخاص المصابين / الجرحى:</td>
                 <td style="width: 25%; text-align: center;">{{ $c['illness']['affected_count'] ?? '' }}</td>
             </tr>
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" style="text-align: right; font-size: 8px;">
                     - معلوماتهم (الأسماء – الأعمار – الكميات المستهلكة – التواريخ وأوقات الحدث):
                     {{ $c['illness']['affected_info'] ?? '' }}
@@ -166,7 +172,7 @@
             </tr>
 
             <!-- Section 7: الأعراض -->
-            <tr>
+            <tr style="height: 22px;">
                 <td colspan="4" class="section-header" style="text-align: right;">- أعراض المرض (حسب الشدة) أو وصف الإصابة:</td>
             </tr>
             <tr>
@@ -331,7 +337,7 @@
          <div style="margin-top: 30px; font-weight: bold; text-align: left;">تأشير مسئول النظافة: .................................</div>
 
     @elseif($document->type === 'cleaning')
-        
+        <div class="cleaning-section">
         @php
             $sections = [
                 'work_halls' => '1. قاعات العمل:',
@@ -343,10 +349,9 @@
                 'external' => '7. حالات أخرى (خارج المؤسسة وبعد الصيانة):',
             ];
         @endphp
-        
         @foreach($sections as $key => $label)
-             <h4 style="margin: 5px 0 2px 0; font-size: 12px; text-decoration: underline;">{{ $label }}</h4>
-             <table style="margin-bottom: 5px;">
+             <h4 style="margin: 4px 0 1px 0; font-size: 10px; text-decoration: underline;">{{ $label }}</h4>
+             <table style="margin-bottom: 3px; font-size: 8px;">
                 <thead>
                     <tr style="background: #f2f2f2;">
                         <th width="10%">الساعة</th>
@@ -370,7 +375,8 @@
                 </tbody>
              </table>
         @endforeach
-         <div style="margin-top: 15px; font-weight: bold; text-align: left;">تأشير مسئول الإنتاج: .................................</div>
+        <div style="margin-top: 10px; font-weight: bold; text-align: left; font-size: 10px;">تأشير مسئول الإنتاج: .................................</div>
+        </div>
 
     @elseif($document->type === 'batch')
         <table style="width: 100%;">
