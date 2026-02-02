@@ -1,16 +1,43 @@
 <div style="direction: rtl; text-align: right; margin: 0; padding: 0;">
-    <!-- Print Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border: 2px solid #333; padding: 1rem; gap: 1rem;">
-        <div style="font-size: 2rem; text-align: center;">🌿</div>
-        <div style="flex: 1; text-align: center;">
-            <h2 style="margin: 0; font-size: 1rem; font-weight: bold; color: #333;">التحقق من عملية السحب أو التجميع</h2>
-            <p style="margin: 0.25rem 0; font-size: 0.85rem; color: #333;">تعاونية الوالتكاديين</p>
-        </div>
-        <div style="text-align: left; font-size: 0.85rem;">
-            <p style="margin: 0.25rem 0;"><strong>الرمز:</strong> PR-R-EN9</p>
-            <p style="margin: 0.25rem 0;"><strong>الإصدار:</strong> 01</p>
-        </div>
-    </div>
+    <style>
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+    </style>
+
+    <table class="header-table" style="page-break-after: avoid;">
+        <tr>
+            <td class="right-box">
+                <img src="{{ asset('logo.svg') }}" alt="Logo">
+            </td>
+            <td class="center-box">
+                <div class="title">التحقق من عملية السحب أو التجميع</div>
+                <div class="subtitle">تعاونية أنرار نتقادرين</div>
+            </td>
+            <td class="left-box">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="border-bottom:1px solid #000; padding:6px;">
+                            <div class="label">الرمز:</div>
+                            <div>{{ $document->reference }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px;">
+                            <div class="label">الإصدار:</div>
+                            <div>{{ $document->version }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Reference Information -->
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">

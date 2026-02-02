@@ -4,48 +4,67 @@
     <meta charset="utf-8">
     <title>{{ $document->title }}</title>
     <style>
-        @page { size: A4 portrait; margin: 5mm; }
+        @page { size: A4 portrait; margin: 10mm; }
         * { margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { 
+            font-family: Arial, sans-serif; 
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact;
+            direction: rtl;
+        }
         
         .container { width: 100%; }
         table { width: 100%; border-collapse: collapse; }
-        td, th { border: 1px solid black; padding: 3px; font-size: 10px; text-align: right; }
+        td, th { border: 1px solid #000; padding: 3px; font-size: 10px; text-align: right; }
         
-        .header-table { width: 100%; margin-bottom: 2px; }
-        .header-table td { padding: 2px; font-size: 9px; }
-        .logo { height: 30px; width: auto; }
-        .title-cell { font-weight: bold; font-size: 12px; }
-        .section-header { background: #f0f0f0; font-weight: bold; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+        .section-header { background: #e8e8e8; font-weight: bold; }
     </style>
 </head>
-<body onload="window.print()">
 
+<body onload="window.print()">
     <div class="container">
-        <!-- Header Table -->
-        <table class="header-table" style="margin-bottom: 3px;">
+        <!-- Header Table: Logo right, Title center, Code/version left -->
+        <table class="header-table" style="page-break-after: avoid;">
             <tr>
-                <!-- Left: Logo -->
-                <td style="width: 15%; text-align: center; border: 1px solid black; padding: 3px;">
-                    <img src="/logo.png" alt="Logo" style="max-height: 35px;">
+                <!-- Right: Logo -->
+                <td class="right-box">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo">
                 </td>
-                <!-- Center: Main Title -->
-                <td style="width: 55%; text-align: center; border: 1px solid black; padding: 5px 3px;">
-                    <div style="font-weight: bold; font-size: 13px;">تسجيل:</div>
-                    <div style="font-weight: bold; font-size: 12px;">{{ $document->title }}</div>
+                <!-- Center: Title -->
+                <td class="center-box">
+                    <div class="title">تسجيل:</div>
+                    <div class="subtitle">{{ $document->title }}</div>
                 </td>
-                <!-- Right: Reference and Version -->
-                <td style="width: 30%; text-align: center; border: 1px solid black; padding: 3px;">
-                    <div style="font-size: 9px;">
-                        <div>الرمز: <span style="font-weight: bold;">{{ $document->reference }}</span></div>
-                        <div>الإصدار: <span style="font-weight: bold;">{{ $document->version }}</span></div>
-                    </div>
+                <!-- Left: Code & Version -->
+                <td class="left-box">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-bottom:1px solid #000; padding:6px;">
+                                <div class="label">الرمز:</div>
+                                <div>{{ $document->reference }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px;">
+                                <div class="label">الإصدار:</div>
+                                <div>{{ $document->version }}</div>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
-
-        <!-- Info Row -->
-        <table style="margin-bottom: 3px;">
+        <!-- Info Row: Only render ONCE at the top of the document -->
+        <table style="margin-bottom: 3px; page-break-after: avoid;">
             <tr>
                 <td style="text-align: left; padding: 2px; width: 50%; border: 1px solid black;">ملف رقم: ................................</td>
                 <td style="text-align: center; padding: 2px; width: 50%; border: 1px solid black;">فتح بتاريخ: ................................</td>
@@ -187,30 +206,7 @@
         </table>
     </div>
 
-    <div class="header-box">
-        <div class="header-right" style="width: 20%; font-size: 10px;">
-            <table style="margin: 0; border: none;">
-                <tr style="border: none;"><td style="border: none; text-align: left;">الرمز:</td><td style="border: 1px solid black; text-align: center; font-weight: bold; width: 60px;">{{ $document->reference }}</td></tr>
-                <tr style="border: none;"><td style="border: none; text-align: left;">الإصدار:</td><td style="border: 1px solid black; text-align: center; font-weight: bold; width: 60px;">{{ $document->version }}</td></tr>
-            </table>
-        </div>
-        <div class="header-center">
-            <div style="font-size: 16px; font-weight: bold; border-bottom: 1px solid black; display: inline-block; padding: 0 20px; margin-bottom: 5px;">تسجيل:</div>
-            <div style="font-size: 20px; font-weight: bold;">{{ $document->title }}</div>
-        </div>
-        <div class="header-left" style="width: 25%; display: flex; align-items: center; justify-content: space-between;">
-             <div style="text-align: right; font-size: 11px; line-height: 1.2;">
-                <strong>تعاونية أنرار نتجادرين</strong><br>
-                Cooperative Anrar Ntgadirin
-            </div>
-            <img src="/logo.png" alt="Logo" style="max-height: 50px; margin-left: 10px;">
-        </div>
-    </div>
 
-    <div class="info-bar" style="border: none; border-bottom: 1px solid black; background: none; margin-bottom: 20px;">
-        <div>التاريخ: <span style="border-bottom: 1px dotted black; min-width: 150px; display: inline-block;">{{ $document->date->format('Y/m/d') }}</span></div>
-        <div>المسئول: <span style="border-bottom: 1px dotted black; min-width: 150px; display: inline-block;">{{ $document->responsible }}</span></div>
-    </div>
 
     @php $c = $document->content; @endphp
 

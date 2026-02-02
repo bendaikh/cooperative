@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>{{ $document->title }}</title>
     <style>
-        @page { size: A4 portrait; margin: 8mm; }
+        @page { size: A4 portrait; margin: 10mm; }
         * { margin: 0; padding: 0; }
         body { 
             font-family: Arial, sans-serif; 
@@ -15,15 +15,20 @@
         
         .container { width: 100%; }
         table { width: 100%; border-collapse: collapse; }
-        td, th { border: 1px solid #000; padding: 5px; font-size: 10px; text-align: right; }
+        td, th { border: 1px solid #000; padding: 4px; font-size: 9px; text-align: right; }
         
-        .header-row td { padding: 4px; border: 1px solid #000; }
-        .logo-cell { text-align: center; width: 12%; }
-        .title-cell { text-align: center; width: 56%; }
-        .ref-cell { text-align: center; width: 32%; font-size: 9px; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
         .section-header { background: #e8e8e8; font-weight: bold; }
         .info-row td { padding: 3px; }
-        h2 { text-align: center; font-size: 12px; margin: 10px 0; }
+        h2 { text-align: center; font-size: 12px; margin: 8px 0; }
     </style>
 </head>
 <body onload="window.print()">
@@ -32,19 +37,34 @@
 
     <div class="container">
         <!-- Header -->
-        <table style="margin-bottom: 2px;">
-            <tr class="header-row">
-                <td class="logo-cell">
-                    <img src="/logo.png" alt="Logo" style="max-height: 30px; width: auto;">
+        <!-- Unified Header Table: Logo right, Title center, Code/version left -->
+        <table class="header-table" style="width: 100%; margin-bottom: 8px; border-collapse: collapse; page-break-after: avoid;">
+            <tr>
+                <!-- Right: Logo -->
+                <td class="right-box" style="width: 20%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo" style="max-height: 70px;">
                 </td>
-                <td class="title-cell" style="padding: 4px;">
-                    <div style="font-weight: bold; font-size: 11px; margin-bottom: 2px;">تسجيل:</div>
-                    <div style="font-weight: bold; font-size: 10px;">إعادة التتبع (السحب / التجميع)</div>
-                    <div style="font-size: 8px; margin-top: 2px;">تعاونية أنرار نتجادرين</div>
+                <!-- Center: Title -->
+                <td class="center-box" style="width: 60%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                    <div class="title" style="font-size: 22px; font-weight: bold;">استقصاء التتبع</div>
+                    <div class="subtitle" style="font-size: 18px; margin-top: 5px;">{{ $document->title }}</div>
                 </td>
-                <td class="ref-cell">
-                    <div style="margin-bottom: 2px;">الرمز: <strong>{{ $document->reference }}</strong></div>
-                    <div>الإصدار: <strong>{{ $document->version }}</strong></div>
+                <!-- Left: Code and Version -->
+                <td class="left-box" style="width: 20%; text-align: center; padding: 0; border: 1px solid #000; vertical-align: middle;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-bottom:1px solid #000; padding:6px;">
+                                <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الرمز:</div>
+                                <div>{{ $document->reference }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px;">
+                                <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الإصدار:</div>
+                                <div>{{ $document->version }}</div>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>

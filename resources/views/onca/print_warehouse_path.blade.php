@@ -1,30 +1,44 @@
 <!-- Warehouse Path Tracking Print Template -->
 <div style="page-break-after: avoid; direction: rtl; text-align: right;">
-    <div class="onca-print-header" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
-        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 0.5rem; flex-direction: row-reverse;">
-            @if(file_exists(public_path('logo.png')))
-                <img src="{{ asset('logo.png') }}" alt="Logo" style="height: 50px; width: auto;">
-            @endif
-            <div style="text-align: right;">
-                <h1 style="margin: 0; font-size: 1.5rem; font-weight: bold;">تسجيل مسار الدفعة</h1>
-                <p style="margin: 0; font-size: 0.875rem; opacity: 0.9;">WAREHOUSE PATH TRACKING RECORD</p>
-            </div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 1rem; text-align: right;">
-            <div>
-                <span style="opacity: 0.8;">Version / الإصدار:</span>
-                <strong>01</strong>
-            </div>
-            <div>
-                <span style="opacity: 0.8;">Batch Number / رقم الدفعة:</span>
-                <strong>{{ $document->content['batch_number'] ?? '_______________' }}</strong>
-            </div>
-            <div>
-                <span style="opacity: 0.8;">Reference / المرجع:</span>
-                <strong>PR-T-EN9</strong>
-            </div>
-        </div>
-    </div>
+    <style>
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+    </style>
+
+    <table class="header-table" style="page-break-after: avoid;">
+        <tr>
+            <td class="right-box">
+                <img src="{{ asset('logo.svg') }}" alt="Logo">
+            </td>
+            <td class="center-box">
+                <div class="title">تسجيل:</div>
+                <div class="subtitle">{{ $document->title ?? 'مسار الدفعة' }}</div>
+            </td>
+            <td class="left-box">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="border-bottom:1px solid #000; padding:6px;">
+                            <div class="label">الرمز:</div>
+                            <div>{{ $document->reference }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px;">
+                            <div class="label">الإصدار:</div>
+                            <div>{{ $document->version ?? '01' }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Path Tracking Table -->
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.75rem; border: 1px solid #d1d5db; direction: rtl;">

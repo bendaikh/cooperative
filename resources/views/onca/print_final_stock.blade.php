@@ -1,49 +1,51 @@
 <!-- Final Product Stock Print Template -->
 <div style="page-break-after: avoid; direction: rtl; text-align: right;">
-    <div class="onca-print-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
-        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 0.5rem; flex-direction: row-reverse;">
-            @if(file_exists(public_path('logo.png')))
-                <img src="{{ asset('logo.png') }}" alt="Logo" style="height: 50px; width: auto;">
-            @endif
-            <div style="text-align: right;">
-                <h1 style="margin: 0; font-size: 1.5rem; font-weight: bold;">سجل دخول وخروج المنتج النهائي</h1>
-                <p style="margin: 0; font-size: 0.875rem; opacity: 0.9;">FINAL PRODUCT STOCK REGISTER</p>
-            </div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 1rem; text-align: right;">
-            <div>
-                <span style="opacity: 0.8;">Version / الإصدار:</span>
-                <strong>01</strong>
-            </div>
-            <div>
-                <span style="opacity: 0.8;">Period / الفترة:</span>
-                <strong>{{ now()->locale('ar')->translatedFormat('F Y') }}</strong>
-            </div>
-            <div>
-                <span style="opacity: 0.8;">Reference / المرجع:</span>
-                <strong>PR-T-EN5</strong>
-            </div>
-        </div>
-    </div>
+    <table class="header-table" style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; page-break-after: avoid;">
+        <tr>
+            <td class="right-box" style="width: 20%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                <img src="{{ asset('logo.svg') }}" alt="Logo" style="max-height: 70px;">
+            </td>
+            <td class="center-box" style="width: 60%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                <div class="title" style="font-size: 22px; font-weight: bold;">سجل دخول وخروج المنتج النهائي</div>
+                <!-- Removed English subtitle as per client request -->
+            </td>
+            <td class="left-box" style="width: 20%; text-align: center; padding: 0; border: 1px solid #000; vertical-align: middle;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="border-bottom:1px solid #000; padding:6px;">
+                            <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">المرجع:</div>
+                            <div>PR-T-EN5</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px;">
+                            <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الإصدار:</div>
+                            <div>01</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Stock Table -->
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.75rem; border: 1px solid #d1d5db; direction: rtl;">
         <thead>
             <tr style="background: #f3f4f6;">
-                <th rowspan="2" style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ / Date</th>
-                <th colspan="4" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">دخول المنتج النهائي / Incoming Final Product</th>
-                <th colspan="4" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">خروج المنتج النهائي / Outgoing Final Product</th>
-                <th rowspan="2" style="width: 12%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">المخزون النهائي / Final Stock</th>
+                <th rowspan="2" style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">التاريخ</th>
+                <th colspan="4" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">دخول المنتج النهائي</th>
+                <th colspan="4" style="border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">خروج المنتج النهائي</th>
+                <th rowspan="2" style="width: 12%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600;">المخزون النهائي</th>
             </tr>
             <tr style="background: #f9fafb;">
-                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">رقم الدفعة / Batch #</th>
-                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">كمية الوحدة / Unit Qty</th>
-                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">العدد / Qty</th>
-                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">الكمية الإجمالية / Total</th>
-                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">الزبون المعني / Customer</th>
-                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">كمية الوحدة / Unit Qty</th>
-                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">العدد / Qty</th>
-                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">الكمية الإجمالية / Total</th>
+                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">رقم الدفعة</th>
+                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">كمية الوحدة</th>
+                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">العدد</th>
+                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">الكمية الإجمالية</th>
+                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">الزبون المعني</th>
+                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">كمية الوحدة</th>
+                <th style="width: 8%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">العدد</th>
+                <th style="width: 10%; border: 1px solid #d1d5db; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.7rem;">الكمية الإجمالية</th>
             </tr>
         </thead>
         <tbody>

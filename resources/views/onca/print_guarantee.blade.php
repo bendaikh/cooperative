@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,13 +16,14 @@
             color: #333;
             line-height: 1.4;
             background: #f5f5f5;
+            direction: rtl;
         }
 
         .container {
-            width: 8.5in;
-            height: auto;
+            width: 210mm;
+            min-height: 297mm;
             background: white;
-            margin: 10px auto;
+            margin: 0 auto;
             padding: 30px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -179,28 +180,50 @@
 <body>
     <div class="container">
         <!-- Header -->
-        <div class="header">
-            <div class="logo">Co-op Anrar</div>
-            <div class="title">Certificat de Garantie</div>
-            <div class="subtitle">Attestation de Qualité et Fiabilité des Produits</div>
-        </div>
+        <table class="header-table" style="direction: rtl; page-break-after: avoid; width: 100%; border-collapse: collapse; margin-bottom: 8px;">
+            <tr>
+                <td class="right-box" style="width: 20%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo" style="max-height: 70px;">
+                </td>
+                <td class="center-box" style="width: 60%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                    <div class="title" style="font-size: 22px; font-weight: bold;">شهادة الضمان</div>
+                    <div class="subtitle" style="font-size: 18px; margin-top: 5px;">{{ $document->title ?? 'CERT-GAR-001' }}</div>
+                </td>
+                <td class="left-box" style="width: 20%; text-align: center; padding: 0; border: 1px solid #000; vertical-align: middle;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-bottom:1px solid #000; padding:6px;">
+                                <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الرمز:</div>
+                                <div>{{ $document->reference }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px;">
+                                <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الإصدار:</div>
+                                <div>{{ $document->version }}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         <!-- Metadata -->
         <div class="meta-info">
             <div class="meta-item">
-                <span class="meta-label">Référence</span>
+                <span class="meta-label">الرمز</span>
                 <span class="meta-value">{{ $document->reference }}</span>
             </div>
             <div class="meta-item">
-                <span class="meta-label">Date</span>
+                <span class="meta-label">التاريخ</span>
                 <span class="meta-value">{{ $document->date->format('d/m/Y') }}</span>
             </div>
             <div class="meta-item">
-                <span class="meta-label">Responsable</span>
+                <span class="meta-label">المسؤول</span>
                 <span class="meta-value">{{ $document->responsible ?? 'N/A' }}</span>
             </div>
             <div class="meta-item">
-                <span class="meta-label">Version</span>
+                <span class="meta-label">الإصدار</span>
                 <span class="meta-value">{{ $document->version }}</span>
             </div>
         </div>
@@ -208,32 +231,32 @@
         <!-- Section 1: Signataire -->
         @if(isset($document->content['signatory']))
         <div class="section">
-            <h2 class="section-title">1. Information du Signataire</h2>
+            <h2 class="section-title">1. معلومات الموقع</h2>
             <div class="section-content">
                 @if($document->content['signatory']['full_name'] ?? null)
                 <div class="field">
-                    <div class="field-label">Nom Complet</div>
+                    <div class="field-label">الاسم الكامل</div>
                     <div class="field-value">{{ $document->content['signatory']['full_name'] }}</div>
                 </div>
                 @endif
                 
                 @if($document->content['signatory']['position'] ?? null)
                 <div class="field">
-                    <div class="field-label">Position</div>
+                    <div class="field-label">المنصب</div>
                     <div class="field-value">{{ $document->content['signatory']['position'] }}</div>
                 </div>
                 @endif
                 
                 @if($document->content['signatory']['id_number'] ?? null)
                 <div class="field">
-                    <div class="field-label">Numéro d'Identité</div>
+                    <div class="field-label">رقم الهوية</div>
                     <div class="field-value">{{ $document->content['signatory']['id_number'] }}</div>
                 </div>
                 @endif
                 
                 @if($document->content['signatory']['organization'] ?? null)
                 <div class="field">
-                    <div class="field-label">Organisme</div>
+                    <div class="field-label">الهيئة</div>
                     <div class="field-value">{{ $document->content['signatory']['organization'] }}</div>
                 </div>
                 @endif

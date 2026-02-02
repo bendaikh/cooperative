@@ -510,11 +510,17 @@ function calculateCosts() {
     }
     
     // Herb cost: PROPORTIONAL to capsules ordered
+    let herbQuantityGrams = 0; // quantity in grams for display
+    
     if (filledCapsuleQuantity > 0) {
         // Calculate herb cost per capsule
         // herbQuantity = total kg for entire batch
         // filledCapsuleQuantity = total rangées in batch
         const totalCapsulesInBatch = filledCapsuleQuantity * 420; // 1 rangée = 420 capsules
+        
+        // Herb quantity used for this order (proportional)
+        herbQuantityGrams = (totalCapsules / totalCapsulesInBatch) * herbQuantity * 1000; // convert kg to grams
+        
         const herbCostPerCapsule = (herbQuantity * herbPrice) / totalCapsulesInBatch;
         costHerbPerUnit = herbCostPerCapsule; // cost per capsule
     }
@@ -522,9 +528,6 @@ function calculateCosts() {
     // Calculate totals for all capsules used
     const costCapsules = costCapsulePerUnit * totalCapsules; // total capsule cost
     const costHerbMaterial = costHerbPerUnit * totalCapsules; // total herb material cost
-    
-    // Calculate herb quantity in grams for display
-    const herbQuantityGrams = (costHerbMaterial / herbPrice) * 1000; // convert kg to grams
     
     // Display separately
     document.getElementById('cost-capsules').textContent = formatCurrency(costCapsules);

@@ -29,6 +29,16 @@
             direction: rtl;
         }
 
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+
         .header {
             text-align: center;
             margin-bottom: 20px;
@@ -208,23 +218,36 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo">تعاونية أنرار نتقادرين</div>
-            <div class="title">استمارة اشعار بالسحب</div>
-            <div class="subtitle">Formulaire d'Avis de Retrait</div>
-        </div>
+        <table class="header-table" style="page-break-after: avoid;">
+            <tr>
+                <td class="right-box">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo">
+                </td>
+                <td class="center-box">
+                    <div class="title">تسجيل:</div>
+                    <div class="subtitle">{{ $document->title ?? 'استمارة اشعار بالسحب' }}</div>
+                </td>
+                <td class="left-box">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-bottom:1px solid #000; padding:6px;">
+                                <div class="label">الرمز:</div>
+                                <div>{{ $document->reference ?? '' }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px;">
+                                <div class="label">الإصدار:</div>
+                                <div>{{ $document->version ?? '' }}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         <!-- Metadata -->
         <div class="meta-info">
-            <div class="meta-item">
-                <span class="meta-label">الرمز:</span>
-                <span class="meta-value">{{ $document->reference }}</span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">الإصدار:</span>
-                <span class="meta-value">{{ $document->version }}</span>
-            </div>
             <div class="meta-item">
                 <span class="meta-label">ملف رقم :</span>
                 <span class="meta-value">{{ $document->file_number ?? '' }}</span>

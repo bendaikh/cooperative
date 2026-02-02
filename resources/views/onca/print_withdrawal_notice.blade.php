@@ -1,16 +1,32 @@
 <div style="direction: rtl; text-align: right; margin: 0; padding: 0;">
     <!-- Print Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border: 2px solid #333; padding: 1rem; gap: 1rem;">
-        <div style="font-size: 2rem; text-align: center;">🌿</div>
-        <div style="flex: 1; text-align: center;">
-            <h1 style="margin: 0; font-size: 1.1rem; font-weight: bold; color: #333;">إشعار بالسحب</h1>
-            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #333;">استقصاء:</p>
-        </div>
-        <div style="text-align: left; font-size: 0.85rem;">
-            <p style="margin: 0.25rem 0;"><strong>الرمز:</strong> PR-R-FR2</p>
-            <p style="margin: 0.25rem 0;"><strong>الإصدار:</strong> 01</p>
-        </div>
-    </div>
+    <table class="header-table" style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; page-break-after: avoid;">
+        <tr>
+            <td class="right-box" style="width: 20%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                <img src="{{ asset('logo.svg') }}" alt="Logo" style="max-height: 70px;">
+            </td>
+            <td class="center-box" style="width: 60%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
+                <div class="title" style="font-size: 22px; font-weight: bold;">إشعار بالسحب</div>
+                <div class="subtitle" style="font-size: 18px; margin-top: 5px;"></div>
+            </td>
+            <td class="left-box" style="width: 20%; text-align: center; padding: 0; border: 1px solid #000; vertical-align: middle;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="border-bottom:1px solid #000; padding:6px;">
+                            <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الرمز:</div>
+                            <div>PR-R-FR2</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px;">
+                            <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الإصدار:</div>
+                            <div>01</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Reference Information -->
     <div style="display: flex; gap: 0; margin-bottom: 2rem; border: 1px solid #999;">

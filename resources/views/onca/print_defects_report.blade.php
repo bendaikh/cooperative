@@ -1,20 +1,57 @@
-<div style="direction: rtl; text-align: right; margin: 0; padding: 0;">
-    <!-- Print Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid #333; padding-bottom: 1rem; gap: 1rem;">
-        <div style="font-size: 2rem; text-align: center;">🌿</div>
-        <div style="flex: 1; text-align: center;">
-            <h2 style="margin: 0; font-size: 1.1rem; font-weight: bold; color: #333;">تعاونية الوالتكاديين</h2>
-            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #333;">استقصاء حول حالة العيوب</p>
-            <p style="margin: 0.25rem 0; font-size: 0.85rem; color: #666;"><strong>التسجيل:</strong></p>
-        </div>
-        <div style="text-align: left; font-size: 0.85rem;">
-            <p style="margin: 0.25rem 0;"><strong>الرمز:</strong> PR-R-EN2</p>
-            <p style="margin: 0.25rem 0;"><strong>الإصدار:</strong> 01</p>
-        </div>
-    </div>
+<div style="direction: rtl; text-align: right; margin: 0; padding: 0; page-break-inside: avoid; width: 100vw; max-width: 100vw; overflow: hidden;">
+    <style>
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+        @media print {
+            html, body, div[style*='direction: rtl'] {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow: hidden !important;
+                page-break-inside: avoid !important;
+            }
+            .header-table, .header-table td, table, tr, td, th, div, label {
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+
+    <table class="header-table" style="page-break-after: avoid;">
+        <tr>
+            <td class="right-box">
+                <img src="{{ asset('logo.svg') }}" alt="Logo">
+            </td>
+            <td class="center-box">
+                <div class="title">استقصاء:</div>
+                <div class="subtitle">{{ $document->title }}</div>
+            </td>
+            <td class="left-box">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="border-bottom:1px solid #000; padding:6px;">
+                            <div class="label">الرمز:</div>
+                            <div>{{ $document->reference }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px;">
+                            <div class="label">الإصدار:</div>
+                            <div>{{ $document->version ?? '01' }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Reference Information -->
-    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; padding: 0 0.5rem;">
+    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; padding: 0 0.5rem; page-break-inside: avoid;">
         <div style="flex: 1;">
             <label style="font-weight: bold; font-size: 0.85rem;">ملف رقم:</label>
             <div style="border-bottom: 1px solid #333; min-height: 25px; margin-top: 0.25rem;"></div>
@@ -26,7 +63,7 @@
     </div>
 
     <!-- Survey Period -->
-    <div style="border: 1px solid #999; margin-bottom: 1.5rem;">
+    <div style="border: 1px solid #999; margin-bottom: 1.5rem; page-break-inside: avoid;">
         <div style="background-color: #f0f0f0; padding: 0.75rem; border-bottom: 1px solid #999; font-weight: bold; font-size: 0.85rem;">فترة الاستقصاء</div>
         <div style="padding: 1rem;">
             <table style="width: 100%; border-collapse: collapse;">
@@ -51,7 +88,7 @@
     </div>
 
     <!-- Question 1 -->
-    <div style="border-right: 4px solid #0066cc; background: #f9fafb; padding: 1rem; margin-bottom: 1rem; border: 1px solid #999;">
+    <div style="border-right: 4px solid #0066cc; background: #f9fafb; padding: 1rem; margin-bottom: 1rem; border: 1px solid #999; page-break-inside: avoid;">
         <div style="font-weight: bold; margin-bottom: 0.75rem; font-size: 0.85rem;">1. العيوب المتعلقة بالمنتج (المنتجات):</div>
         <div style="min-height: 80px; border: 1px solid #999; padding: 0.5rem;"></div>
     </div>

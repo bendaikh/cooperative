@@ -225,7 +225,7 @@
 <div style="margin-bottom: 1rem;">
     <h2 style="font-size: 0.8rem; font-weight: 800; margin: 0 0 0.65rem 0; color: #111827;">🏆 Top Performers</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem;">
-        @if($bestSelling)
+        @if($bestSelling && $bestSelling->commande && $bestSelling->commande->client)
         <div class="performer-card" style="background: linear-gradient(135deg, #667eea 0%, #5568d3 50%, #764ba2 100%); padding: 1rem;">
             <div class="performer-icon" style="font-size: 60px;">🏆</div>
             <div style="position: relative; z-index: 2;">

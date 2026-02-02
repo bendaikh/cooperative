@@ -54,14 +54,20 @@
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 56px;
+            height: 56px;
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            padding: 6px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .logo-text {
@@ -305,7 +311,9 @@
     <div class="left-panel">
         <div>
             <div class="logo-section">
-                <div class="logo-icon">🍃</div>
+                <div class="logo-icon">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo">
+                </div>
                 <div class="logo-text">Co-op ERP</div>
             </div>
             <div class="promo-content">

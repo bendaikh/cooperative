@@ -41,14 +41,20 @@
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #2d7a52;
-            border-radius: 8px;
+            width: 56px;
+            height: 56px;
+            background: #fff;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            padding: 6px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .logo-text {
@@ -317,7 +323,9 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon">🍃</div>
+            <div class="logo-icon">
+                <img src="{{ asset('logo.svg') }}" alt="Logo">
+            </div>
             <div class="logo-text">Co-op ERP</div>
         </div>
 

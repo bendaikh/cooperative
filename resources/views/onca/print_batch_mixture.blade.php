@@ -1,17 +1,44 @@
 <!-- Batch Mixture Print Template -->
 <div style="page-break-after: avoid; direction: rtl; text-align: right;">
-    <!-- Print Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid #333; padding-bottom: 1rem; gap: 1rem;">
-        <div style="flex: 1; text-align: center;">
-            <h2 style="margin: 0; font-size: 1.1rem; font-weight: bold; color: #333;">تعاونية الوالتكاديين</h2>
-            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #333;">قائمة ترميز الدفعة (الخلطات)</p>
-            <p style="margin: 0.25rem 0; font-size: 0.85rem; color: #666;"><strong>Batch Mixture Coding List</strong></p>
-        </div>
-        <div style="text-align: left; font-size: 0.85rem;">
-            <p style="margin: 0.25rem 0;"><strong>الرمز:</strong> PR-T-EN3</p>
-            <p style="margin: 0.25rem 0;"><strong>الإصدار:</strong> 01</p>
-        </div>
-    </div>
+    <style>
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
+    </style>
+
+    <table class="header-table" style="page-break-after: avoid;">
+        <tr>
+            <td class="right-box">
+                <img src="{{ asset('logo.svg') }}" alt="Logo">
+            </td>
+            <td class="center-box">
+                <div class="title">تسجيل:</div>
+                <div class="subtitle">{{ $document->title ?? 'قائمة ترميز الدفعة' }}</div>
+            </td>
+            <td class="left-box">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="border-bottom:1px solid #000; padding:6px;">
+                            <div class="label">الرمز:</div>
+                            <div>{{ $document->reference ?? 'PR-T-EN3' }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px;">
+                            <div class="label">الإصدار:</div>
+                            <div>{{ $document->version ?? '01' }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Mixture Table -->
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 12px; border: 1px solid #333; direction: rtl;">

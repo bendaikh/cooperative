@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>{{ $document->title }}</title>
     <style>
-        @page { size: A4 portrait; margin: 8mm; }
+        @page { size: A4 portrait; margin: 10mm; }
         * { margin: 0; padding: 0; }
         body { 
             font-family: Arial, sans-serif; 
@@ -15,15 +15,19 @@
         
         .container { width: 100%; }
         table { width: 100%; border-collapse: collapse; }
-        td { border: 1px solid #000; padding: 2px 4px; font-size: 9px; text-align: right; }
+        td { border: 1px solid #000; padding: 3px 4px; font-size: 9px; text-align: right; }
         
-        .header-row td { padding: 3px; border: 1px solid #000; }
-        .logo-cell { text-align: center; width: 12%; }
-        .title-cell { text-align: center; width: 56%; }
-        .ref-cell { text-align: center; width: 32%; font-size: 8px; }
-        .section-header { background: #e8e8e8; font-weight: bold; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .header-table td { border: 1px solid #000; vertical-align: middle; }
+        .right-box { width: 20%; text-align: center; padding: 8px; }
+        .right-box img { max-height: 70px; }
+        .center-box { width: 60%; text-align: center; padding: 8px; }
+        .center-box .title { font-size: 22px; font-weight: bold; }
+        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
+        .left-box { width: 20%; text-align: center; padding: 0; }
+        .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
         .subsection-header { background: #f0f0f0; font-weight: bold; }
-        .info-row td { padding: 2px; }
+        .info-row td { padding: 3px; }
     </style>
 </head>
 <body onload="window.print()">
@@ -31,26 +35,39 @@
     @php $c = $document->content ?? []; @endphp
 
     <div class="container">
-        <!-- Header -->
-        <table style="margin-bottom: 2px;">
-            <tr class="header-row">
-                <td class="logo-cell">
-                    <img src="/logo.png" alt="Logo" style="max-height: 32px; width: auto;">
+        <!-- Header Table: Logo right, Title center, Code/version left -->
+        <table class="header-table" style="page-break-after: avoid;">
+            <tr>
+                <!-- Right: Logo -->
+                <td class="right-box">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo">
                 </td>
-                <td class="title-cell" style="padding: 4px;">
-                    <div style="font-weight: bold; font-size: 11px; margin-bottom: 2px;">تسجيل:</div>
-                    <div style="font-weight: bold; font-size: 11px;">مراقبة الإنتاج (المكملات الغذائية)</div>
-                    <div style="font-size: 8px; margin-top: 2px;">تعاونية أنرار نتجادرين</div>
+                <!-- Center: Title -->
+                <td class="center-box">
+                    <div class="title">تسجيل:</div>
+                    <div class="subtitle">{{ $document->title }}</div>
                 </td>
-                <td class="ref-cell">
-                    <div style="margin-bottom: 2px;">الرمز: <strong>{{ $document->reference }}</strong></div>
-                    <div>الإصدار: <strong>{{ $document->version }}</strong></div>
+                <!-- Left: Code & Version -->
+                <td class="left-box">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-bottom:1px solid #000; padding:6px;">
+                                <div class="label">الرمز:</div>
+                                <div>{{ $document->reference }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px;">
+                                <div class="label">الإصدار:</div>
+                                <div>{{ $document->version }}</div>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
-
-        <!-- Info Row -->
-        <table style="margin-bottom: 2px;">
+        <!-- Info Row: Only render ONCE at the top of the document -->
+        <table style="margin-bottom: 2px; page-break-after: avoid;">
             <tr class="info-row">
                 <td style="width: 50%; text-align: right;">المسؤول: {{ $document->responsible }}</td>
                 <td style="width: 50%;">التاريخ: {{ $document->date->format('Y/m/d') }}</td>
