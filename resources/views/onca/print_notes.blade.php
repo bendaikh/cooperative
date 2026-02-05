@@ -176,7 +176,6 @@
             <!-- Center: Title -->
             <td class="center-box">
                 <div class="title">سجل الملاحظات</div>
-                <div class="subtitle">Registre des Observations</div>
             </td>
 
             <!-- Left: Code & Version -->

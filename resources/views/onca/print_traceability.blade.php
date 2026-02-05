@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="utf-8">
-    <title>{{ $document->title }}</title>
+    <meta charset="UTF-8">
+    <title>سجل الإنتاج - PR-R-EN3</title>
     <style>
         @page { size: A4 portrait; margin: 10mm; }
         * { margin: 0; padding: 0; }
@@ -13,55 +13,92 @@
             direction: rtl;
         }
         
-        .container { width: 100%; }
-        table { width: 100%; border-collapse: collapse; }
-        td, th { border: 1px solid #000; padding: 4px; font-size: 9px; text-align: right; }
-        
         .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
         .header-table td { border: 1px solid #000; vertical-align: middle; }
         .right-box { width: 20%; text-align: center; padding: 8px; }
         .right-box img { max-height: 70px; }
         .center-box { width: 60%; text-align: center; padding: 8px; }
         .center-box .title { font-size: 22px; font-weight: bold; }
-        .center-box .subtitle { font-size: 18px; margin-top: 5px; }
         .left-box { width: 20%; text-align: center; padding: 0; }
         .left-box .label { font-size: 14px; text-align: right; font-weight: normal; }
-        .section-header { background: #e8e8e8; font-weight: bold; }
-        .info-row td { padding: 3px; }
-        h2 { text-align: center; font-size: 12px; margin: 8px 0; }
+        
+        .doc-info {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        .doc-info td {
+            padding: 6px;
+            border-bottom: 1px dotted #999;
+        }
+        .doc-info .info-label {
+            font-weight: bold;
+            width: 15%;
+            text-align: right;
+        }
+        .doc-info .info-value {
+            width: 35%;
+            text-align: right;
+            border-bottom: 1px solid #000;
+        }
+        
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            direction: rtl;
+            margin-bottom: 20px;
+        }
+        table.data-table th, table.data-table td {
+            border: 1.2px solid #3b78b6;
+            padding: 6px;
+            text-align: right;
+            vertical-align: middle;
+            font-size: 11px;
+        }
+        table.data-table th {
+            font-weight: bold;
+            background-color: #e8f0f7;
+        }
+        .row {
+            height: 32px;
+        }
+        .signature {
+            margin-top: 30px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px 0;
+        }
     </style>
 </head>
-<body onload="window.print()">
-
-    @php $c = $document->content ?? []; @endphp
+<body>
 
     <div class="container">
-        <!-- Header -->
-        <!-- Unified Header Table: Logo right, Title center, Code/version left -->
-        <table class="header-table" style="width: 100%; margin-bottom: 8px; border-collapse: collapse; page-break-after: avoid;">
+        <!-- Header Table: Logo right, Title center, Code/version left -->
+        <table class="header-table" style="page-break-after: avoid;">
             <tr>
                 <!-- Right: Logo -->
-                <td class="right-box" style="width: 20%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
-                    <img src="{{ asset('logo.svg') }}" alt="Logo" style="max-height: 70px;">
+                <td class="right-box">
+                    <img src="{{ asset('logo.svg') }}" alt="Logo">
                 </td>
                 <!-- Center: Title -->
-                <td class="center-box" style="width: 60%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
-                    <div class="title" style="font-size: 22px; font-weight: bold;">استقصاء التتبع</div>
-                    <div class="subtitle" style="font-size: 18px; margin-top: 5px;">{{ $document->title }}</div>
+                <td class="center-box">
+                    <div class="title">سجل الإنتاج</div>
                 </td>
-                <!-- Left: Code and Version -->
-                <td class="left-box" style="width: 20%; text-align: center; padding: 0; border: 1px solid #000; vertical-align: middle;">
+                <!-- Left: Code & Version -->
+                <td class="left-box">
                     <table style="width:100%; border-collapse:collapse;">
                         <tr>
                             <td style="border-bottom:1px solid #000; padding:6px;">
-                                <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الرمز:</div>
-                                <div>{{ $document->reference }}</div>
+                                <div class="label">الرمز:</div>
+                                <div style="font-size: 14px;">PR-R-EN3</div>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:6px;">
-                                <div class="label" style="font-size: 14px; text-align: right; font-weight: normal;">الإصدار:</div>
-                                <div>{{ $document->version }}</div>
+                                <div class="label">الإصدار:</div>
+                                <div style="font-size: 14px;">01</div>
                             </td>
                         </tr>
                     </table>
@@ -69,85 +106,105 @@
             </tr>
         </table>
 
-        <!-- Info Row -->
-        <table style="margin-bottom: 2px;">
-            <tr class="info-row">
-                <td style="width: 50%; text-align: right;">المسؤول: {{ $document->responsible ?? '' }}</td>
-                <td style="width: 50%;">التاريخ: {{ $document->date->format('d/m/Y') }}</td>
+        <!-- Document Info Section -->
+        <table class="doc-info">
+            <tr>
+                <td class="info-label">ملف رقم:</td>
+                <td class="info-value">................................</td>
+                <td class="info-label">فتح بتاريخ:</td>
+                <td class="info-value">................................</td>
             </tr>
         </table>
 
-        <h2>تسجيل إعادة التتبع (السحب / التجميع)</h2>
-
-        <!-- Product Section -->
-        <table style="margin-bottom: 5px;">
-            <tr class="section-header">
-                <th colspan="3">المنتج / Product</th>
-            </tr>
+        <!-- Data Table with simplified structure -->
+        <table class="data-table">
+            <!-- HEADER LEVEL 1 -->
             <tr>
-                <th style="width: 33%;">التسمية / Name</th>
-                <th style="width: 33%;">رقم الدفعة / Batch</th>
-                <th style="width: 34%;">الكمية (كغ) / Qty (kg)</th>
+                <th colspan="3">المنتوج</th>
+                <th colspan="5">المادة الأولية</th>
+                <th colspan="3">التعليب</th>
             </tr>
-            <tr style="height: 25px;">
-                <td>{{ $c['product_name'] ?? '' }}</td>
-                <td>{{ $c['product_batch'] ?? '' }}</td>
-                <td>{{ $c['product_qty'] ?? '' }}</td>
-            </tr>
-        </table>
 
-        <!-- Raw Materials Section -->
-        <table style="margin-bottom: 5px; font-size: 9px;">
-            <tr class="section-header">
-                <th colspan="6">المادة الأولية / Raw Materials</th>
-            </tr>
+            <!-- HEADER LEVEL 2 -->
             <tr>
-                <th style="width: 12%;">طبيعتها</th>
-                <th style="width: 15%;">المورد</th>
-                <th style="width: 12%;">المنطقة</th>
-                <th style="width: 12%;">تاريخ الاستلام</th>
-                <th style="width: 12%;">الكمية (كغ)</th>
-                <th style="width: 37%;">ملاحظة</th>
+                <!-- المنتج -->
+                <th>التسمية</th>
+                <th>رقم الدفعة</th>
+                <th>الكمية المنتجة<br>(كلغ)</th>
+
+                <!-- المادة الأولية -->
+                <th>طبيعتها</th>
+                <th>المزود</th>
+                <th>المنطقة</th>
+                <th>تاريخ الاستلام</th>
+                <th>الكمية<br>(كلغ)</th>
+
+                <!-- التعليب -->
+                <th>طبيعة</th>
+                <th>رقم الدفعة</th>
+                <th>الكمية<br>(وحدة)</th>
             </tr>
-            @php $materials = $c['materials'] ?? []; $max_m = max(count($materials), 5); @endphp
-            @for($i=0; $i<$max_m; $i++)
-                <tr style="height: 20px;">
-                    <td>{{ $materials[$i]['nature'] ?? '' }}</td>
-                    <td>{{ $materials[$i]['supplier'] ?? '' }}</td>
-                    <td>{{ $materials[$i]['region'] ?? '' }}</td>
-                    <td>{{ $materials[$i]['receipt_date'] ?? '' }}</td>
-                    <td>{{ $materials[$i]['qty'] ?? '' }}</td>
-                    <td>{{ $materials[$i]['notes'] ?? '' }}</td>
+
+            <!-- DATA ROWS -->
+            @php
+                $materials = $document->content['materials'] ?? [];
+                $packaging = $document->content['packaging'] ?? [];
+                $maxRows = max(count($materials), count($packaging));
+                $productName = $document->content['product_name'] ?? '';
+                $productBatch = $document->content['product_batch'] ?? '';
+                $productQty = $document->content['product_qty'] ?? '';
+            @endphp
+            @if($maxRows > 0)
+                @foreach(range(0, $maxRows - 1) as $index)
+                    @php
+                        $material = $materials[$index] ?? [];
+                        $pack = $packaging[$index] ?? [];
+                    @endphp
+                    <tr class="row">
+                        @if($index === 0)
+                            <td>{{ $productName }}</td>
+                            <td>{{ $productBatch }}</td>
+                            <td>{{ $productQty }}</td>
+                        @else
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        @endif
+                        <td>{{ $material['nature'] ?? '' }}</td>
+                        <td>{{ $material['supplier'] ?? '' }}</td>
+                        <td>{{ $material['region'] ?? '' }}</td>
+                        <td>{{ $material['receipt_date'] ?? '' }}</td>
+                        <td>{{ $material['qty'] ?? '' }}</td>
+                        <td>{{ $pack['nature'] ?? '' }}</td>
+                        <td>{{ $pack['batch'] ?? '' }}</td>
+                        <td>{{ $pack['qty'] ?? '' }}</td>
+                    </tr>
+                @endforeach
+            @else
+                <tr class="row">
+                    <td>{{ $productName }}</td>
+                    <td>{{ $productBatch }}</td>
+                    <td>{{ $productQty }}</td>
+                    <td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td>
                 </tr>
-            @endfor
-        </table>
 
-        <!-- Packaging Section -->
-        <table style="margin-bottom: 10px; font-size: 9px;">
-            <tr class="section-header">
-                <th colspan="3">التعليب / Packaging</th>
-            </tr>
-            <tr>
-                <th style="width: 33%;">طبيعته</th>
-                <th style="width: 33%;">رقم الدفعة</th>
-                <th style="width: 34%;">الكمية (وحدة)</th>
-            </tr>
-            @php $packaging = $c['packaging'] ?? []; $max_p = max(count($packaging), 3); @endphp
-            @for($i=0; $i<$max_p; $i++)
-                <tr style="height: 20px;">
-                    <td>{{ $packaging[$i]['nature'] ?? '' }}</td>
-                    <td>{{ $packaging[$i]['batch'] ?? '' }}</td>
-                    <td>{{ $packaging[$i]['qty'] ?? '' }}</td>
+                <tr class="row">
+                    <td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td>
                 </tr>
-            @endfor
+
+                <tr class="row">
+                    <td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td>
+                </tr>
+            @endif
         </table>
 
-        <!-- Signature -->
-        <div style="margin-top: 20px;">
-            <p style="font-weight: bold;">
-                تأشير مسؤول الجودة: <span style="display: inline-block; width: 150px; border-bottom: 1px solid #000;">{{ $c['signature'] ?? '' }}</span>
-            </p>
-        </div>
+        <div class="signature">تأشير مسؤول الجودة:</div>
+
     </div>
 
 </body>

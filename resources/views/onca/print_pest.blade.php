@@ -178,7 +178,6 @@
             <!-- Center: Title -->
             <td class="center-box">
                 <div class="title">نتائج عمليات الوقاية والمعالجة</div>
-                <div class="subtitle">Résultats des Opérations de Prévention et de Traitement</div>
             </td>
 
             <!-- Left: Code & Version -->

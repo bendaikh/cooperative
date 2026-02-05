@@ -69,7 +69,6 @@
                 </td>
                 <td class="center-box">
                     <div class="title">لائحة المشاركين في التكوين</div>
-                    <div class="subtitle">Liste des Participants à la Formation</div>
                 </td>
                 <td class="left-box">
                     <table style="width:100%; border-collapse:collapse;">

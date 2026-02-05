@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificat de Garantie - {{ $document->reference }}</title>
+    <title>شهادة الضمان</title>
     <style>
         * {
             margin: 0;
@@ -187,7 +187,6 @@
                 </td>
                 <td class="center-box" style="width: 60%; text-align: center; padding: 8px; border: 1px solid #000; vertical-align: middle;">
                     <div class="title" style="font-size: 22px; font-weight: bold;">شهادة الضمان</div>
-                    <div class="subtitle" style="font-size: 18px; margin-top: 5px;">{{ $document->title ?? 'CERT-GAR-001' }}</div>
                 </td>
                 <td class="left-box" style="width: 20%; text-align: center; padding: 0; border: 1px solid #000; vertical-align: middle;">
                     <table style="width:100%; border-collapse:collapse;">
@@ -365,7 +364,7 @@
 
                 <div class="signature-block">
                     <p style="font-weight: bold; font-size: 10px;">Signé à {{ $document->content['signature']['place'] ?? 'Co-op Anrar' }}</p>
-                    <p style="font-size: 10px;">Le {{ $document->date->format('d/m/Y') }}</p>
+                    <p style="font-size: 10px;">{{ $document->date->format('d/m/Y') }}</p>
                     <div class="signature-line"></div>
                     <p style="font-size: 10px;">{{ $document->responsible ?? '' }}</p>
                 </div>

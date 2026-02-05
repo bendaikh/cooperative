@@ -99,17 +99,17 @@
 
     <!-- Signature Section -->
     <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; direction: rtl; text-align: right;">
-        <p style="margin: 0 0 1rem 0; font-size: 0.875rem; font-weight: 600;">بتأشير مسئول الإنتاج / Production Manager Signature</p>
+        <p style="margin: 0 0 1rem 0; font-size: 0.875rem; font-weight: 600;">بتأشير مسئول الإنتاج</p>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; margin-top: 2rem;">
             <div style="text-align: center;">
-                <p style="margin: 0; font-size: 0.875rem; font-weight: 600;">الختم / Stamp</p>
+                <p style="margin: 0; font-size: 0.875rem; font-weight: 600;">الختم</p>
                 <div style="height: 60px; border-bottom: 2px solid #000; margin-bottom: 0.5rem;"></div>
                 <p style="margin: 0.25rem 0 0; font-size: 0.75rem; color: #666;">_______________</p>
             </div>
             <div style="text-align: center;">
-                <p style="margin: 0; font-size: 0.875rem; font-weight: 600;">الاسم / Name</p>
+                <p style="margin: 0; font-size: 0.875rem; font-weight: 600;">الاسم</p>
                 <div style="height: 60px; border-bottom: 2px solid #000; margin-bottom: 0.5rem;"></div>
-                <p style="margin: 0.25rem 0 0; font-size: 0.75rem; color: #666;">التاريخ / Date: _______________</p>
+                <p style="margin: 0.25rem 0 0; font-size: 0.75rem; color: #666;">التاريخ: _______________</p>
             </div>
         </div>
     </div>

@@ -56,10 +56,7 @@
             font-weight: bold;
         }
 
-        .center-box .subtitle {
-            font-size: 18px;
-            margin-top: 5px;
-        }
+
 
         .left-box {
             width: 20%;
