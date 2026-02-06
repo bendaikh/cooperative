@@ -324,6 +324,8 @@
                 @include('onca.forms.alerts')
             @elseif($type === 'mca')
                 @include('onca.forms.mca')
+            @elseif($type === 'production')
+                @include('onca.forms.production')
             @elseif($type === 'quality')
                 @include('onca.forms.quality')
             @elseif($type === 'traceability')
@@ -350,6 +352,8 @@
                 @include('onca.forms.mca2')
             @elseif($type === 'training2')
                 @include('onca.forms.training2')
+            @elseif($type === 'pest_intervention')
+                @include('onca.forms.pest_intervention')
             @endif
         </div>
 
@@ -366,7 +370,7 @@
                     Enregistrer la Liste
                 @elseif($type === 'alerts')
                     Enregistrer l'Alerte
-                @elseif($type === 'mca' || $type === 'mca2')
+                @elseif($type === 'mca' || $type === 'mca2' || $type === 'production')
                     Enregistrer le Document
                 @elseif($type === 'training2')
                     Enregistrer la Liste

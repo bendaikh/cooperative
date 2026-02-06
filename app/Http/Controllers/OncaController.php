@@ -111,45 +111,126 @@ class OncaController extends Controller
 
         foreach ($content as $key => $value) {
             if (is_array($value)) {
-                // Check if this is a table structure (array of arrays) or key-value pairs
-                $isTableStructure = false;
-                $tableRows = [];
-                $keyValuePairs = [];
+                // Check if this is numeric-only keys (0, 1, 2, etc.) - MCA form style
+                $numericOnlyKeys = !empty(array_filter(array_keys($value), 'is_numeric'));
+                $hasStringKeys = !empty(array_filter(array_keys($value), function($k) { return !is_numeric($k); }));
                 
-                foreach ($value as $subKey => $subValue) {
-                    if (is_array($subValue)) {
-                        // This is a table row (like health[0][time], health[new_123][name], etc.)
-                        $isTableStructure = true;
-                        
-                        // Check if this row has any non-empty values
-                        $hasData = false;
-                        $rowData = [];
-                        
-                        foreach ($subValue as $field => $fieldValue) {
-                            // Keep all fields, even if empty (for proper table structure)
-                            $rowData[$field] = $fieldValue ?? '';
-                            if (!empty($fieldValue) && trim($fieldValue) !== '') {
-                                $hasData = true;
-                            }
+                if ($numericOnlyKeys && !$hasStringKeys) {
+                    // Check if the values are all scalars (simple numeric array) or arrays (table structure)
+                    $allScalars = true;
+                    foreach ($value as $v) {
+                        if (is_array($v)) {
+                            $allScalars = false;
+                            break;
                         }
-                        
-                        // Only include rows that have at least one non-empty field
-                        if ($hasData) {
-                            $tableRows[] = $rowData;
+                    }
+                    
+                    if ($allScalars) {
+                        // This is a numeric array like [0 => 'val1', 1 => 'val2', 2 => 'val3']
+                        // Keep the structure as-is, just ensure all values are strings
+                        $normalized[$key] = [];
+                        foreach ($value as $idx => $v) {
+                            $normalized[$key][$idx] = $v ?? '';
                         }
                     } else {
-                        // Direct key-value pairs (like preventive[door_window])
-                        $keyValuePairs[$subKey] = $subValue ?? '';
+                        // This is a table structure with numeric keys [0 => [...], 1 => [...], ...]
+                        $tableRows = [];
+                        foreach ($value as $idx => $rowData) {
+                            if (is_array($rowData)) {
+                                $row = [];
+                                foreach ($rowData as $field => $fieldValue) {
+                                    $row[$field] = $fieldValue ?? '';
+                                }
+                                $tableRows[$idx] = $row;
+                            } else {
+                                $tableRows[$idx] = '';
+                            }
+                        }
+                        $normalized[$key] = $tableRows;
                     }
-                }
-                
-                // Set the normalized value based on structure type
-                if ($isTableStructure) {
-                    // For table structures, use numeric array of rows
-                    $normalized[$key] = $tableRows;
                 } else {
-                    // For key-value pairs, preserve the structure
-                    $normalized[$key] = $keyValuePairs;
+                    // Check if this is a table structure (array of arrays) or key-value pairs
+                    $isTableStructure = false;
+                    $tableRows = [];
+                    $keyValuePairs = [];
+                    
+                    foreach ($value as $subKey => $subValue) {
+                        if (is_array($subValue)) {
+                            // Check if the subValue is purely numeric array (column data like material[0], material[1], etc.)
+                            $subNumericOnly = !empty(array_filter(array_keys($subValue), 'is_numeric'));
+                            $subHasStringKeys = !empty(array_filter(array_keys($subValue), function($k) { return !is_numeric($k); }));
+                            
+                            if ($subNumericOnly && !$subHasStringKeys) {
+                                // Check if all values in this array are scalars
+                                $allSubScalars = true;
+                                foreach ($subValue as $sv) {
+                                    if (is_array($sv)) {
+                                        $allSubScalars = false;
+                                        break;
+                                    }
+                                }
+                                
+                                if ($allSubScalars) {
+                                    // This is a column of data (material[0], material[1], etc.)
+                                    // NOT a table structure - treat as key-value pair
+                                    $columnData = [];
+                                    foreach ($subValue as $idx => $v) {
+                                        $columnData[$idx] = $v ?? '';
+                                    }
+                                    $keyValuePairs[$subKey] = $columnData;
+                                } else {
+                                    // This contains nested arrays, treat as table structure
+                                    $isTableStructure = true;
+                                    $rowData = [];
+                                    foreach ($subValue as $field => $fieldValue) {
+                                        if (is_array($fieldValue)) {
+                                            $rowData[$field] = '';
+                                        } else {
+                                            $rowData[$field] = $fieldValue ?? '';
+                                        }
+                                    }
+                                    if (is_numeric($subKey)) {
+                                        $tableRows[$subKey] = $rowData;
+                                    } else {
+                                        $tableRows[] = $rowData;
+                                    }
+                                }
+                            } else {
+                                // This is a table row (like sorting[0][material], sorting[0][batch_number], etc.)
+                                $isTableStructure = true;
+                                
+                                // Preserve the row structure with all fields
+                                $rowData = [];
+                                foreach ($subValue as $field => $fieldValue) {
+                                    if (is_array($fieldValue)) {
+                                        $rowData[$field] = '';
+                                    } else {
+                                        $rowData[$field] = $fieldValue ?? '';
+                                    }
+                                }
+                                
+                                // Use numeric index for consistency
+                                if (is_numeric($subKey)) {
+                                    $tableRows[$subKey] = $rowData;
+                                } else {
+                                    // Handle non-numeric keys by converting to next numeric index
+                                    $tableRows[] = $rowData;
+                                }
+                            }
+                        } else {
+                            // Direct key-value pairs (like preventive[door_window])
+                            $keyValuePairs[$subKey] = $subValue ?? '';
+                        }
+                    }
+                    
+                    // Set the normalized value based on structure type
+                    if ($isTableStructure) {
+                        // For table structures, preserve the numeric array structure
+                        $normalized[$key] = $tableRows;
+                    } else {
+                        // For key-value pairs, preserve the structure
+                        $normalized[$key] = $keyValuePairs;
+                    }
                 }
             } else {
                 // Simple key-value pairs (like material_name at root level)
@@ -208,6 +289,12 @@ class OncaController extends Controller
                 'title' => 'مراقبة الإنتاج (المكملات الغذائية)', 
                 'title_en' => 'SURVEILLANCE DE LA PRODUCTION (SUPPLEMENTS)',
                 'ref' => 'MCA-EN1', 
+                'ver' => '01'
+            ],
+            'production' => [
+                'title' => 'مراقبة الإنتاج', 
+                'title_en' => 'PRODUCTION MONITORING',
+                'ref' => 'PR-P-EN1', 
                 'ver' => '01'
             ],
             'quality' => [
@@ -286,6 +373,12 @@ class OncaController extends Controller
                 'title' => 'إشعار بالسحب', 
                 'title_en' => 'WITHDRAWAL NOTICE',
                 'ref' => 'PR-R-FR2', 
+                'ver' => '01'
+            ],
+            'pest_intervention' => [
+                'title' => 'الاحتياطات المرتبطة بمكافحة الآفات', 
+                'title_en' => 'PEST CONTROL INTERVENTION MEASURES',
+                'ref' => 'PR-V-IN1', 
                 'ver' => '01'
             ],
         ];

@@ -145,6 +145,14 @@
         background: #93c5fd;
     }
 
+    .onca-doc-icon-production {
+        background: #fde2e4;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-production {
+        background: #fcd5d8;
+    }
+
     .onca-doc-icon-quality {
         background: #dcfce7;
     }
@@ -231,6 +239,14 @@
 
     .onca-doc-card:hover .onca-doc-icon-withdrawal_notice {
         background: #ddd6fe;
+    }
+
+    .onca-doc-icon-pest_intervention {
+        background: #fca5a5;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-pest_intervention {
+        background: #f87171;
     }
 
     .onca-doc-info {
@@ -392,7 +408,21 @@
             </div>
         </a>
 
-        <!-- Document 8: Quality Control -->
+        <!-- Document 8: Production Monitoring -->
+        <a href="{{ route('onca.create-form', 'production') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-production">
+                    <span>🏭</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">مراقبة الإنتاج</h3>
+                    <p class="onca-doc-description">مراقبة كاملة لعمليات الإنتاج والتعبئة</p>
+                    <span class="onca-doc-code">PR-P-EN1</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 9: Quality Control -->
         <a href="{{ route('onca.create-form', 'quality') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-quality">
@@ -406,7 +436,7 @@
             </div>
         </a>
 
-        <!-- Document 8: Traceability Recording -->
+        <!-- Document 9: Traceability Recording -->
         <a href="{{ route('onca.create-form', 'traceability') }}" class="onca-doc-card">
             <div class="onca-doc-content">
                 <div class="onca-doc-icon-wrapper onca-doc-icon-traceability">
@@ -528,6 +558,20 @@
                     <h3 class="onca-doc-name">لائحة المشاركين في التكوين</h3>
                     <p class="onca-doc-description">تسجيل المشاركين في برامج التدريب والتكوين</p>
                     <span class="onca-doc-code">PR-S-EN2</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 16: Pest Intervention Measures -->
+        <a href="{{ route('onca.create-form', 'pest_intervention') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-pest_intervention">
+                    <span>🦟</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">الاحتياطات المرتبطة بمكافحة الآفات</h3>
+                    <p class="onca-doc-description">تسجيل المنتجات والمواد المستخدمة في مكافحة الآفات.</p>
+                    <span class="onca-doc-code">PR-V-IN1</span>
                 </div>
             </div>
         </a>

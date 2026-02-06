@@ -610,6 +610,10 @@
         <!-- Include Withdrawal Notice Print Template -->
         @include('onca.print_withdrawal_notice')
 
+    @elseif($document->type === 'pest_intervention')
+        <!-- Include Pest Intervention Print Template -->
+        @include('onca.print_pest_intervention')
+
     @endif
 
 </body>
