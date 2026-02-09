@@ -354,6 +354,12 @@
                 @include('onca.forms.training2')
             @elseif($type === 'pest_intervention')
                 @include('onca.forms.pest_intervention')
+            @elseif($type === 'onca_report')
+                @include('onca.forms.onca_report')
+            @elseif($type === 'gathering_report')
+                @include('onca.forms.gathering_report')
+            @elseif($type === 'non_conformance')
+                @include('onca.forms.non_conformance')
             @endif
         </div>
 

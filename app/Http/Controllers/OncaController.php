@@ -381,6 +381,24 @@ class OncaController extends Controller
                 'ref' => 'PR-V-IN1', 
                 'ver' => '01'
             ],
+            'onca_report' => [
+                'title' => 'استمارة تبليغ مصلحة أونسا', 
+                'title_en' => 'ONCA REPORTING FORM',
+                'ref' => 'PR-R-FR1', 
+                'ver' => '01'
+            ],
+            'gathering_report' => [
+                'title' => 'بلاغ للبيت بخصوص التجمع', 
+                'title_en' => 'REPORT FOR HOUSE REGARDING GATHERING',
+                'ref' => 'PR-R-FR3', 
+                'ver' => '01'
+            ],
+            'non_conformance' => [
+                'title' => 'بطاقة عدم المطابقة', 
+                'title_en' => 'NON-CONFORMANCE CARD',
+                'ref' => 'PR-R-FF1', 
+                'ver' => '01'
+            ],
         ];
         return $types[$type] ?? null;
     }

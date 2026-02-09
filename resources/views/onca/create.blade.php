@@ -249,6 +249,30 @@
         background: #f87171;
     }
 
+    .onca-doc-icon-onca_report {
+        background: #bfdbfe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-onca_report {
+        background: #93c5fd;
+    }
+
+    .onca-doc-icon-gathering_report {
+        background: #ddd6fe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-gathering_report {
+        background: #c4b5fd;
+    }
+
+    .onca-doc-icon-non_conformance {
+        background: #fecaca;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-non_conformance {
+        background: #fca5a5;
+    }
+
     .onca-doc-info {
         margin-left: 1rem;
         flex: 1;
@@ -572,6 +596,48 @@
                     <h3 class="onca-doc-name">الاحتياطات المرتبطة بمكافحة الآفات</h3>
                     <p class="onca-doc-description">تسجيل المنتجات والمواد المستخدمة في مكافحة الآفات.</p>
                     <span class="onca-doc-code">PR-V-IN1</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 17: ONCA Reporting Form -->
+        <a href="{{ route('onca.create-form', 'onca_report') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-onca_report">
+                    <span>📋</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">استمارة تبليغ مصلحة أونسا</h3>
+                    <p class="onca-doc-description">تبليغ عن شكاوى المنتجات والعيوب المكتشفة.</p>
+                    <span class="onca-doc-code">PR-R-FR1</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 18: Gathering Report -->
+        <a href="{{ route('onca.create-form', 'gathering_report') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-gathering_report">
+                    <span>📄</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">بلاغ للبيت بخصوص التجمع</h3>
+                    <p class="onca-doc-description">استمارة بلاغ للبيت بخصوص التجمع مع ملاحظات تفصيلية.</p>
+                    <span class="onca-doc-code">PR-R-FR3</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 19: Non-Conformance Card -->
+        <a href="{{ route('onca.create-form', 'non_conformance') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-non_conformance">
+                    <span>⚠️</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">بطاقة عدم المطابقة</h3>
+                    <p class="onca-doc-description">نموذج شامل لتسجيل وتتبع حالات عدم المطابقة والإجراءات التصحيحية والوقائية.</p>
+                    <span class="onca-doc-code">PR-R-FF1</span>
                 </div>
             </div>
         </a>

@@ -614,6 +614,18 @@
         <!-- Include Pest Intervention Print Template -->
         @include('onca.print_pest_intervention')
 
+    @elseif($document->type === 'onca_report')
+        <!-- Include ONCA Report Print Template -->
+        @include('onca.print_onca_report')
+
+    @elseif($document->type === 'gathering_report')
+        <!-- Include Gathering Report Print Template -->
+        @include('onca.print_gathering_report')
+
+    @elseif($document->type === 'non_conformance')
+        <!-- Include Non-Conformance Print Template -->
+        @include('onca.print_non_conformance')
+
     @endif
 
 </body>
