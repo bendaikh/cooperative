@@ -360,6 +360,8 @@
                 @include('onca.forms.gathering_report')
             @elseif($type === 'non_conformance')
                 @include('onca.forms.non_conformance')
+            @elseif($type === 'suppliers_customers')
+                @include('onca.forms.suppliers_customers')
             @endif
         </div>
 

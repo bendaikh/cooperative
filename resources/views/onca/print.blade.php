@@ -626,6 +626,10 @@
         <!-- Include Non-Conformance Print Template -->
         @include('onca.print_non_conformance')
 
+    @elseif($document->type === 'suppliers_customers')
+        <!-- Include Suppliers and Customers Print Template -->
+        @include('onca.print_suppliers_customers')
+
     @endif
 
 </body>

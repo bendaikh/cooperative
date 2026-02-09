@@ -273,6 +273,14 @@
         background: #fca5a5;
     }
 
+    .onca-doc-icon-suppliers_customers {
+        background: #bfdbfe;
+    }
+
+    .onca-doc-card:hover .onca-doc-icon-suppliers_customers {
+        background: #93c5fd;
+    }
+
     .onca-doc-info {
         margin-left: 1rem;
         flex: 1;
@@ -638,6 +646,20 @@
                     <h3 class="onca-doc-name">بطاقة عدم المطابقة</h3>
                     <p class="onca-doc-description">نموذج شامل لتسجيل وتتبع حالات عدم المطابقة والإجراءات التصحيحية والوقائية.</p>
                     <span class="onca-doc-code">PR-R-FF1</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Document 20: Customers Alert List -->
+        <a href="{{ route('onca.create-form', 'suppliers_customers') }}" class="onca-doc-card">
+            <div class="onca-doc-content">
+                <div class="onca-doc-icon-wrapper onca-doc-icon-suppliers_customers">
+                    <span>📋</span>
+                </div>
+                <div class="onca-doc-info">
+                    <h3 class="onca-doc-name">لائحة الزبناء المعنيين بالإنذار</h3>
+                    <p class="onca-doc-description">تسجيل قائمة الزبائن المعنيين بالإنذارات مع معلومات الاتصال والمنتجات والكميات.</p>
+                    <span class="onca-doc-code">PR-R-EN4</span>
                 </div>
             </div>
         </a>

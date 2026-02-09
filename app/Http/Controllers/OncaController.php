@@ -399,6 +399,12 @@ class OncaController extends Controller
                 'ref' => 'PR-R-FF1', 
                 'ver' => '01'
             ],
+            'suppliers_customers' => [
+                'title' => 'لائحة الزبناء المعنيين بالإنذار', 
+                'title_en' => 'CUSTOMERS ALERT LIST',
+                'ref' => 'PR-R-EN4', 
+                'ver' => '01'
+            ],
         ];
         return $types[$type] ?? null;
     }
