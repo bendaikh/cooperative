@@ -224,10 +224,11 @@ class CommandeController extends Controller
             'filled_capsule_id' => 'required|exists:filled_capsules,id',
             'avec_joint_securite' => 'nullable|boolean',
             'avec_ticket' => 'nullable|boolean',
-            'ticket_quantity' => 'nullable|numeric|min:0.001',
-            'nom_marque' => 'nullable|string|max:255',
-            'numero_autorisation' => 'nullable|string|max:255',
-            'ticket_product_stock_id' => 'nullable|exists:product_stock,id',
+            'ticket_quantity' => 'required_if:avec_ticket,1|nullable|numeric|min:0.001',
+            'ticket_type' => 'required_if:avec_ticket,1|nullable|string|in:PAPIER,VINELLE',
+            'nom_marque' => 'required_if:avec_ticket,1|nullable|string|max:255',
+            'numero_autorisation' => 'required_if:avec_ticket,1|nullable|string|max:255',
+            'ticket_product_stock_id' => 'required_if:avec_ticket,1|nullable|exists:product_stock,id',
             'selling_price' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
@@ -416,6 +417,9 @@ class CommandeController extends Controller
                         'commande_id' => $commande->id,
                         'product_stock_id' => $request->ticket_product_stock_id,
                         'quantity' => $request->ticket_quantity,
+                        'ticket_type' => $request->ticket_type,
+                        'nom_marque' => $request->nom_marque,
+                        'numero_autorisation' => $request->numero_autorisation,
                     ]);
                     \Log::info('COMMANDE STORE: Ticket record created');
                 }
@@ -428,6 +432,9 @@ class CommandeController extends Controller
                         'commande_id' => $commande->id,
                         'product_stock_id' => $request->ticket_product_stock_id,
                         'quantity' => $request->ticket_quantity,
+                        'ticket_type' => $request->ticket_type,
+                        'nom_marque' => $request->nom_marque,
+                        'numero_autorisation' => $request->numero_autorisation,
                     ]);
                     \Log::info('COMMANDE STORE: Ticket record created for without_packaging');
                 }
@@ -704,6 +711,7 @@ class CommandeController extends Controller
         if ($request->avec_ticket) {
             $rules['ticket_product_stock_id'] = 'required|exists:product_stock,id';
             $rules['ticket_quantity'] = 'required|numeric|min:0.001';
+            $rules['ticket_type'] = 'required|string|in:PAPIER,VINELLE';
             $rules['nom_marque'] = 'required|string';
             $rules['numero_autorisation'] = 'required|string';
         }
@@ -900,6 +908,7 @@ class CommandeController extends Controller
                     'commande_id' => $commande->id,
                     'product_stock_id' => $request->ticket_product_stock_id,
                     'quantity' => $request->ticket_quantity ?? 0,
+                    'ticket_type' => $request->ticket_type,
                     'nom_marque' => $request->nom_marque,
                     'numero_autorisation' => $request->numero_autorisation,
                 ]);

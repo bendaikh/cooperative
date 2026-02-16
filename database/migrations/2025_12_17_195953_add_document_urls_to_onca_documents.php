@@ -13,13 +13,19 @@ return new class extends Migration
     {
         Schema::table('onca_documents', function (Blueprint $table) {
             // Primary document URL (from CamScanner or file upload)
-            $table->text('document_url')->nullable()->after('content');
+            if (!Schema::hasColumn('onca_documents', 'document_url')) {
+                $table->text('document_url')->nullable()->after('content');
+            }
             
             // JSON array to store multiple document URLs
-            $table->json('document_urls')->nullable()->after('document_url');
+            if (!Schema::hasColumn('onca_documents', 'document_urls')) {
+                $table->json('document_urls')->nullable()->after('document_url');
+            }
             
             // Document type: 'camscanner', 'upload', 'external'
-            $table->string('document_source')->default('upload')->after('document_urls');
+            if (!Schema::hasColumn('onca_documents', 'document_source')) {
+                $table->string('document_source')->default('upload')->after('document_urls');
+            }
         });
     }
 
